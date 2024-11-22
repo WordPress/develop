@@ -1104,6 +1104,23 @@ class Tests_HtmlApi_WpHtmlProcessor extends WP_UnitTestCase {
 	}
 
 	/**
+	 * @ticket 62357
+	 */
+	public function test_prevent_fragment_creation_on_closers() {
+		$processor = WP_HTML_Processor::create_full_parser( '<p></p>' );
+		$processor->next_tag( 'P' );
+		$processor->next_tag(
+			array(
+				'tag_name'    => 'P',
+				'tag_closers' => 'visit',
+			)
+		);
+		$this->assertSame( 'P', $processor->get_tag() );
+		$this->assertTrue( $processor->is_tag_closer() );
+		$this->assertNull( $processor->create_fragment_at_current_node( '<i>fragment HTML</i>' ) );
+	}
+
+	/**
 	 * Ensure that lowercased tag_name query matches tags case-insensitively.
 	 *
 	 * @group 62427
