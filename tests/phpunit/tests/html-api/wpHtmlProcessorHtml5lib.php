@@ -153,68 +153,54 @@ class Tests_HtmlApi_Html5lib extends WP_UnitTestCase {
 	 * @return string|null Tree structure of parsed HTML, if supported, else null.
 	 */
 	private static function build_tree_representation( ?string $fragment_context, string $html ) {
-		$processor = null;
 		if ( $fragment_context ) {
-			if ( 'body' === $fragment_context ) {
-				$processor = WP_HTML_Processor::create_fragment( $html );
-			} else {
-
-				/*
-				 * If the string of characters starts with "svg ", the context
-				 * element is in the SVG namespace and the substring after
-				 * "svg " is the local name. If the string of characters starts
-				 * with "math ", the context element is in the MathML namespace
-				 * and the substring after "math " is the local name.
-				 * Otherwise, the context element is in the HTML namespace and
-				 * the string is the local name.
-				 */
-				if ( str_starts_with( $fragment_context, 'svg ' ) ) {
-					$tag_name = substr( $fragment_context, 4 );
-					if ( 'svg' === $tag_name ) {
-						$parent_processor = WP_HTML_Processor::create_full_parser( '<!DOCTYPE html><svg>' );
-					} else {
-						$parent_processor = WP_HTML_Processor::create_full_parser( "<!DOCTYPE html><svg><{$tag_name}>" );
-					}
-					$parent_processor->next_tag( $tag_name );
-				} elseif ( str_starts_with( $fragment_context, 'math ' ) ) {
-					$tag_name = substr( $fragment_context, 5 );
-					if ( 'math' === $tag_name ) {
-						$parent_processor = WP_HTML_Processor::create_full_parser( '<!DOCTYPE html><math>' );
-					} else {
-						$parent_processor = WP_HTML_Processor::create_full_parser( "<!DOCTYPE html><math><{$tag_name}>" );
-					}
-					$parent_processor->next_tag( $tag_name );
+			/*
+			 * If the string of characters starts with "svg ", the context
+			 * element is in the SVG namespace and the substring after
+			 * "svg " is the local name. If the string of characters starts
+			 * with "math ", the context element is in the MathML namespace
+			 * and the substring after "math " is the local name.
+			 * Otherwise, the context element is in the HTML namespace and
+			 * the string is the local name.
+			 */
+			if ( str_starts_with( $fragment_context, 'svg ' ) ) {
+				$tag_name = substr( $fragment_context, 4 );
+				if ( 'svg' === $tag_name ) {
+					$fragment_context_html = '<svg>';
 				} else {
-					if ( in_array(
-						$fragment_context,
-						array(
-							'caption',
-							'col',
-							'colgroup',
-							'tbody',
-							'td',
-							'tfoot',
-							'th',
-							'thead',
-							'tr',
-						),
-						true
-					) ) {
-						$parent_processor = WP_HTML_Processor::create_full_parser( "<!DOCTYPE html><table><{$fragment_context}>" );
-						$parent_processor->next_tag();
-					} else {
-						$parent_processor = WP_HTML_Processor::create_full_parser( "<!DOCTYPE html><{$fragment_context}>" );
-					}
-					$parent_processor->next_tag( $fragment_context );
+					$fragment_context_html = "<svg><{$tag_name}>";
 				}
-				if ( null !== $parent_processor->get_unsupported_exception() ) {
-					throw $parent_processor->get_unsupported_exception();
+			} elseif ( str_starts_with( $fragment_context, 'math ' ) ) {
+				$tag_name = substr( $fragment_context, 5 );
+				if ( 'math' === $tag_name ) {
+					$fragment_context_html = '<math>';
+				} else {
+					$fragment_context_html = "<math><{$tag_name}>";
 				}
-				if ( null !== $parent_processor->get_last_error() ) {
-					throw new Exception( $parent_processor->get_last_error() );
+			} else {
+				// Tags that only appear in tables need a special case.
+				if ( in_array(
+					$fragment_context,
+					array(
+						'caption',
+						'col',
+						'colgroup',
+						'tbody',
+						'td',
+						'tfoot',
+						'th',
+						'thead',
+						'tr',
+					),
+					true
+				) ) {
+					$fragment_context_html = "<table><{$fragment_context}>";
+				} else {
+					$fragment_context_html = "<{$fragment_context}>";
 				}
-				$processor = $parent_processor->create_fragment_at_current_node( $html );
 			}
+
+			$processor = WP_HTML_Processor::create_fragment( $html, $fragment_context_html );
 
 			if ( null === $processor ) {
 				throw new WP_HTML_Unsupported_Exception( "Could not create a parser with the given fragment context: {$fragment_context}.", '', 0, '', array(), array() );
