@@ -11,6 +11,7 @@ on:
     paths:
       - '.github/workflows/install-testing.yml'
       - '.version-support-*.json'
+      - '.github/workflows/reusable-support-json-reader-v1.yml'
   pull_request:
     # Always test the workflow when changes are suggested.
     paths:
