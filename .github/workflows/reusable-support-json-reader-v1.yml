@@ -52,9 +52,9 @@ jobs:
       - name: Determine the major WordPress version
         id: major-wp-version
         run: |
-          if [ "${{ inputs.wp-version }}" ] && [ "${{ inputs.wp-version }}" != "nightly" ] && [ "${{ inputs.wp-version }}" != "latest" ]; then
+          if [ "${{ inputs.wp-version }}" ] && [ "${{ inputs.wp-version }}" != "nightly" ] && [ "${{ inputs.wp-version }}" != "latest" ] && [ "${{ inputs.wp-version }}" != "trunk" ]; then
             echo "version=$(echo "${{ inputs.wp-version }}" | tr '.' '-' | cut -d '-' -f1-2)" >> $GITHUB_OUTPUT
-          elif [ "${{ inputs.wp-version }}" ]; then
+          elif [ "${{ inputs.wp-version }}" ] && [ "${{ inputs.wp-version }}" != "trunk" ]; then
             echo "version=$(echo "${{ inputs.wp-version }}")" >> $GITHUB_OUTPUT
           else
             echo "version=nightly" >> $GITHUB_OUTPUT
