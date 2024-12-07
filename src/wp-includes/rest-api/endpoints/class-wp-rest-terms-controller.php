@@ -312,6 +312,12 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 			$prepared_args = array_merge( $prepared_args, $taxonomy_obj->args );
 		}
 
+		$is_head_request = $request->is_method( 'head' );
+		if ( $is_head_request ) {
+			// Force the 'fields' argument. For HEAD requests, only term IDs are required.
+			$prepared_args['fields'] = 'ids';
+		}
+
 		/**
 		 * Filters get_terms() arguments when querying terms via the REST API.
 		 *
@@ -354,14 +360,15 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 			$total_terms = 0;
 		}
 
-		$response = array();
-
-		foreach ( $query_result as $term ) {
-			$data       = $this->prepare_item_for_response( $term, $request );
-			$response[] = $this->prepare_response_for_collection( $data );
+		if ( ! $is_head_request ) {
+			$response = array();
+			foreach ( $query_result as $term ) {
+				$data       = $this->prepare_item_for_response( $term, $request );
+				$response[] = $this->prepare_response_for_collection( $data );
+			}
 		}
 
-		$response = rest_ensure_response( $response );
+		$response = $is_head_request ? new WP_REST_Response() : rest_ensure_response( $response );
 
 		// Store pagination values for headers.
 		$per_page = (int) $prepared_args['number'];
@@ -466,6 +473,10 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 		$term = $this->get_term( $request['id'] );
 		if ( is_wp_error( $term ) ) {
 			return $term;
+		}
+
+		if ( $request->is_method( 'head' ) ) {
+			return new WP_REST_Response();
 		}
 
 		$response = $this->prepare_item_for_response( $term, $request );
