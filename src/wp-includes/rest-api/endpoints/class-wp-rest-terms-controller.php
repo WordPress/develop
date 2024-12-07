@@ -312,7 +312,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 			$prepared_args = array_merge( $prepared_args, $taxonomy_obj->args );
 		}
 
-		$is_head_request = $request->is_method( 'head' );
+		$is_head_request = $request->is_method( 'HEAD' );
 		if ( $is_head_request ) {
 			// Force the 'fields' argument. For HEAD requests, only term IDs are required.
 			$prepared_args['fields'] = 'ids';
@@ -475,7 +475,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 			return $term;
 		}
 
-		if ( $request->is_method( 'head' ) ) {
+		if ( $request->is_method( 'HEAD' ) ) {
 			return new WP_REST_Response();
 		}
 

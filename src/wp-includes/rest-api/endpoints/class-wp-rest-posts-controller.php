@@ -402,7 +402,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		// Force the post_type argument, since it's not a user input variable.
 		$args['post_type'] = $this->post_type;
 
-		$is_head_request = $request->is_method( 'head' );
+		$is_head_request = $request->is_method( 'HEAD' );
 		if ( $is_head_request ) {
 			// Force the 'fields' argument. For HEAD requests, only post IDs are required to calculate pagination.
 			$args['fields'] = 'ids';
@@ -640,7 +640,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 			return $post;
 		}
 
-		if ( $request->is_method( 'head' ) ) {
+		if ( $request->is_method( 'HEAD' ) ) {
 			$response = new WP_REST_Response();
 		} else {
 			$data     = $this->prepare_item_for_response( $post, $request );

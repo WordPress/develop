@@ -114,7 +114,7 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller {
 	 */
 	public function get_items( $request ) {
 
-		if ( $request->is_method( 'head' ) ) {
+		if ( $request->is_method( 'HEAD' ) ) {
 			// Return early as this method doesn't add any headers.
 			return new WP_REST_Response();
 		}
@@ -196,7 +196,7 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller {
 			);
 		}
 
-		if ( $request->is_method( 'head' ) ) {
+		if ( $request->is_method( 'HEAD' ) ) {
 			return new WP_REST_Response();
 		}
 

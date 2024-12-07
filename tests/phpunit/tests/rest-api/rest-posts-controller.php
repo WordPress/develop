@@ -318,7 +318,7 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		if ( $request->is_method( 'head' ) ) {
+		if ( $request->is_method( 'HEAD' ) ) {
 			$this->assertNull( $response->get_data(), 'Failed asserting that response data is null for HEAD request.' );
 		} else {
 			$this->assertSame( array(), $response->get_data(), 'Failed asserting that response data is an empty array for GET request.' );

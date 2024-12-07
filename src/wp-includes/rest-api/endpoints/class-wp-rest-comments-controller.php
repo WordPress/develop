@@ -262,7 +262,7 @@ class WP_REST_Comments_Controller extends WP_REST_Controller {
 			$prepared_args['offset'] = $prepared_args['number'] * ( absint( $request['page'] ) - 1 );
 		}
 
-		$is_head_request = $request->is_method( 'head' );
+		$is_head_request = $request->is_method( 'HEAD' );
 		if ( $is_head_request ) {
 			// Force the 'fields' argument. For HEAD requests, only post IDs are required to calculate pagination.
 			$prepared_args['fields'] = 'ids';
@@ -435,7 +435,7 @@ class WP_REST_Comments_Controller extends WP_REST_Controller {
 			return $comment;
 		}
 
-		if ( $request->is_method( 'head' ) ) {
+		if ( $request->is_method( 'HEAD' ) ) {
 			// Don't prepare response body for HEAD requests.
 			return new WP_REST_Response();
 		}

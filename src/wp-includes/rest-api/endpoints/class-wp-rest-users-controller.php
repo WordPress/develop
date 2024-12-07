@@ -334,7 +334,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 			$prepared_args['search'] = '*' . $prepared_args['search'] . '*';
 		}
 
-		$is_head_request = $request->is_method( 'head' );
+		$is_head_request = $request->is_method( 'HEAD' );
 		if ( $is_head_request ) {
 			// Force the 'fields' argument. For HEAD requests, only user IDs are required.
 			$prepared_args['fields'] = 'id';
@@ -488,7 +488,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 			return $user;
 		}
 
-		if ( $request->is_method( 'head' ) ) {
+		if ( $request->is_method( 'HEAD' ) ) {
 			return new WP_REST_Response();
 		}
 
