@@ -1086,14 +1086,14 @@ class Tests_REST_Request extends WP_UnitTestCase {
 	 * Tests that WP_REST_Request::is_method() correctly detects the request method,
 	 * regardless of case sensitivity.
 	 *
-	 * @dataProvider data_is_method_should_correctly_detect_the_request_method
+	 * @dataProvider data_is_method_should_detect_method_ignoring_case
 	 * @ticket 56481
 	 *
 	 * @param string $method       The expected HTTP method of the request.
 	 * @param string $input_method The HTTP method to check against.
 	 * @param bool   $expected     The expected result of the is_method() check.
 	 */
-	public function test_is_method_should_correctly_detect_the_request_method( $method, $input_method, $expected ) {
+	public function test_is_method_should_detect_method_ignoring_case( $method, $input_method, $expected ) {
 		$request = new WP_REST_Request();
 		$request->set_method( $method );
 		$result = $request->is_method( $input_method );
@@ -1106,7 +1106,7 @@ class Tests_REST_Request extends WP_UnitTestCase {
 	 *
 	 * @return array
 	 */
-	public function data_is_method_should_correctly_detect_the_request_method() {
+	public function data_is_method_should_detect_method_ignoring_case() {
 		return array(
 			// GET.
 			'GET same case'          => array( 'GET', 'GET', true ),
