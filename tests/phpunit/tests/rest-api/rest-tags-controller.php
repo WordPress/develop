@@ -1515,7 +1515,7 @@ class WP_Test_REST_Tags_Controller extends WP_Test_REST_Controller_Testcase {
 	 *
 	 * @param string $method HTTP method to use.
 	 */
-	public function test_get_items_returns_only_fetches_ids_for_head_requests( $method ) {
+	public function test_get_items_only_fetches_ids_for_head_requests( $method ) {
 		$is_head_request = 'HEAD' === $method;
 		$request         = new WP_REST_Request( $method, '/wp/v2/tags' );
 
