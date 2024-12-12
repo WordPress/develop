@@ -1313,7 +1313,7 @@ class WP_Test_REST_Categories_Controller extends WP_Test_REST_Controller_Testcas
 	 *
 	 * @return array
 	 */
-	public function data_readable_http_methods() {
+	public static function data_readable_http_methods() {
 		return array(
 			'GET request'  => array( 'GET' ),
 			'HEAD request' => array( 'HEAD' ),

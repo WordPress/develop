@@ -1945,7 +1945,7 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 	 *
 	 * @return array
 	 */
-	public function data_readable_http_methods() {
+	public static function data_readable_http_methods() {
 		return array(
 			'GET request'  => array( 'GET' ),
 			'HEAD request' => array( 'HEAD' ),
