@@ -266,6 +266,8 @@ class WP_REST_Comments_Controller extends WP_REST_Controller {
 		if ( $is_head_request ) {
 			// Force the 'fields' argument. For HEAD requests, only post IDs are required to calculate pagination.
 			$prepared_args['fields'] = 'ids';
+			// Disable priming comment meta for HEAD requests to improve performance.
+			$prepared_args['update_comment_meta_cache'] = false;
 		}
 
 		/**

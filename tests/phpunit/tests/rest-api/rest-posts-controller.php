@@ -1987,9 +1987,17 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 			$this->assertSame( 'ids', $query->query['fields'], 'The query must fetch only post IDs.' );
 			$this->assertArrayHasKey( 'fields', $query->query_vars, 'The fields parameter is not set in the query vars.' );
 			$this->assertSame( 'ids', $query->query_vars['fields'], 'The query must fetch only post IDs.' );
+			$this->assertArrayHasKey( 'update_post_term_cache', $query->query_vars, 'The "update_post_term_cache" parameter is missing in the query vars.' );
+			$this->assertFalse( $query->query_vars['update_post_term_cache'], 'The "update_post_term_cache" parameter must be false for HEAD requests.' );
+			$this->assertArrayHasKey( 'update_post_meta_cache', $query->query_vars, 'The "update_post_meta_cache" parameter is missing in the query vars.' );
+			$this->assertFalse( $query->query_vars['update_post_meta_cache'], 'The "update_post_meta_cache" parameter must be false for HEAD requests.' );
 		} else {
 			$this->assertTrue( ! array_key_exists( 'fields', $query->query ) || 'ids' !== $query->query['fields'], 'The fields parameter should not be forced to "ids" for non-HEAD requests.' );
 			$this->assertTrue( ! array_key_exists( 'fields', $query->query_vars ) || 'ids' !== $query->query_vars['fields'], 'The fields parameter should not be forced to "ids" for non-HEAD requests.' );
+			$this->assertArrayHasKey( 'update_post_term_cache', $query->query_vars, 'The "update_post_term_cache" parameter is missing in the query vars.' );
+			$this->assertTrue( $query->query_vars['update_post_term_cache'], 'The "update_post_term_cache" parameter must be true for non-HEAD requests.' );
+			$this->assertArrayHasKey( 'update_post_meta_cache', $query->query_vars, 'The "update_post_meta_cache" parameter is missing in the query vars.' );
+			$this->assertTrue( $query->query_vars['update_post_meta_cache'], 'The "update_post_meta_cache" parameter must be true for non-HEAD requests.' );
 		}
 
 		if ( ! $is_head_request ) {

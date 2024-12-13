@@ -316,6 +316,8 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 		if ( $is_head_request ) {
 			// Force the 'fields' argument. For HEAD requests, only term IDs are required.
 			$prepared_args['fields'] = 'ids';
+			// Disable priming term meta for HEAD requests to improve performance.
+			$prepared_args['update_term_meta_cache'] = false;
 		}
 
 		/**

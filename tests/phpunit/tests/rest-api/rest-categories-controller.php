@@ -1288,11 +1288,15 @@ class WP_Test_REST_Categories_Controller extends WP_Test_REST_Controller_Testcas
 		if ( $is_head_request ) {
 			$this->assertArrayHasKey( 'fields', $query->query_vars, 'The fields parameter is not set in the query vars.' );
 			$this->assertSame( 'ids', $query->query_vars['fields'], 'The query must fetch only term IDs.' );
+			$this->assertArrayHasKey( 'update_term_meta_cache', $query->query_vars, 'The update_term_meta_cache key is missing in the query vars.' );
+			$this->assertFalse( $query->query_vars['update_term_meta_cache'], 'The update_term_meta_cache value should be false for HEAD requests.' );
 		} else {
 			$this->assertTrue(
 				! array_key_exists( 'fields', $query->query_vars ) || 'ids' !== $query->query_vars['fields'],
 				'The fields parameter should not be forced to "ids" for non-HEAD requests.'
 			);
+			$this->assertArrayHasKey( 'update_term_meta_cache', $query->query_vars, 'The update_term_meta_cache key is missing in the query vars.' );
+			$this->assertTrue( $query->query_vars['update_term_meta_cache'], 'The update_term_meta_cache value should be true for HEAD requests.' );
 		}
 
 		if ( ! $is_head_request ) {

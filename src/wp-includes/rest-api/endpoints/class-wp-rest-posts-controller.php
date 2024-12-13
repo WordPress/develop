@@ -406,6 +406,9 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		if ( $is_head_request ) {
 			// Force the 'fields' argument. For HEAD requests, only post IDs are required to calculate pagination.
 			$args['fields'] = 'ids';
+			// Disable priming post meta for HEAD requests to improve performance.
+			$args['update_post_term_cache'] = false;
+			$args['update_post_meta_cache'] = false;
 		}
 
 		/**
