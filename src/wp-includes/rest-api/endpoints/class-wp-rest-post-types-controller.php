@@ -109,6 +109,11 @@ class WP_REST_Post_Types_Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
 	 */
 	public function get_items( $request ) {
+		if ( $request->is_method( 'HEAD' ) ) {
+			// Return early as this handler doesn't add any response headers.
+			return new WP_REST_Response();
+		}
+
 		$data  = array();
 		$types = get_post_types( array( 'show_in_rest' => true ), 'objects' );
 
@@ -157,6 +162,10 @@ class WP_REST_Post_Types_Controller extends WP_REST_Controller {
 				__( 'Sorry, you are not allowed to edit posts in this post type.' ),
 				array( 'status' => rest_authorization_required_code() )
 			);
+		}
+
+		if ( $request->is_method( 'HEAD' ) ) {
+			return new WP_REST_Response();
 		}
 
 		$data = $this->prepare_item_for_response( $obj, $request );
