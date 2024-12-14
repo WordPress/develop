@@ -393,4 +393,16 @@ class Tests_Formatting_ConvertSmilies extends WP_UnitTestCase {
 		$wpsmiliestrans['<3'] = '\xe2\x9d\xa4';
 		return $wpsmiliestrans;
 	}
+
+
+	/**
+	 * Tests that the function does not throw a fatal error from count()
+	 * when preg_split() fails on large input.
+	 *
+	 * @ticket 51019
+	 */
+	public function test_smilies_with_large_text_input() {
+		$text = '<p><img alt="" src="data:image/png;base64,' . str_repeat( 'iVBORw0KGgoAAAAN', 65536 ) . '="></p> :)';
+		$this->assertStringContainsString( "\xf0\x9f\x99\x82", convert_smilies( $text ) );
+	}
 }
