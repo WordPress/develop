@@ -113,9 +113,8 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response Response object on success, or WP_Error object on failure.
 	 */
 	public function get_items( $request ) {
-
 		if ( $request->is_method( 'HEAD' ) ) {
-			// Return early as this method doesn't add any headers.
+			// Return early as this handler doesn't add any response headers.
 			return new WP_REST_Response();
 		}
 
