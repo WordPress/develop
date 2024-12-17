@@ -79,6 +79,7 @@ class WP_Test_REST_Pages_Controller extends WP_Test_REST_Post_Type_Controller_Te
 				'offset',
 				'order',
 				'orderby',
+				'orderby_hierarchy',
 				'page',
 				'parent',
 				'parent_exclude',

@@ -3007,8 +3007,10 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 				),
 				'default'     => array(),
 			);
+		}
+		if ( $post_type->hierarchical ) {
 			$query_params['orderby_hierarchy'] = array(
-				'description' => 'Sort pages by hierarchy.',
+				'description' => __( 'Whether the post should be grouped by parent-child relationship (hierarchy).' ),
 				'type'        => 'boolean',
 				'default'     => false,
 			);
