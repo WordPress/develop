@@ -263,7 +263,9 @@ jobs:
       - name: Set the environment to the baseline version
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' }}
         run: |
-          npm run env:cli -- core update --version=${{ env.BASE_TAG }} --force --path=/var/www/${{ env.LOCAL_DIR }}
+          VERSION="${{ env.BASE_TAG }}"
+          VERSION="${VERSION%.0}"
+          npm run env:cli -- core update --version=$VERSION --force --path=/var/www/${{ env.LOCAL_DIR }}
           npm run env:cli -- core version --path=/var/www/${{ env.LOCAL_DIR }}
 
       - name: Run any database upgrades
