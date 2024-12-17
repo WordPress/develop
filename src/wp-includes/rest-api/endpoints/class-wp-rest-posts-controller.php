@@ -2991,7 +2991,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		$post_type = get_post_type_object( $this->post_type );
 
 		if ( $post_type->hierarchical || 'attachment' === $this->post_type ) {
-			$query_params['parent']         = array(
+			$query_params['parent']            = array(
 				'description' => __( 'Limit result set to items with particular parent IDs.' ),
 				'type'        => 'array',
 				'items'       => array(
@@ -2999,13 +2999,18 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 				),
 				'default'     => array(),
 			);
-			$query_params['parent_exclude'] = array(
+			$query_params['parent_exclude']    = array(
 				'description' => __( 'Limit result set to all items except those of a particular parent ID.' ),
 				'type'        => 'array',
 				'items'       => array(
 					'type' => 'integer',
 				),
 				'default'     => array(),
+			);
+			$query_params['orderby_hierarchy'] = array(
+				'description' => 'Sort pages by hierarchy.',
+				'type'        => 'boolean',
+				'default'     => false,
 			);
 		}
 
