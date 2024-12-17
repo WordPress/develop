@@ -477,10 +477,6 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 			return $term;
 		}
 
-		if ( $request->is_method( 'HEAD' ) ) {
-			return new WP_REST_Response();
-		}
-
 		$response = $this->prepare_item_for_response( $term, $request );
 
 		return rest_ensure_response( $response );
@@ -899,6 +895,12 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response Response object.
 	 */
 	public function prepare_item_for_response( $item, $request ) {
+
+		// Don't prepare the response body for HEAD requests.
+		if ( $request->is_method( 'HEAD' ) ) {
+			/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php */
+			return apply_filters( "rest_prepare_{$this->taxonomy}", new WP_REST_Response(), $item, $request );
+		}
 
 		$fields = $this->get_fields_for_response( $request );
 		$data   = array();

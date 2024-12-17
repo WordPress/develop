@@ -3534,21 +3534,39 @@ class WP_Test_REST_Comments_Controller extends WP_Test_REST_Controller_Testcase 
 	}
 
 	/**
+	 * @dataProvider data_readable_http_methods
 	 * @ticket 56481
+	 *
+	 * @param string $method The HTTP method to use.
 	 */
-	public function test_get_item_with_head_request_should_not_prepare_comment_data() {
-		$request = new WP_REST_Request( 'HEAD', sprintf( '/wp/v2/comments/%d', self::$approved_id ) );
+	public function test_get_item_should_allow_adding_headers_via_filter( $method ) {
+		$request = new WP_REST_Request( $method, sprintf( '/wp/v2/comments/%d', self::$approved_id ) );
 
 		$hook_name = 'rest_prepare_comment';
 
 		$filter   = new MockAction();
 		$callback = array( $filter, 'filter' );
 		add_filter( $hook_name, $callback );
+		$header_filter = new class() {
+			public static function add_custom_header( $response ) {
+				$response->header( 'X-Test-Header', 'Test' );
+
+				return $response;
+			}
+		};
+		add_filter( $hook_name, array( $header_filter, 'add_custom_header' ) );
 		$response = rest_get_server()->dispatch( $request );
 		remove_filter( $hook_name, $callback );
+		remove_filter( $hook_name, array( $header_filter, 'add_custom_header' ) );
 
 		$this->assertSame( 200, $response->get_status(), 'The response status should be 200.' );
-		$this->assertSame( 0, $filter->get_call_count(), 'The "' . $hook_name . '" filter was called when it should not be for HEAD requests.' );
+		$headers = $response->get_headers();
+		$this->assertSame( 1, $filter->get_call_count(), 'The "' . $hook_name . '" filter was called when it should not be for HEAD requests.' );
+		$this->assertArrayHasKey( 'X-Test-Header', $headers, 'The "X-Test-Header" header should be present in the response.' );
+		$this->assertSame( 'Test', $headers['X-Test-Header'], 'The "X-Test-Header" header value should be equal to "Test".' );
+		if ( 'HEAD' !== $method ) {
+			return null;
+		}
 		$this->assertNull( $response->get_data(), 'The server should not generate a body in response to a HEAD request.' );
 	}
 }

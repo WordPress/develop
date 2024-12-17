@@ -643,12 +643,8 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 			return $post;
 		}
 
-		if ( $request->is_method( 'HEAD' ) ) {
-			$response = new WP_REST_Response();
-		} else {
-			$data     = $this->prepare_item_for_response( $post, $request );
-			$response = rest_ensure_response( $data );
-		}
+		$data     = $this->prepare_item_for_response( $post, $request );
+		$response = rest_ensure_response( $data );
 
 		if ( is_post_type_viewable( get_post_type_object( $post->post_type ) ) ) {
 			$response->link_header( 'alternate', get_permalink( $post->ID ), array( 'type' => 'text/html' ) );
@@ -1838,6 +1834,12 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		$GLOBALS['post'] = $post;
 
 		setup_postdata( $post );
+
+		// Don't prepare the response body for HEAD requests.
+		if ( $request->is_method( 'HEAD' ) ) {
+			/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php */
+			return apply_filters( "rest_prepare_{$this->post_type}", new WP_REST_Response(), $post, $request );
+		}
 
 		$fields = $this->get_fields_for_response( $request );
 

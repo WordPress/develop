@@ -437,11 +437,6 @@ class WP_REST_Comments_Controller extends WP_REST_Controller {
 			return $comment;
 		}
 
-		if ( $request->is_method( 'HEAD' ) ) {
-			// Don't prepare response body for HEAD requests.
-			return new WP_REST_Response();
-		}
-
 		$data     = $this->prepare_item_for_response( $comment, $request );
 		$response = rest_ensure_response( $data );
 
@@ -1055,6 +1050,12 @@ class WP_REST_Comments_Controller extends WP_REST_Controller {
 	public function prepare_item_for_response( $item, $request ) {
 		// Restores the more descriptive, specific name for use within this method.
 		$comment = $item;
+
+		// Don't prepare the response body for HEAD requests.
+		if ( $request->is_method( 'HEAD' ) ) {
+			/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php */
+			return apply_filters( 'rest_prepare_comment', new WP_REST_Response(), $comment, $request );
+		}
 
 		$fields = $this->get_fields_for_response( $request );
 		$data   = array();

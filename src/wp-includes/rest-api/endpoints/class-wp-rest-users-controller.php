@@ -488,10 +488,6 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 			return $user;
 		}
 
-		if ( $request->is_method( 'HEAD' ) ) {
-			return new WP_REST_Response();
-		}
-
 		$user     = $this->prepare_item_for_response( $user, $request );
 		$response = rest_ensure_response( $user );
 
@@ -1010,6 +1006,12 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 	public function prepare_item_for_response( $item, $request ) {
 		// Restores the more descriptive, specific name for use within this method.
 		$user = $item;
+
+		// Don't prepare the response body for HEAD requests.
+		if ( $request->is_method( 'HEAD' ) ) {
+			/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php */
+			return apply_filters( 'rest_prepare_user', new WP_REST_Response(), $user, $request );
+		}
 
 		$fields = $this->get_fields_for_response( $request );
 		$data   = array();

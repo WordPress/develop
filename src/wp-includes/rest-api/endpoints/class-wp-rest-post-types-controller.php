@@ -164,10 +164,6 @@ class WP_REST_Post_Types_Controller extends WP_REST_Controller {
 			);
 		}
 
-		if ( $request->is_method( 'HEAD' ) ) {
-			return new WP_REST_Response();
-		}
-
 		$data = $this->prepare_item_for_response( $obj, $request );
 
 		return rest_ensure_response( $data );
@@ -186,6 +182,12 @@ class WP_REST_Post_Types_Controller extends WP_REST_Controller {
 	public function prepare_item_for_response( $item, $request ) {
 		// Restores the more descriptive, specific name for use within this method.
 		$post_type = $item;
+
+		// Don't prepare the response body for HEAD requests.
+		if ( $request->is_method( 'HEAD' ) ) {
+			/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-post-types-controller.php */
+			return apply_filters( 'rest_prepare_post_type', new WP_REST_Response(), $post_type, $request );
+		}
 
 		$taxonomies = wp_list_filter( get_object_taxonomies( $post_type->name, 'objects' ), array( 'show_in_rest' => true ) );
 		$taxonomies = wp_list_pluck( $taxonomies, 'name' );

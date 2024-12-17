@@ -195,10 +195,6 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller {
 			);
 		}
 
-		if ( $request->is_method( 'HEAD' ) ) {
-			return new WP_REST_Response();
-		}
-
 		$data = $this->prepare_item_for_response( $tax_obj, $request );
 
 		return rest_ensure_response( $data );
@@ -217,6 +213,12 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller {
 	public function prepare_item_for_response( $item, $request ) {
 		// Restores the more descriptive, specific name for use within this method.
 		$taxonomy = $item;
+
+		// Don't prepare the response body for HEAD requests.
+		if ( $request->is_method( 'HEAD' ) ) {
+			/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-taxonomies-controller.php */
+			return apply_filters( 'rest_prepare_taxonomy', new WP_REST_Response(), $taxonomy, $request );
+		}
 
 		$base = ! empty( $taxonomy->rest_base ) ? $taxonomy->rest_base : $taxonomy->name;
 
