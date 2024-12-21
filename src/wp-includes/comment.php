@@ -1958,7 +1958,7 @@ function wp_get_unapproved_comment_author_email() {
 
 		if ( $comment && hash_equals( $_GET['moderation-hash'], wp_hash( $comment->comment_date_gmt ) ) ) {
 			// The comment will only be viewable by the comment author for 10 minutes.
-			$comment_preview_expires = strtotime( $comment->comment_date_gmt . '+10 minutes' );
+			$comment_preview_expires = ( new DateTimeImmutable( $comment->comment_date_gmt ) )->add( new DateInterval( 'PT10M' ) )->getTimestamp();
 
 			if ( time() < $comment_preview_expires ) {
 				$commenter_email = $comment->comment_author_email;
@@ -3413,7 +3413,7 @@ function _close_comments_for_old_posts( $posts, $query ) {
 		return $posts;
 	}
 
-	if ( time() - strtotime( $posts[0]->post_date_gmt ) > ( $days_old * DAY_IN_SECONDS ) ) {
+	if ( time() - ( new DateTimeImmutable( $posts[0]->post_date_gmt ) )->getTimestamp() > ( $days_old * DAY_IN_SECONDS ) ) {
 		$posts[0]->comment_status = 'closed';
 		$posts[0]->ping_status    = 'closed';
 	}
@@ -3458,7 +3458,7 @@ function _close_comments_for_old_post( $open, $post_id ) {
 		return $open;
 	}
 
-	if ( time() - strtotime( $post->post_date_gmt ) > ( $days_old * DAY_IN_SECONDS ) ) {
+	if ( time() - ( new DateTimeImmutable( $post->post_date_gmt ) )->getTimestamp() > ( $days_old * DAY_IN_SECONDS ) ) {
 		return false;
 	}
 
