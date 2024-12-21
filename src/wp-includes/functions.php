@@ -2833,6 +2833,7 @@ function _wp_check_existing_file_names( $filename, $files ) {
 
 	// Edge case, file names like `.ext`.
 	if ( empty( $fname ) ) {
+
 		return false;
 	}
 
