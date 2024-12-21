@@ -28,7 +28,9 @@ $credits = wp_credits();
 			</h1>
 		</div>
 
-		<div class="about__header-text"></div>
+		<div class="about__header-text">
+			<?php _e( 'Created by a worldwide team of passionate individuals' ); ?>
+		</div>
 	</div>
 
 	<nav class="about__header-navigation nav-tab-wrapper wp-clearfix" aria-label="<?php esc_attr_e( 'Secondary menu' ); ?>">
@@ -133,3 +135,17 @@ __( 'Release Design Lead' );
 __( 'Release Deputy' );
 __( 'Core Developer' );
 __( 'External Libraries' );
+__( 'Release Coordination' );
+__( 'Core Tech Lead' );
+__( 'Core Triage Lead' );
+__( 'Editor Tech Lead' );
+__( 'Editor Triage Lead' );
+__( 'Documentation Lead' );
+__( 'Test Lead' );
+__( 'Design Lead' );
+__( 'Performance Lead' );
+__( 'Default Theme Design Lead' );
+__( 'Default Theme Development Lead' );
+__( 'Tech Lead' );
+__( 'Triage Lead' );
+__( 'Minor Release Lead' );
