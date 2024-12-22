@@ -128,7 +128,7 @@ class Tests_REST_WpRestBlockPatternCategoriesController extends WP_Test_REST_Con
 	 */
 	public function test_get_items_with_head_request_should_not_prepare_block_pattern_categories_data() {
 		wp_set_current_user( self::$admin_id );
-		$request            = new WP_REST_Request( 'HEAD', static::REQUEST_ROUTE );
+		$request  = new WP_REST_Request( 'HEAD', static::REQUEST_ROUTE );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertSame( 200, $response->get_status(), 'The response status should be 200.' );
 		$this->assertNull( $response->get_data(), 'The server should not generate a body in response to a HEAD request.' );
