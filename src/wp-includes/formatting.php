@@ -3932,8 +3932,8 @@ function human_time_diff( $from, $to = 0 ) {
  *
  * The timestamps are expected to be a Unix timestamp or a mysql date.
  *
- * @param int $from Timestamp to compare to $to.
- * @param int $to Timestamp to compare $from against. Defaults to time().
+ * @param int $from  Timestamp to compare to $to.
+ * @param int $to    Timestamp to compare $from against. Defaults to time().
  * @param int $limit Maximum number of parts (precision) in the given result.
  * @return string Human-readable time difference.
  */
