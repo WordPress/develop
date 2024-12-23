@@ -574,16 +574,15 @@ class Tests_Option_Option extends WP_UnitTestCase {
 
 		wp_cache_delete_multiple( array( 'ticket-62692', 'notoptions', 'alloptions' ), 'options' );
 
-		$stats = wp_cache_get_stats();
+		$stats             = wp_cache_get_stats();
 		$connections_start = $stats[0]['total_connections'];
-
 
 		$call_getter = 10;
 		while ( $call_getter-- ) {
 			get_option( 'ticket-62692' );
 		}
 
-		$stats = wp_cache_get_stats();
+		$stats           = wp_cache_get_stats();
 		$connections_end = $stats[0]['total_connections'];
 
 		$this->assertSame( 0, $connections_end - $connections_start );
