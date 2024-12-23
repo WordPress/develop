@@ -89,19 +89,22 @@ class WP_REST_Font_Collections_Controller extends WP_REST_Controller {
 
 		$collections_page = array_slice( $collections_all, ( $page - 1 ) * $per_page, $per_page );
 
-		$items = array();
-		foreach ( $collections_page as $collection ) {
-			$item = $this->prepare_item_for_response( $collection, $request );
+		$is_head_request = $request->is_method( 'HEAD' );
+		if ( ! $is_head_request ) {
+			$items = array();
+			foreach ( $collections_page as $collection ) {
+				$item = $this->prepare_item_for_response( $collection, $request );
 
-			// If there's an error loading a collection, skip it and continue loading valid collections.
-			if ( is_wp_error( $item ) ) {
-				continue;
+				// If there's an error loading a collection, skip it and continue loading valid collections.
+				if ( is_wp_error( $item ) ) {
+					continue;
+				}
+				$item    = $this->prepare_response_for_collection( $item );
+				$items[] = $item;
 			}
-			$item    = $this->prepare_response_for_collection( $item );
-			$items[] = $item;
 		}
 
-		$response = rest_ensure_response( $items );
+		$response = $is_head_request ? new WP_REST_Response() : rest_ensure_response( $items );
 
 		$response->header( 'X-WP-Total', (int) $total_items );
 		$response->header( 'X-WP-TotalPages', $max_pages );
@@ -159,6 +162,12 @@ class WP_REST_Font_Collections_Controller extends WP_REST_Controller {
 	* @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
 	*/
 	public function prepare_item_for_response( $item, $request ) {
+		// Don't prepare the response body for HEAD requests.
+		if ( $request->is_method( 'HEAD' ) ) {
+			/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-font-collections-controller.php */
+			return apply_filters( 'rest_prepare_font_collection', new WP_REST_Response(), $item, $request );
+		}
+
 		$fields = $this->get_fields_for_response( $request );
 		$data   = array();
 
