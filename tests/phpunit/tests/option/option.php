@@ -556,10 +556,11 @@ class Tests_Option_Option extends WP_UnitTestCase {
 	 *
 	 * @dataProvider data_get_option_does_not_hit_the_external_cache_multiple_times_for_the_same_option
 	 *
-	 * @param bool $option_exists Whether the option should be set.
-	 * @param string $autoload Whether the option should be auto loaded. Default true.
+	 * @param int    $expected_connections Expected number of connections to the memcached server.
+	 * @param bool   $option_exists        Whether the option should be set. Default true.
+	 * @param string $autoload             Whether the option should be auto loaded. Default true.
 	 */
-	public function test_get_option_does_not_hit_the_external_cache_multiple_times_for_the_same_option( $option_exists = true, $autoload = true ) {
+	public function test_get_option_does_not_hit_the_external_cache_multiple_times_for_the_same_option( $expected_connections, $option_exists = true, $autoload = true ) {
 		if ( ! wp_using_ext_object_cache() ) {
 			$this->markTestSkipped( 'This test requires an external object cache.' );
 		}
@@ -575,7 +576,7 @@ class Tests_Option_Option extends WP_UnitTestCase {
 		wp_cache_delete_multiple( array( 'ticket-62692', 'notoptions', 'alloptions' ), 'options' );
 
 		$stats             = wp_cache_get_stats();
-		$connections_start = array_shift( $stats )['total_connections'];
+		$connections_start = array_shift( $stats )['cmd_get'];
 
 		$call_getter = 10;
 		while ( $call_getter-- ) {
@@ -583,9 +584,9 @@ class Tests_Option_Option extends WP_UnitTestCase {
 		}
 
 		$stats           = wp_cache_get_stats();
-		$connections_end = array_shift( $stats )['total_connections'];
+		$connections_end = array_shift( $stats )['cmd_get'];
 
-		$this->assertSame( 0, $connections_end - $connections_start );
+		$this->assertSame( $expected_connections, $connections_end - $connections_start );
 	}
 
 	/**
@@ -595,9 +596,9 @@ class Tests_Option_Option extends WP_UnitTestCase {
 	 */
 	public function data_get_option_does_not_hit_the_external_cache_multiple_times_for_the_same_option() {
 		return array(
-			'exists, autoload'       => array( true, true ),
-			'exists, not autoloaded' => array( true, false ),
-			'does not exist'         => array( false ),
+			'exists, autoload'       => array( 0, true, true ),
+			'exists, not autoloaded' => array( 0, true, false ),
+			'does not exist'         => array( 0, false ),
 		);
 	}
 }
