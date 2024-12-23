@@ -178,6 +178,7 @@ function get_option( $option, $default_value = false ) {
 
 			if ( ! is_array( $notoptions ) ) {
 				$notoptions = array();
+				wp_cache_set( 'notoptions', $notoptions, 'options' );
 			}
 
 			if ( isset( $notoptions[ $option ] ) ) {
