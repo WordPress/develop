@@ -548,4 +548,57 @@ class Tests_Option_Option extends WP_UnitTestCase {
 		$updated_notoptions = wp_cache_get( 'notoptions', 'options' );
 		$this->assertArrayNotHasKey( $option_name, $updated_notoptions, 'The "foobar" option should not be in the notoptions cache after adding it.' );
 	}
+
+	/**
+	 * Test that get_option() does not hit the external cache multiple times for the same option.
+	 *
+	 * @ticket 62692
+	 *
+	 * @dataProvider data_get_option_does_not_hit_the_external_cache_multiple_times_for_the_same_option
+	 *
+	 * @param bool $option_exists Whether the option should be set.
+	 * @param string $autoload Whether the option should be auto loaded. Default true.
+	 */
+	public function test_get_option_does_not_hit_the_external_cache_multiple_times_for_the_same_option( $option_exists = true, $autoload = true ) {
+		if ( ! wp_using_ext_object_cache() ) {
+			$this->markTestSkipped( 'This test requires an external object cache.' );
+		}
+
+		if ( ! function_exists( 'wp_cache_get_stats' ) ) {
+			$this->markTestSkipped( 'This test requires the Memcached PECL extension.' );
+		}
+
+		if ( $option_exists ) {
+			add_option( 'ticket-62692', 'value', '', $autoload );
+		}
+
+		wp_cache_delete_multiple( array( 'ticket-62692', 'notoptions', 'alloptions' ), 'options' );
+
+		$stats = wp_cache_get_stats();
+		$connections_start = $stats[0]['total_connections'];
+
+
+		$call_getter = 10;
+		while ( $call_getter-- ) {
+			get_option( 'ticket-62692' );
+		}
+
+		$stats = wp_cache_get_stats();
+		$connections_end = $stats[0]['total_connections'];
+
+		$this->assertSame( 0, $connections_end - $connections_start );
+	}
+
+	/**
+	 * Data provider.
+	 *
+	 * @return array[]
+	 */
+	public function data_get_option_does_not_hit_the_external_cache_multiple_times_for_the_same_option() {
+		return array(
+			'exists, autoload'       => array( true, true ),
+			'exists, not autoloaded' => array( true, false ),
+			'does not exist'         => array( false ),
+		);
+	}
 }
