@@ -596,9 +596,9 @@ class Tests_Option_Option extends WP_UnitTestCase {
 	 */
 	public function data_get_option_does_not_hit_the_external_cache_multiple_times_for_the_same_option() {
 		return array(
-			'exists, autoload'       => array( 1, true, true ),
-			'exists, not autoloaded' => array( 3, true, false ),
-			'does not exist'         => array( 12, false ),
+			'exists, autoload'       => array( 1, true, true ), // 1 on trunk.
+			'exists, not autoloaded' => array( 12, true, false ), // 3 on trunk.
+			'does not exist'         => array( 3, false ), // 12 on trunk.
 		);
 	}
 }
