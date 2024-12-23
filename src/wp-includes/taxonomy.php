@@ -4307,13 +4307,7 @@ function _update_post_term_count( $terms, $taxonomy ) {
 
 		if ( $object_types ) {
 			foreach ( $object_types as $type ) {
-				$current_count = (int) $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT COUNT(*) FROM $wpdb->term_relationships, $wpdb->posts WHERE $wpdb->posts.ID = $wpdb->term_relationships.object_id AND post_status IN ('" . implode( "','", $post_statuses ) . "') AND post_type = %s AND term_taxonomy_id = %d",
-						$type,
-						$tt_id
-					)
-				);
+				$current_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->term_relationships, $wpdb->posts WHERE $wpdb->posts.ID = $wpdb->term_relationships.object_id AND post_status = 'publish' AND post_type = %s AND term_taxonomy_id = %d", $type, $tt_id ) );
 
 				$count += $current_count;
 
