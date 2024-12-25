@@ -6267,7 +6267,7 @@ function get_page_uri( $page = 0 ) {
  *     @type string       $post_type    The post type to query. Default 'page'.
  *     @type string|array $post_status  A comma-separated list or array of post statuses to include.
  *                                      Default 'publish'. If `$post_status` includes 'any' then any status
- * 										post status with 'exclude_from_search' will also be included.
+ * 									    post status with 'exclude_from_search' will also be included.
  * }
  * @return WP_Post[]|false Array of pages (or hierarchical post type items). Boolean false if the
  *                         specified post type is not hierarchical or the specified status is not
