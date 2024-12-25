@@ -6320,10 +6320,12 @@ function get_pages( $args = array() ) {
 	}
 
 	if ( in_array( 'any', $post_status ) ) {
-		$post_status = array_unique( array_merge(
-			array_diff( $post_status, ['any'] ),
-			array_keys( get_post_stati( ['exclude_from_search' => false] ) )
-		) );
+		$post_status = array_unique(
+			array_merge(
+				array_diff( $post_status, array( 'any' ) ),
+				array_keys( get_post_stati( array( 'exclude_from_search' => false ) ) )
+			)
+		);
 	}
 
 	if ( array_diff( $post_status, get_post_stati() ) ) {
