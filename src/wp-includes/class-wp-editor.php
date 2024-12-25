@@ -194,7 +194,7 @@ final class _WP_Editors {
 				$buttons .= '<button type="button" id="' . $editor_id_attr . '-tmce"' . $html_active . ' class="wp-switch-editor switch-tmce"' .
 					' data-wp-editor-id="' . $editor_id_attr . '">' . _x( 'Visual', 'Name for the Visual editor tab' ) . "</button>\n";
 				$buttons .= '<button type="button" id="' . $editor_id_attr . '-html"' . $tmce_active . ' class="wp-switch-editor switch-html"' .
-					' data-wp-editor-id="' . $editor_id_attr . '">' . _x( 'Code', 'Name for the Code editor tab (formerly HTML)' ) . "</button>\n";
+					' data-wp-editor-id="' . $editor_id_attr . '">' . _x( 'Code', 'Name for the Code editor tab (formerly Text)' ) . "</button>\n";
 			} else {
 				$default_editor = 'tinymce';
 			}
