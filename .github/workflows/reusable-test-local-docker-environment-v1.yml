@@ -27,7 +27,7 @@ on:
         description: 'Database version'
         required: false
         type: 'string'
-        default: '8.0'
+        default: '8.4'
       memcached:
         description: 'Whether to enable memcached'
         required: false

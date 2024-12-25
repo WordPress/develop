@@ -36,7 +36,7 @@ jobs:
     uses: WordPress/wordpress-develop/.github/workflows/reusable-performance.yml@trunk
     permissions:
       contents: read
-    if: ${{ ( github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' ) && ! contains( github.event.before, '00000000' ) }}
+    if: ${{ ( github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' ) }}
     strategy:
       fail-fast: false
       matrix:

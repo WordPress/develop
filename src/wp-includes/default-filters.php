@@ -192,6 +192,7 @@ add_filter( 'the_title', 'wptexturize' );
 add_filter( 'the_title', 'convert_chars' );
 add_filter( 'the_title', 'trim' );
 
+add_filter( 'the_content', 'apply_block_hooks_to_content', 8 ); // BEFORE do_blocks().
 add_filter( 'the_content', 'do_blocks', 9 );
 add_filter( 'the_content', 'wptexturize' );
 add_filter( 'the_content', 'convert_smilies', 20 );
@@ -759,10 +760,16 @@ add_action( 'init', '_wp_register_default_font_collections' );
 add_filter( 'rest_pre_insert_wp_template', 'inject_ignored_hooked_blocks_metadata_attributes' );
 add_filter( 'rest_pre_insert_wp_template_part', 'inject_ignored_hooked_blocks_metadata_attributes' );
 
-// Update ignoredHookedBlocks postmeta for wp_navigation post type.
+// Update ignoredHookedBlocks postmeta for some post types.
+add_filter( 'rest_pre_insert_page', 'update_ignored_hooked_blocks_postmeta' );
+add_filter( 'rest_pre_insert_post', 'update_ignored_hooked_blocks_postmeta' );
+add_filter( 'rest_pre_insert_wp_block', 'update_ignored_hooked_blocks_postmeta' );
 add_filter( 'rest_pre_insert_wp_navigation', 'update_ignored_hooked_blocks_postmeta' );
 
-// Inject hooked blocks into the wp_navigation post type REST response.
+// Inject hooked blocks into the Posts endpoint REST response for some given post types.
+add_filter( 'rest_prepare_page', 'insert_hooked_blocks_into_rest_response', 10, 2 );
+add_filter( 'rest_prepare_post', 'insert_hooked_blocks_into_rest_response', 10, 2 );
+add_filter( 'rest_prepare_wp_block', 'insert_hooked_blocks_into_rest_response', 10, 2 );
 add_filter( 'rest_prepare_wp_navigation', 'insert_hooked_blocks_into_rest_response', 10, 2 );
 
 unset( $filter, $action );

@@ -261,7 +261,7 @@ function remove_user_from_blog( $user_id, $blog_id = 0, $reassign = 0 ) {
 		$new_domain = '';
 		$blogs      = get_blogs_of_user( $user_id );
 		foreach ( (array) $blogs as $blog ) {
-			if ( (int) $blog->userblog_id === $blog_id ) {
+			if ( $blog->userblog_id === $blog_id ) {
 				continue;
 			}
 			$new_id     = $blog->userblog_id;
