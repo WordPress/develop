@@ -67,8 +67,7 @@ class HierarchicalSortTest extends WP_UnitTestCase {
 			),
 		);
 
-		$hs     = Hierarchical_Sort::get_instance();
-		$result = $hs->sort( $input );
+		$result = Hierarchical_Sort::run( $input );
 		$this->assertEquals( array( 12, 3, 6, 5, 4, 7, 8, 9, 11, 10 ), $result['post_ids'] );
 		$this->assertEquals(
 			array(
@@ -112,8 +111,7 @@ class HierarchicalSortTest extends WP_UnitTestCase {
 			),
 		);
 
-		$hs     = Hierarchical_Sort::get_instance();
-		$result = $hs->sort( $input );
+		$result = Hierarchical_Sort::run( $input );
 		$this->assertEquals( array( 11, 4, 7 ), $result['post_ids'] );
 		$this->assertEquals(
 			array(
@@ -185,8 +183,7 @@ class HierarchicalSortTest extends WP_UnitTestCase {
 			),
 		);
 
-		$hs     = Hierarchical_Sort::get_instance();
-		$result = $hs->sort( $input );
+		$result = Hierarchical_Sort::run( $input );
 		$this->assertEquals( array( 2, 3, 5, 6, 4, 7, 8, 9, 11, 10 ), $result['post_ids'] );
 		$this->assertEquals(
 			array(
