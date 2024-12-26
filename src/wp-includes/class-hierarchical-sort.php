@@ -14,34 +14,6 @@
  */
 class Hierarchical_Sort {
 
-	private static $post_ids = array();
-	private static $levels   = array();
-	private static $instance;
-
-	public static function get_instance() {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
-
-	public function run( $args ) {
-		$new_args = array_merge(
-			$args,
-			array(
-				'fields'         => 'id=>parent',
-				'posts_per_page' => -1,
-			)
-		);
-		$query    = new WP_Query( $new_args );
-		$posts    = $query->posts;
-		$result   = self::sort( $posts );
-
-		self::$post_ids = $result['post_ids'];
-		self::$levels   = $result['levels'];
-	}
-
 	/**
 	 * Check if the request is eligible for hierarchical sorting.
 	 *
@@ -57,7 +29,21 @@ class Hierarchical_Sort {
 		return true;
 	}
 
-	public static function get_ancestor( $post_id ) {
+	public static function run( $args ) {
+		$new_args = array_merge(
+			$args,
+			array(
+				'fields'         => 'id=>parent',
+				'posts_per_page' => -1,
+			)
+		);
+		$query    = new WP_Query( $new_args );
+		$posts    = $query->posts;
+
+		return self::sort( $posts );
+	}
+
+	private static function get_ancestor( $post_id ) {
 		return get_post( $post_id )->post_parent ?? 0;
 	}
 
@@ -93,7 +79,7 @@ class Hierarchical_Sort {
 	 *     @type array $levels   Array of levels for the corresponding post ID in the same index
 	 * }
 	 */
-	public static function sort( $posts ) {
+	private static function sort( $posts ) {
 		/*
 		 * Arrange pages in two arrays:
 		 *
@@ -152,38 +138,4 @@ class Hierarchical_Sort {
 			}
 		}
 	}
-
-	public static function get_post_ids() {
-		return self::$post_ids;
-	}
-
-	public static function get_levels() {
-		return self::$levels;
-	}
-}
-
-function rest_page_query_hierarchical_sort_filter_by_post_in( $args, $request ) {
-	if ( ! Hierarchical_Sort::is_eligible( $request ) ) {
-		return $args;
-	}
-
-	$hs = Hierarchical_Sort::get_instance();
-	$hs->run( $args );
-
-	// Reconfigure the args to display only the ids in the list.
-	$args['post__in'] = $hs->get_post_ids();
-	$args['orderby']  = 'post__in';
-
-	return $args;
-}
-
-function rest_prepare_page_hierarchical_sort_add_levels( $response, $post, $request ) {
-	if ( ! Hierarchical_Sort::is_eligible( $request ) ) {
-		return $response;
-	}
-
-	$hs                      = Hierarchical_Sort::get_instance();
-	$response->data['level'] = $hs->get_levels()[ $post->ID ];
-
-	return $response;
 }
