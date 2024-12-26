@@ -411,10 +411,10 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 
 		if ( Hierarchical_Sort::is_eligible( $request ) ) {
 			$result       = Hierarchical_Sort::run( $args );
-			$this->levels = $result[ 'levels' ];
+			$this->levels = $result['levels'];
 
-			$args[ 'post__in' ] = $result[ 'post_ids' ];
-			$args[ 'orderby' ]  = 'post__in';
+			$args['post__in'] = $result['post_ids'];
+			$args['orderby']  = 'post__in';
 		}
 
 		/**
@@ -3010,7 +3010,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		$post_type = get_post_type_object( $this->post_type );
 
 		if ( $post_type->hierarchical || 'attachment' === $this->post_type ) {
-			$query_params['parent']            = array(
+			$query_params['parent']         = array(
 				'description' => __( 'Limit result set to items with particular parent IDs.' ),
 				'type'        => 'array',
 				'items'       => array(
@@ -3018,7 +3018,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 				),
 				'default'     => array(),
 			);
-			$query_params['parent_exclude']    = array(
+			$query_params['parent_exclude'] = array(
 				'description' => __( 'Limit result set to all items except those of a particular parent ID.' ),
 				'type'        => 'array',
 				'items'       => array(
