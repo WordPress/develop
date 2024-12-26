@@ -141,7 +141,7 @@ class WP_Test_REST_Taxonomies_Controller extends WP_Test_REST_Controller_Testcas
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertSame( 200, $response->get_status() );
 		if ( 'HEAD' === $method ) {
-			return;
+			return null;
 		}
 		$data = $response->get_data();
 		$this->assertSame( '{}', json_encode( $data ) );

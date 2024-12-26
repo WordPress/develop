@@ -254,7 +254,7 @@ class WP_Test_REST_Users_Controller extends WP_Test_REST_Controller_Testcase {
 
 		if ( 'HEAD' === $method ) {
 			$this->assertNull( $response->get_data(), 'Expected null response data for HEAD request, but received non-null data.' );
-			return;
+			return null;
 		}
 
 		$all_data = $response->get_data();
