@@ -289,6 +289,11 @@ class WP_REST_Global_Styles_Revisions_Controller extends WP_REST_Revisions_Contr
 	 * @return WP_REST_Response|WP_Error Response object.
 	 */
 	public function prepare_item_for_response( $post, $request ) {
+		// Don't prepare the response body for HEAD requests.
+		if ( $request->is_method( 'HEAD' ) ) {
+			return new WP_REST_Response();
+		}
+
 		$parent               = $this->get_parent( $request['parent'] );
 		$global_styles_config = $this->get_decoded_global_styles_json( $post->post_content );
 
