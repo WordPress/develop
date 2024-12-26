@@ -162,12 +162,6 @@ class WP_REST_Font_Collections_Controller extends WP_REST_Controller {
 	* @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
 	*/
 	public function prepare_item_for_response( $item, $request ) {
-		// Don't prepare the response body for HEAD requests.
-		if ( $request->is_method( 'HEAD' ) ) {
-			/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-font-collections-controller.php */
-			return apply_filters( 'rest_prepare_font_collection', new WP_REST_Response(), $item, $request );
-		}
-
 		$fields = $this->get_fields_for_response( $request );
 		$data   = array();
 
@@ -184,11 +178,25 @@ class WP_REST_Font_Collections_Controller extends WP_REST_Controller {
 				return $collection_data;
 			}
 
+			// Don't prepare the response body for HEAD requests.
+			// Cannot exit at the beginning of the method because of the possible WP_Error object
+			// that needs to be returned.
+			if ( $request->is_method( 'HEAD' ) ) {
+				/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-font-collections-controller.php */
+				return apply_filters( 'rest_prepare_font_collection', new WP_REST_Response(), $item, $request );
+			}
+
 			foreach ( $data_fields as $field ) {
 				if ( rest_is_field_included( $field, $fields ) ) {
 					$data[ $field ] = $collection_data[ $field ];
 				}
 			}
+		}
+
+		// Don't prepare the response body for HEAD requests.
+		if ( $request->is_method( 'HEAD' ) ) {
+			/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-font-collections-controller.php */
+			return apply_filters( 'rest_prepare_font_collection', new WP_REST_Response(), $item, $request );
 		}
 
 		$response = rest_ensure_response( $data );
