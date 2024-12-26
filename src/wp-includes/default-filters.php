@@ -772,8 +772,4 @@ add_filter( 'rest_prepare_post', 'insert_hooked_blocks_into_rest_response', 10, 
 add_filter( 'rest_prepare_wp_block', 'insert_hooked_blocks_into_rest_response', 10, 2 );
 add_filter( 'rest_prepare_wp_navigation', 'insert_hooked_blocks_into_rest_response', 10, 2 );
 
-// Filter the pages endpoint to consider orderby_hierarchy.
-add_filter( 'rest_page_query', 'rest_page_query_hierarchical_sort_filter_by_post_in', 10, 2 );
-add_filter( 'rest_prepare_page', 'rest_prepare_page_hierarchical_sort_add_levels', 10, 3 );
-
 unset( $filter, $action );

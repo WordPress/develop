@@ -402,6 +402,8 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		// Force the post_type argument, since it's not a user input variable.
 		$args['post_type'] = $this->post_type;
 
+		$args = rest_page_query_hierarchical_sort_filter_by_post_in( $args, $request );
+
 		/**
 		 * Filters WP_Query arguments when querying posts via the REST API.
 		 *
@@ -2089,6 +2091,8 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 				}
 			}
 		}
+
+		$response = rest_prepare_page_hierarchical_sort_add_levels( $response, $post, $request );
 
 		/**
 		 * Filters the post data for a REST API response.
