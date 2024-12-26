@@ -253,6 +253,8 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller {
 			);
 		}
 
+		$is_head_request = $request->is_method( 'HEAD' );
+
 		if ( wp_revisions_enabled( $parent ) ) {
 			$registered = $this->get_collection_params();
 			$args       = array(
@@ -287,7 +289,6 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller {
 				$args['orderby'] = 'date ID';
 			}
 
-			$is_head_request = $request->is_method( 'HEAD' );
 			if ( $is_head_request ) {
 				// Force the 'fields' argument. For HEAD requests, only post IDs are required to calculate pagination.
 				$args['fields'] = 'ids';
