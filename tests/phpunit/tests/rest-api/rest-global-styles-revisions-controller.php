@@ -330,8 +330,6 @@ class WP_REST_Global_Styles_Revisions_Controller_Test extends WP_Test_REST_Contr
 	 * @ticket 56481
 	 *
 	 * @covers WP_REST_Global_Styles_Controller::prepare_item_for_response
-	 *
-	 * @param string $method The HTTP method to use.
 	 */
 	public function test_get_items_should_return_no_response_body_for_head_requests() {
 		wp_set_current_user( self::$admin_id );
