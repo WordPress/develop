@@ -1092,6 +1092,10 @@ figcaption,
   color: #000;
 }
 
+.wp-block-pullquote blockquote p {
+  color: inherit;
+}
+
 .wp-block-pullquote blockquote {
   margin-top: calc(3 * 1rem);
   margin-bottom: calc(3.33 * 1rem);
