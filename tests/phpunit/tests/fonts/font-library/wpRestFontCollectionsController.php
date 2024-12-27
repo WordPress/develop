@@ -85,9 +85,7 @@ class Tests_REST_WpRestFontCollectionsController extends WP_Test_REST_Controller
 	 * @param string $method The HTTP method to use.
 	 */
 	public function test_get_items_should_only_return_valid_collections( $method ) {
-		if ( 'GET' === $method ) {
-			$this->setExpectedIncorrectUsage( 'WP_Font_Collection::load_from_json' );
-		}
+		$this->setExpectedIncorrectUsage( 'WP_Font_Collection::load_from_json' );
 
 		wp_set_current_user( self::$admin_id );
 		wp_register_font_collection(
