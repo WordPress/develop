@@ -1865,7 +1865,7 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 		self::factory()->post->create();
 		++$total_posts;
 		++$total_pages;
-		$request = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+		$request = new WP_REST_Request( $method, '/wp/v2/posts' );
 		$request->set_param( 'page', 3 );
 		$response = rest_get_server()->dispatch( $request );
 		$headers  = $response->get_headers();
@@ -1887,7 +1887,7 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 		$this->assertStringContainsString( '<' . $next_link . '>; rel="next"', $headers['Link'] );
 
 		// Last page.
-		$request = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+		$request = new WP_REST_Request( $method, '/wp/v2/posts' );
 		$request->set_param( 'page', $total_pages );
 		$response = rest_get_server()->dispatch( $request );
 		$headers  = $response->get_headers();
@@ -1903,7 +1903,7 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 		$this->assertStringNotContainsString( 'rel="next"', $headers['Link'] );
 
 		// Out of bounds.
-		$request = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+		$request = new WP_REST_Request( $method, '/wp/v2/posts' );
 		$request->set_param( 'page', 100 );
 		$response = rest_get_server()->dispatch( $request );
 		$headers  = $response->get_headers();
@@ -1911,7 +1911,7 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 
 		// With query params.
 		$total_pages = (int) ceil( $total_posts / 5 );
-		$request     = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+		$request     = new WP_REST_Request( $method, '/wp/v2/posts' );
 		$request->set_query_params(
 			array(
 				'per_page' => 5,
