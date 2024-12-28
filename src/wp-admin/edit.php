@@ -389,7 +389,7 @@ $bulk_messages['wp_block'] = array(
 	/* translators: %s: Number of patterns. */
 	'deleted'   => _n( '%s pattern permanently deleted.', '%s patterns permanently deleted.', $bulk_counts['deleted'] ),
 	/* translators: %s: Number of patterns. */
-	'trashed'   => _n( '%s pattern moved to the Trash.', '%s patterns moved to the Trash.', $bulk_counts['trashed'] ) . sprintf( __( 'It will be deleted from trash after %s days.' ), EMPTY_TRASH_DAYS ),
+'trashed'   => _n( '%s pattern moved to the Trash.', '%s patterns moved to the Trash.', $bulk_counts['trashed'] ) . _n( 'It will be deleted from the trash after %s day.', 'It will be deleted from the trash after %s days.', EMPTY_TRASH_DAYS ),
 	/* translators: %s: Number of patterns. */
 	'untrashed' => _n( '%s pattern restored from the Trash.', '%s patterns restored from the Trash.', $bulk_counts['untrashed'] ),
 );
