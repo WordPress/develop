@@ -363,7 +363,7 @@ $bulk_messages['post']     = array(
 	/* translators: %s: Number of posts. */
 	'deleted'   => _n( '%s post permanently deleted.', '%s posts permanently deleted.', $bulk_counts['deleted'] ),
 	/* translators: %s: Number of posts. */
-	'trashed'   => _n( '%s post moved to the Trash.', '%s posts moved to the Trash.', $bulk_counts['trashed'] ) . sprintf( __( 'It will be deleted from trash after %s days.' ), EMPTY_TRASH_DAYS ),
+'trashed'   => _n( '%s post moved to the Trash.', '%s posts moved to the Trash.', $bulk_counts['trashed'] ) . _n( 'It will be deleted from the trash after %s day.', 'It will be deleted from the trash after %s days.', EMPTY_TRASH_DAYS ),
 	/* translators: %s: Number of posts. */
 	'untrashed' => _n( '%s post restored from the Trash.', '%s posts restored from the Trash.', $bulk_counts['untrashed'] ),
 );
