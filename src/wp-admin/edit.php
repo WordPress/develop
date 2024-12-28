@@ -440,9 +440,17 @@ if ( isset( $_REQUEST['s'] ) && strlen( $_REQUEST['s'] ) ) {
 $messages = array();
 foreach ( $bulk_counts as $message => $count ) {
 	if ( isset( $bulk_messages[ $post_type ][ $message ] ) ) {
-		$messages[] = sprintf( $bulk_messages[ $post_type ][ $message ], number_format_i18n( $count ) );
+		$messages[] = sprintf(
+			$bulk_messages[ $post_type ][ $message ],
+			number_format_i18n( $count ),
+			'trashed' === $message ? number_format_i18n( EMPTY_TRASH_DAYS ) : ''
+		);
 	} elseif ( isset( $bulk_messages['post'][ $message ] ) ) {
-		$messages[] = sprintf( $bulk_messages['post'][ $message ], number_format_i18n( $count ) );
+		$messages[] = sprintf(
+			$bulk_messages['post'][ $message ],
+			number_format_i18n( $count ),
+			'trashed' === $message ? number_format_i18n( EMPTY_TRASH_DAYS ) : ''
+		);
 	}
 
 	if ( 'trashed' === $message && isset( $_REQUEST['ids'] ) ) {
