@@ -5702,8 +5702,6 @@ Shankle pork chop prosciutto ribeye ham hock pastrami. T-bone shank brisket baco
 		return $schema;
 	}
 
-
-
 	public function filter_post_item_schema_add_property( $schema ) {
 		$schema['properties']['something_entirely_new'] = array(
 			'description' => __( 'A new prop added with a the rest_post_item_schema filter.' ),
