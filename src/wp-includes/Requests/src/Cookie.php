@@ -79,25 +79,25 @@ class Cookie {
 	 * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $flags argument is not an array.
 	 * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $reference_time argument is not an integer or null.
 	 */
-	public function __construct($name, $value, $attributes = [], $flags = [], $reference_time = null) {
-		if (is_string($name) === false) {
-			throw InvalidArgument::create(1, '$name', 'string', gettype($name));
+	public function __construct( $name, $value, $attributes = [], $flags = [], $reference_time = null ) {
+		if ( is_string( $name ) === false ) {
+			throw InvalidArgument::create( 1, '$name', 'string', gettype( $name ) );
 		}
 
-		if (is_string($value) === false) {
-			throw InvalidArgument::create(2, '$value', 'string', gettype($value));
+		if ( is_string( $value ) === false ) {
+			throw InvalidArgument::create( 2, '$value', 'string', gettype( $value ) );
 		}
 
-		if (InputValidator::has_array_access($attributes) === false || InputValidator::is_iterable($attributes) === false) {
-			throw InvalidArgument::create(3, '$attributes', 'array|ArrayAccess&Traversable', gettype($attributes));
+		if ( InputValidator::has_array_access( $attributes ) === false || InputValidator::is_iterable( $attributes ) === false ) {
+			throw InvalidArgument::create( 3, '$attributes', 'array|ArrayAccess&Traversable', gettype( $attributes ) );
 		}
 
-		if (is_array($flags) === false) {
-			throw InvalidArgument::create(4, '$flags', 'array', gettype($flags));
+		if ( is_array( $flags ) === false ) {
+			throw InvalidArgument::create( 4, '$flags', 'array', gettype( $flags ) );
 		}
 
-		if ($reference_time !== null && is_int($reference_time) === false) {
-			throw InvalidArgument::create(5, '$reference_time', 'integer|null', gettype($reference_time));
+		if ( null !== $reference_time && false === is_int( $reference_time ) ) {
+			throw InvalidArgument::create( 5, '$reference_time', 'integer|null', gettype( $reference_time ) );
 		}
 
 		$this->name       = $name;
@@ -109,10 +109,10 @@ class Cookie {
 			'persistent'  => false,
 			'host-only'   => true,
 		];
-		$this->flags      = array_merge($default_flags, $flags);
+		$this->flags      = array_merge( $default_flags, $flags );
 
 		$this->reference_time = time();
-		if ($reference_time !== null) {
+		if ( null !== $reference_time ) {
 			$this->reference_time = $reference_time;
 		}
 
