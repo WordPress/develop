@@ -71,18 +71,23 @@ function get_active_blog_for_user( $user_id ) {
 		}
 	}
 
-	if ( ( ! is_object( $primary ) ) || ( 1 == $primary->archived || 1 == $primary->spam || 1 == $primary->deleted ) ) {
+	if ( ( ! is_object( $primary ) )
+		|| ( '1' === $primary->archived || '1' === $primary->spam || '1' === $primary->deleted )
+	) {
 		$blogs = get_blogs_of_user( $user_id, true ); // If a user's primary blog is shut down, check their other blogs.
 		$ret   = false;
 		if ( is_array( $blogs ) && count( $blogs ) > 0 ) {
 			foreach ( (array) $blogs as $blog_id => $blog ) {
-				if ( get_current_network_id() != $blog->site_id ) {
+				if ( get_current_network_id() !== $blog->site_id ) {
 					continue;
 				}
+
 				$details = get_site( $blog_id );
-				if ( is_object( $details ) && 0 == $details->archived && 0 == $details->spam && 0 == $details->deleted ) {
+				if ( is_object( $details )
+					&& '0' === $details->archived && '0' === $details->spam && '0' === $details->deleted
+				) {
 					$ret = $details;
-					if ( get_user_meta( $user_id, 'primary_blog', true ) != $blog_id ) {
+					if ( (int) get_user_meta( $user_id, 'primary_blog', true ) !== $blog_id ) {
 						update_user_meta( $user_id, 'primary_blog', $blog_id );
 					}
 					if ( ! get_user_meta( $user_id, 'source_domain', true ) ) {
@@ -230,8 +235,10 @@ function add_user_to_blog( $blog_id, $user_id, $role ) {
 function remove_user_from_blog( $user_id, $blog_id = 0, $reassign = 0 ) {
 	global $wpdb;
 
-	switch_to_blog( $blog_id );
 	$user_id = (int) $user_id;
+	$blog_id = (int) $blog_id;
+
+	switch_to_blog( $blog_id );
 
 	/**
 	 * Fires before a user is removed from a site.
@@ -249,13 +256,13 @@ function remove_user_from_blog( $user_id, $blog_id = 0, $reassign = 0 ) {
 	 * If being removed from the primary blog, set a new primary
 	 * if the user is assigned to multiple blogs.
 	 */
-	$primary_blog = get_user_meta( $user_id, 'primary_blog', true );
-	if ( $primary_blog == $blog_id ) {
+	$primary_blog = (int) get_user_meta( $user_id, 'primary_blog', true );
+	if ( $primary_blog === $blog_id ) {
 		$new_id     = '';
 		$new_domain = '';
 		$blogs      = get_blogs_of_user( $user_id );
 		foreach ( (array) $blogs as $blog ) {
-			if ( $blog->userblog_id == $blog_id ) {
+			if ( $blog->userblog_id === $blog_id ) {
 				continue;
 			}
 			$new_id     = $blog->userblog_id;
@@ -341,7 +348,7 @@ function get_blog_id_from_url( $domain, $path = '/' ) {
 	$path   = strtolower( $path );
 	$id     = wp_cache_get( md5( $domain . $path ), 'blog-id-cache' );
 
-	if ( -1 == $id ) { // Blog does not exist.
+	if ( -1 === $id ) { // Blog does not exist.
 		return 0;
 	} elseif ( $id ) {
 		return (int) $id;
@@ -462,7 +469,7 @@ function wpmu_validate_user_signup( $user_name, $user_email ) {
 	$orig_username = $user_name;
 	$user_name     = preg_replace( '/\s+/', '', sanitize_user( $user_name, true ) );
 
-	if ( $user_name != $orig_username || preg_match( '/[^a-z0-9]/', $user_name ) ) {
+	if ( $user_name !== $orig_username || preg_match( '/[^a-z0-9]/', $user_name ) ) {
 		$errors->add( 'user_name', __( 'Usernames can only contain lowercase letters (a-z) and numbers.' ) );
 		$user_name = $orig_username;
 	}
@@ -941,7 +948,7 @@ function wpmu_signup_blog_notification( $domain, $path, $title, $user_login, $us
 	}
 
 	// Send email with activation link.
-	if ( ! is_subdomain_install() || get_current_network_id() != 1 ) {
+	if ( ! is_subdomain_install() || get_current_network_id() !== 1 ) {
 		$activate_url = network_site_url( "wp-activate.php?key=$key" );
 	} else {
 		$activate_url = "http://{$domain}{$path}wp-activate.php?key=$key"; // @todo Use *_url() API.
@@ -2297,7 +2304,7 @@ function is_user_spammy( $user = null ) {
 		}
 	}
 
-	return $user && isset( $user->spam ) && 1 == $user->spam;
+	return $user && isset( $user->spam ) && '1' === $user->spam;
 }
 
 /**
