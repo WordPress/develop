@@ -342,7 +342,18 @@ class WP_REST_Global_Styles_Revisions_Controller extends WP_REST_Revisions_Contr
 			);
 		}
 
-		return $response;
+		/**
+		 * Filters a global styles revision returned from the REST API.
+		 *
+		 * Allows modification of the global styles revision right before it is returned.
+		 *
+		 * @since 6.7.2
+		 *
+		 * @param WP_REST_Response $response The response object.
+		 * @param WP_Post          $post     Post revision object.
+		 * @param WP_REST_Request  $request  Request used to generate the response.
+		 */
+		return apply_filters( 'rest_prepare_global_styles_revision', $response, $post, $request );
 	}
 
 	/**
