@@ -210,10 +210,10 @@ class Tests_General_Template_GetCalendar extends WP_UnitTestCase {
 		$m         = '2023'; // Set year
 
 		// Calculate the date of the first day of the week
-		$first_day_of_week = date( 'Y-m-d', strtotime( $m . 'W' . str_pad( $_GET['w'], 2, '0', STR_PAD_LEFT ) ) );
+		$first_day_of_week = gmdate( 'Y-m-d', strtotime( $m . 'W' . str_pad( $_GET['w'], 2, '0', STR_PAD_LEFT ) ) );
 
 		// Get the month from this date
-		$monthnum = date( 'm', strtotime( $first_day_of_week ) );
+		$monthnum = gmdate( 'm', strtotime( $first_day_of_week ) );
 
 		$post_date = gmdate( 'Y-m-d', strtotime( $m . '-' . $monthnum . '-06' ) );
 		$post_id   = self::factory()->post->create(
@@ -483,7 +483,7 @@ class Tests_General_Template_GetCalendar extends WP_UnitTestCase {
 		// Set up an invalid date
 		$m        = '202313'; // Invalid month (13)
 		$monthnum = '13';
-		$year     = gmdate('Y' );
+		$year     = gmdate( 'Y' );
 
 		wp_cache_delete( 'get_calendar', 'calendar' );
 		$calendar = get_calendar( true, false );
