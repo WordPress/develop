@@ -186,6 +186,9 @@ class WP_REST_Global_Styles_Revisions_Controller extends WP_REST_Revisions_Contr
 				}
 			}
 
+			/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php */
+			$query_args = apply_filters( 'rest_global_styles_revision_query', $query_args, $request );
+
 			$revisions_query = new WP_Query();
 			$revisions       = $revisions_query->query( $query_args );
 			$offset          = isset( $query_args['offset'] ) ? (int) $query_args['offset'] : 0;
