@@ -1146,7 +1146,7 @@ function get_post_ancestors( $post ) {
 
 	while ( $ancestor = get_post( $id ) ) {
 		// Loop detection: If the ancestor has been seen before, break.
-		if ( empty( $ancestor->post_parent ) || ( $ancestor->post_parent === $post->ID )
+		if ( empty( $ancestor->post_parent ) || $ancestor->post_parent === $post->ID
 			|| in_array( $ancestor->post_parent, $ancestors, true )
 		) {
 			break;
