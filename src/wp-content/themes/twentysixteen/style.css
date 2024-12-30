@@ -3600,8 +3600,6 @@ p > video {
 		display: block;
 		float: none;
 		margin-right: 0;
-		margin-left: -40%;
-		max-width: 140%;
 	}
 
 	body:not(.search-results) article:not(.type-page) .gallery-item img.below-entry-meta,

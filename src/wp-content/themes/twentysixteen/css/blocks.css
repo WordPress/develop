@@ -50,7 +50,6 @@ p.has-drop-cap:not(:focus)::first-letter {
 		display: block;
 		float: none;
 		margin-right: 0;
-		margin-left: -40%;
 		max-width: 140%;
 	}
 
