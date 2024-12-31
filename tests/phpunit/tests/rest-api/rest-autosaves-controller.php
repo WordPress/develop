@@ -182,7 +182,7 @@ class WP_Test_REST_Autosaves_Controller extends WP_Test_REST_Post_Type_Controlle
 	/**
 	 * @ticket 56481
 	 */
-	public function test_get_items_with_head_request_should_not_prepare_post_data() {
+	public function test_get_items_with_head_request_should_not_prepare_autosaves_data() {
 		$request = new WP_REST_Request( 'HEAD', '/wp/v2/posts/' . self::$post_id . '/autosaves' );
 
 		$hook_name = 'rest_prepare_autosave';

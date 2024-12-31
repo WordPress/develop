@@ -124,7 +124,7 @@ class WP_Test_REST_Widget_Types_Controller extends WP_Test_REST_Controller_Testc
 	/**
 	 * @ticket 56481
 	 */
-	public function test_get_items_with_head_request_should_not_prepare_post_data() {
+	public function test_get_items_with_head_request_should_not_prepare_widget_types_data() {
 		wp_set_current_user( self::$admin_id );
 		$request  = new WP_REST_Request( 'HEAD', '/wp/v2/widget-types' );
 		$response = rest_get_server()->dispatch( $request );

@@ -165,7 +165,7 @@ class WP_Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase
 	/**
 	 * @ticket 56481
 	 */
-	public function test_get_items_with_head_request_should_not_prepare_post_data() {
+	public function test_get_items_with_head_request_should_not_prepare_revisions_data() {
 		wp_set_current_user( self::$editor_id );
 
 		$hook_name = 'rest_prepare_revision';
