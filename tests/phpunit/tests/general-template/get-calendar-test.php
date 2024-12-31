@@ -463,9 +463,9 @@ class Tests_General_Template_GetCalendar extends WP_UnitTestCase {
 			)
 		);
 
-		$m = gmdate( 'Ym' );
+		$m        = gmdate( 'Ym' );
 		$monthnum = null;
-		$year = null;
+		$year     = null;
 
 		wp_cache_delete( 'get_calendar', 'calendar' );
 		$today_calendar = get_calendar( true, false );
