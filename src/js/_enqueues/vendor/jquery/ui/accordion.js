@@ -1,5 +1,5 @@
 /*!
- * jQuery UI Accordion 1.13.3
+ * jQuery UI Accordion 1.14.1
  * https://jqueryui.com
  *
  * Copyright OpenJS Foundation and other contributors
@@ -40,7 +40,7 @@
 "use strict";
 
 return $.widget( "ui.accordion", {
-	version: "1.13.3",
+	version: "1.14.1",
 	options: {
 		active: 0,
 		animate: {},
@@ -52,7 +52,17 @@ return $.widget( "ui.accordion", {
 		collapsible: false,
 		event: "click",
 		header: function( elem ) {
-			return elem.find( "> li > :first-child" ).add( elem.find( "> :not(li)" ).even() );
+			return elem
+				.find( "> li > :first-child" )
+				.add(
+					elem.find( "> :not(li)" )
+
+						// Support: jQuery <3.5 only
+						// We could use `.even()` but that's unavailable in older jQuery.
+						.filter( function( i ) {
+							return i % 2 === 0;
+						} )
+				);
 		},
 		heightStyle: "auto",
 		icons: {
@@ -187,13 +197,7 @@ return $.widget( "ui.accordion", {
 		this._super( value );
 
 		this.element.attr( "aria-disabled", value );
-
-		// Support: IE8 Only
-		// #5332 / #6059 - opacity doesn't cascade to positioned elements in IE
-		// so we need to add the disabled class to the headers and panels
 		this._toggleClass( null, "ui-state-disabled", !!value );
-		this._toggleClass( this.headers.add( this.headers.next() ), null, "ui-state-disabled",
-			!!value );
 	},
 
 	_keydown: function( event ) {
@@ -611,10 +615,6 @@ return $.widget( "ui.accordion", {
 		this._removeClass( prev, "ui-accordion-header-active" )
 			._addClass( prev, "ui-accordion-header-collapsed" );
 
-		// Work around for rendering bug in IE (#5421)
-		if ( toHide.length ) {
-			toHide.parent()[ 0 ].className = toHide.parent()[ 0 ].className;
-		}
 		this._trigger( "activate", null, data );
 	}
 } );
