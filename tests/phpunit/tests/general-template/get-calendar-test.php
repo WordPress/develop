@@ -87,9 +87,9 @@ class Tests_General_Template_GetCalendar extends WP_UnitTestCase {
 	public function test_get_calendar_current_month() {
 		global $wp_locale, $m, $monthnum, $year;
 
-		$m = gmdate( 'Ym' );
+		$m        = gmdate( 'Ym' );
 		$monthnum = gmdate( 'm' );
-		$year = gmdate( 'Y' );
+		$year     = gmdate( 'Y' );
 
 		// Set up the current date
 		$current_year  = gmdate( 'Y' );
