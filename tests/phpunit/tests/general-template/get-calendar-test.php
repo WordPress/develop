@@ -457,7 +457,7 @@ class Tests_General_Template_GetCalendar extends WP_UnitTestCase {
 	public function test_get_calendar_out_of_range() {
 		global $m, $monthnum, $year;
 
-		$post_id  = self::factory()->post->create(
+		$post_id = self::factory()->post->create(
 			array(
 				'post_status' => 'publish',
 			)
