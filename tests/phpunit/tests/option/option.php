@@ -565,8 +565,8 @@ class Tests_Option_Option extends WP_UnitTestCase {
 			$this->markTestSkipped( 'This test requires an external object cache.' );
 		}
 
-		if ( ! function_exists( 'wp_cache_get_stats' ) ) {
-			$this->markTestSkipped( 'This test requires the Memcached PECL extension.' );
+		if ( false === $this->helper_object_cache_stats_cmd_get() ) {
+			$this->markTestSkipped( 'This test requires access to the number of get requests to the external object cache.' );
 		}
 
 		if ( $option_exists ) {
@@ -575,16 +575,14 @@ class Tests_Option_Option extends WP_UnitTestCase {
 
 		wp_cache_delete_multiple( array( 'ticket-62692', 'notoptions', 'alloptions' ), 'options' );
 
-		$stats             = wp_cache_get_stats();
-		$connections_start = array_shift( $stats )['cmd_get'];
+		$connections_start = $this->helper_object_cache_stats_cmd_get();
 
 		$call_getter = 10;
 		while ( $call_getter-- ) {
 			get_option( 'ticket-62692' );
 		}
 
-		$stats           = wp_cache_get_stats();
-		$connections_end = array_shift( $stats )['cmd_get'];
+		$connections_end = $this->helper_object_cache_stats_cmd_get();
 
 		$this->assertSame( $expected_connections, $connections_end - $connections_start );
 	}
@@ -600,5 +598,36 @@ class Tests_Option_Option extends WP_UnitTestCase {
 			'exists, not autoloaded' => array( 3, true, false ),
 			'does not exist'         => array( 3, false ),
 		);
+	}
+
+	/**
+	 * Helper function to get the number of get commands from the external object cache.
+	 *
+	 * @return int|false Number of get command calls, false if unavailable.
+	 */
+	public function helper_object_cache_stats_cmd_get() {
+		if ( ! wp_using_ext_object_cache() || ! function_exists( 'wp_cache_get_stats' ) ) {
+			return false;
+		}
+
+		$stats = wp_cache_get_stats();
+
+		// Check the shape of the stats.
+		if ( ! is_array( $stats ) ) {
+			return false;
+		}
+
+		// Get the first server's stats.
+		$stats = array_shift( $stats );
+
+		if ( ! is_array( $stats ) ) {
+			return false;
+		}
+
+		if ( ! array_key_exists( 'cmd_get', $stats ) ) {
+			return false;
+		}
+
+		return $stats['cmd_get'];
 	}
 }
