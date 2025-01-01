@@ -276,12 +276,12 @@ if ( ! function_exists( 'wp_install_defaults' ) ) :
 			__(
 				'Hi, this is a comment.
 				 To get started with moderating, editing, and deleting comments, please visit the Comments screen in the dashboard.
-				 Commenter avatars come from <a href="%1$s">Gravatar</a>. Click here to <a href="%2$s">Learn WordPress</a>.'
+				 Commenter avatars come from <a href="%1$s">Gravatar</a>. If you\'re new to WordPress, check these free <a href="%2$s">online courses at Learn WordPress</a>.'
 			),
 			/* translators: The localized Gravatar URL. */
 			esc_url( __( 'https://gravatar.com/' ) ),
 			/* translators: The localized Learn WordPress URL. */
-			esc_url( __( 'https://learn.wordpress.org/' ) )
+			esc_url( __( 'https://learn.wordpress.org/learning-pathway/user/' ) )
 		);
 		$wpdb->insert(
 			$wpdb->comments,
