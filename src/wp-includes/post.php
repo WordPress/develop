@@ -8474,7 +8474,7 @@ function wp_create_initial_post_meta() {
 /**
  * Retrieves page IDs, permalinks, or titles based on a template file name.
  *
- * Queries pages using a specified template file and returns an array of 
+ * Queries pages using a specified template file and returns an array of
  * IDs, permalinks, or titles based on the provided field parameter.
  *
  * @param string $template The template file name to search for.
@@ -8499,7 +8499,6 @@ function get_page_by_template( $template, $field = 'ID' ) {
 
 	if ( $query->have_posts() ) {
 		$template_page_ids = $query->posts;
-
 		if ( 'ID' === $field ) {
 			wp_reset_postdata();
 			return $template_page_ids;
