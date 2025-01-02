@@ -299,8 +299,6 @@ jobs:
 
       - name: Check date time
         run: echo "COMMITTED_AT_TEST=$(git show -s $GITHUB_SHA --format='%cI')" >> $GITHUB_ENV
-        env:
-          COMMITTED_AT_TEST: $(git show -s $GITHUB_SHA --format="%cI")
 
       - name: Add workflow summary
         run: cat ${{ runner.temp }}/summary.md >> $GITHUB_STEP_SUMMARY
