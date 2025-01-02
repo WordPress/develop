@@ -94,7 +94,6 @@ jobs:
   # - Compare results.
   # - Add workflow summary.
   # - Set the base sha.
-  # - Set commit details.
   # - Publish performance results.
   # - Ensure version-controlled files are not modified or deleted.
   performance:
@@ -311,17 +310,6 @@ jobs:
           script: |
             const baseRef = await github.rest.git.getRef({ owner: context.repo.owner, repo: context.repo.repo, ref: 'tags/${{ env.BASE_TAG }}' });
             return baseRef.data.object.sha;
-
-      - name: Set commit details
-        # Only needed when publishing results.
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached }}
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-        id: commit-timestamp
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const commit_details = await github.rest.git.getCommit({ owner: context.repo.owner, repo: context.repo.repo, commit_sha: context.sha });
-            return parseInt((new Date( commit_details.data.author.date ).getTime() / 1000).toFixed(0))
 
       - name: Publish performance results
         # Only publish results on pushes to trunk.
