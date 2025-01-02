@@ -296,6 +296,8 @@ jobs:
 
       - name: Compare results
         run: node ./tests/performance/compare-results.js ${{ runner.temp }}/summary.md
+        env:
+          COMMITTED_AT_TEST: $(git show -s $GITHUB_SHA --format="%cI")
 
       - name: Add workflow summary
         run: cat ${{ runner.temp }}/summary.md >> $GITHUB_STEP_SUMMARY
