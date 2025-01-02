@@ -1135,7 +1135,7 @@ function get_post( $post = null, $output = OBJECT, $filter = 'raw' ) {
 function get_post_ancestors( $post ) {
 	$post = get_post( $post );
 
-	if ( ! $post || empty( $post->post_parent ) || $post->post_parent == $post->ID ) {
+	if ( ! $post || empty( $post->post_parent ) || $post->post_parent === $post->ID ) {
 		return array();
 	}
 
@@ -1146,7 +1146,9 @@ function get_post_ancestors( $post ) {
 
 	while ( $ancestor = get_post( $id ) ) {
 		// Loop detection: If the ancestor has been seen before, break.
-		if ( empty( $ancestor->post_parent ) || ( $ancestor->post_parent == $post->ID ) || in_array( $ancestor->post_parent, $ancestors, true ) ) {
+		if ( empty( $ancestor->post_parent ) || $ancestor->post_parent === $post->ID
+			|| in_array( $ancestor->post_parent, $ancestors, true )
+		) {
 			break;
 		}
 
@@ -2823,7 +2825,7 @@ function is_sticky( $post_id = 0 ) {
 function sanitize_post( $post, $context = 'display' ) {
 	if ( is_object( $post ) ) {
 		// Check if post already filtered for this context.
-		if ( isset( $post->filter ) && $context == $post->filter ) {
+		if ( isset( $post->filter ) && $context === $post->filter ) {
 			return $post;
 		}
 		if ( ! isset( $post->ID ) ) {
@@ -2835,7 +2837,7 @@ function sanitize_post( $post, $context = 'display' ) {
 		$post->filter = $context;
 	} elseif ( is_array( $post ) ) {
 		// Check if post already filtered for this context.
-		if ( isset( $post['filter'] ) && $context == $post['filter'] ) {
+		if ( isset( $post['filter'] ) && $context === $post['filter'] ) {
 			return $post;
 		}
 		if ( ! isset( $post['ID'] ) ) {
@@ -3388,7 +3390,8 @@ function wp_count_attachments( $mime_type = '' ) {
 	);
 
 	$counts = wp_cache_get( $cache_key, 'counts' );
-	if ( false == $counts ) {
+
+	if ( false === $counts ) {
 		$and   = wp_post_mime_type_where( $mime_type );
 		$count = $wpdb->get_results( "SELECT post_mime_type, COUNT( * ) AS num_posts FROM $wpdb->posts WHERE post_type = 'attachment' AND post_status != 'trash' $and GROUP BY post_mime_type", ARRAY_A );
 
