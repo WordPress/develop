@@ -8472,43 +8472,47 @@ function wp_create_initial_post_meta() {
 }
 
 /**
- * Retrieves the ID or permalink of a page based on its template file name.
+ * Retrieves page IDs, permalinks, or titles based on a template file name.
  *
- * This function performs a query to find pages using a specific template
- * and returns the ID or permalink of the first matching page.
+ * Queries pages using a specified template file and returns an array of 
+ * IDs, permalinks, or titles based on the provided field parameter.
  *
- * @param string $template The name of the template file to search for.
- * @param string $field The field to return: 'ID' for the page ID, 'permalink' for the page permalink.
- * @return string|int The ID or permalink of the page, or null if no page is found.
+ * @param string $template The template file name to search for.
+ * @param string $field The field to return: 'ID' for page IDs, 'permalink' for page permalinks, or 'title' for page titles.
+ * @return array|null An array of IDs, permalinks, or titles of matching pages, or null if no pages are found.
  */
 
 function get_page_by_template( $template, $field = 'ID' ) {
-	global $post;
+    // Query pages by template
+    $query = new WP_Query(
+        array(
+            'post_type'  => 'page',
+            'meta_query' => array(
+                array(
+                    'key'     => '_wp_page_template',
+                    'value'   => $template,
+                    'compare' => '==',
+                ),
+            ),
+            'fields'     => 'ids',
+        )
+    );
 
-	$query = new WP_Query(
-		array(
-			'post_type'  => 'page',
-			'meta_query' => array(
-				array(
-					'key'     => '_wp_page_template',
-					'value'   => $template,
-					'compare' => '==',
-				),
-			),
-			'fields'     => 'ids',
-		)
-	);
+    if ( $query->have_posts() ) {
+        $template_page_ids = $query->posts;
 
-	if ( $query->have_posts() ) {
-		$query->the_post();
-		if ( 'ID' === $field ) {
-			return $query->posts;
-		} elseif ( 'title' === $field ) {
-			return array_combine($query->posts, array_map('get_the_title', $query->posts) );
-		} elseif ( 'permalink' === $field ) {
-			return array_combine($query->posts, array_map('get_permalink', $query->posts) );
-		}
-	}
+        if ( 'ID' === $field ) {
+            wp_reset_postdata();
+            return $template_page_ids;
+        } elseif ( 'title' === $field ) {
+            wp_reset_postdata();
+            return array_combine( $template_page_ids, array_map( 'get_the_title', $template_page_ids ) );
+        } elseif ( 'permalink' === $field ) {
+            wp_reset_postdata();
+            return array_combine( $template_page_ids, array_map( 'get_permalink', $template_page_ids ) );
+        }
+    }
 
-	return null;
+    wp_reset_postdata();
+    return null;
 }
