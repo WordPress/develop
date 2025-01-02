@@ -328,7 +328,7 @@ jobs:
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached }}
         env:
           BASE_SHA: ${{ steps.base-sha.outputs.result }}
-          COMMITTED_AT: ${{ steps.commit-timestamp.outputs.result }}
+          COMMITTED_AT: $(git show -s $GITHUB_SHA --format="%cI")
           CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }}
           HOST_NAME: "www.codevitals.run"
         run: |
