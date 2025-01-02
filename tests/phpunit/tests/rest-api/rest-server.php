@@ -6,6 +6,7 @@
  * @subpackage REST API
  *
  * @group restapi
+ * @group external-http
  */
 class Tests_REST_Server extends WP_Test_REST_TestCase {
 	protected static $icon_id;
