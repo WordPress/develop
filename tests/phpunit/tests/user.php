@@ -2302,11 +2302,11 @@ class Tests_User extends WP_UnitTestCase {
 
 		// Test when preferences are enabled.
 		$_POST = array(
-			'nickname'           => 'Test User',
-			'email'             => 'test@example.com',
-			'rich_editing'      => 'true',
+			'nickname'            => 'Test User',
+			'email'               => 'test@example.com',
+			'rich_editing'        => 'true',
 			'syntax_highlighting' => 'true',
-			'admin_bar_front'   => 'true',
+			'admin_bar_front'     => 'true',
 		);
 
 		$result = edit_user( self::$author_id );
