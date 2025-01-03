@@ -8500,12 +8500,11 @@ function get_page_by_template( $template, $field = 'ID' ) {
 	if ( $query->have_posts() ) { 
 		$template_page_ids = $query->posts;
 		wp_reset_postdata();
-		
-		if ( 'ID' === $field ) { 
+		if ( 'ID' === $field ) {
 			return $template_page_ids;
-		} elseif ( 'title' === $field ) { 
+		} elseif ( 'title' === $field ) {
 			return array_combine( $template_page_ids, array_map( 'get_the_title', $template_page_ids ) );
-		} elseif ( 'permalink' === $field ) { 
+		} elseif ( 'permalink' === $field ) {
 			return array_combine( $template_page_ids, array_map( 'get_permalink', $template_page_ids ) );
 		}
 	}
