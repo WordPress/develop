@@ -264,7 +264,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 	 *
 	 * @since 6.8.0
 	 *
-	 * @var array|null
+	 * @var array
 	 */
 	protected $actively_reconstructed_formatting_attributes = array();
 
