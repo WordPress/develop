@@ -5947,7 +5947,6 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 		 */
 		rewind:
 		if ( 1 === $currently_at ) {
-			echo "\e[90mJumping to create\e[m\n";
 			goto create;
 		}
 
