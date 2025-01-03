@@ -8497,7 +8497,7 @@ function get_page_by_template( $template, $field = 'ID' ) {
 		)
 	);
 
-	if ( $query->have_posts() ) { 
+	if ( $query->have_posts() ) {
 		$template_page_ids = $query->posts;
 		wp_reset_postdata();
 		if ( 'ID' === $field ) {
