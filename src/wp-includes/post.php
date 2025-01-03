@@ -8497,16 +8497,14 @@ function get_page_by_template( $template, $field = 'ID' ) {
 		)
 	);
 
-	if ( $query->have_posts() ) {
+	if ( $query->have_posts() ) { 
 		$template_page_ids = $query->posts;
-		if ( 'ID' === $field ) {
-			wp_reset_postdata();
+		wp_reset_postdata();
+		if ( 'ID' === $field ) { 
 			return $template_page_ids;
-		} elseif ( 'title' === $field ) {
-			wp_reset_postdata();
+		} elseif ( 'title' === $field ) { 
 			return array_combine( $template_page_ids, array_map( 'get_the_title', $template_page_ids ) );
-		} elseif ( 'permalink' === $field ) {
-			wp_reset_postdata();
+		} elseif ( 'permalink' === $field ) { 
 			return array_combine( $template_page_ids, array_map( 'get_permalink', $template_page_ids ) );
 		}
 	}
