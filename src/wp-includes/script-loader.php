@@ -106,11 +106,11 @@ function wp_default_packages_vendor( $scripts ) {
 	);
 
 	$vendor_scripts_versions = array(
-		'react'                       => '18.3.1',
-		'react-dom'                   => '18.3.1',
+		'react'                       => '18.3.1.1', // Final .1 due to switch to UMD build, can be removed in the next update.
+		'react-dom'                   => '18.3.1.1', // Final .1 due to switch to UMD build, can be removed in the next update.
 		'react-jsx-runtime'           => '18.3.1',
 		'regenerator-runtime'         => '0.14.1',
-		'moment'                      => '2.29.4',
+		'moment'                      => '2.30.1',
 		'lodash'                      => '4.17.21',
 		'wp-polyfill-fetch'           => '3.6.20',
 		'wp-polyfill-formdata'        => '4.0.10',
@@ -119,7 +119,7 @@ function wp_default_packages_vendor( $scripts ) {
 		'wp-polyfill-dom-rect'        => '4.8.0',
 		'wp-polyfill-element-closest' => '3.0.2',
 		'wp-polyfill-object-fit'      => '2.3.5',
-		'wp-polyfill-inert'           => '3.1.2',
+		'wp-polyfill-inert'           => '3.1.3',
 		'wp-polyfill'                 => '3.15.0',
 	);
 
@@ -610,7 +610,7 @@ function wp_tinymce_inline_scripts() {
 	}
 
 	if ( ! empty( $editor_settings['tinymce'] ) && is_array( $editor_settings['tinymce'] ) ) {
-		array_merge( $tinymce_settings, $editor_settings['tinymce'] );
+		$tinymce_settings = array_merge( $tinymce_settings, $editor_settings['tinymce'] );
 	}
 
 	/** This filter is documented in wp-includes/class-wp-editor.php */
@@ -754,7 +754,7 @@ function wp_default_scripts( $scripts ) {
 		)
 	);
 
-	$scripts->add( 'common', "/wp-admin/js/common$suffix.js", array( 'jquery', 'hoverIntent', 'utils' ), false, 1 );
+	$scripts->add( 'common', "/wp-admin/js/common$suffix.js", array( 'jquery', 'hoverIntent', 'utils', 'wp-a11y' ), false, 1 );
 	$scripts->set_translations( 'common' );
 
 	$scripts->add( 'wp-sanitize', "/wp-includes/js/wp-sanitize$suffix.js", array(), false, 1 );
@@ -1217,7 +1217,7 @@ function wp_default_scripts( $scripts ) {
 	$scripts->add( 'auth-app', "/wp-admin/js/auth-app$suffix.js", array( 'jquery', 'wp-api-request', 'wp-i18n', 'wp-hooks' ), false, 1 );
 	$scripts->set_translations( 'auth-app' );
 
-	$scripts->add( 'user-profile', "/wp-admin/js/user-profile$suffix.js", array( 'jquery', 'password-strength-meter', 'wp-util' ), false, 1 );
+	$scripts->add( 'user-profile', "/wp-admin/js/user-profile$suffix.js", array( 'clipboard', 'jquery', 'password-strength-meter', 'wp-util', 'wp-a11y' ), false, 1 );
 	$scripts->set_translations( 'user-profile' );
 	$user_id = isset( $_GET['user_id'] ) ? (int) $_GET['user_id'] : 0;
 	did_action( 'init' ) && $scripts->localize(
@@ -1627,6 +1627,7 @@ function wp_default_styles( $styles ) {
 	$styles->add( 'wp-pointer', "/wp-includes/css/wp-pointer$suffix.css", array( 'dashicons' ) );
 	$styles->add( 'customize-preview', "/wp-includes/css/customize-preview$suffix.css", array( 'dashicons' ) );
 	$styles->add( 'wp-embed-template-ie', "/wp-includes/css/wp-embed-template-ie$suffix.css" );
+	$styles->add( 'wp-empty-template-alert', "/wp-includes/css/wp-empty-template-alert$suffix.css" );
 	$styles->add_data( 'wp-embed-template-ie', 'conditional', 'lte IE 8' );
 
 	// External libraries and friends.
@@ -1809,6 +1810,7 @@ function wp_default_styles( $styles ) {
 		'customize-preview',
 		'login',
 		'site-health',
+		'wp-empty-template-alert',
 		// Includes CSS.
 		'buttons',
 		'admin-bar',
@@ -2515,9 +2517,9 @@ function wp_enqueue_global_styles() {
 
 	if ( $is_block_theme ) {
 		/*
-		* Dequeue the Customizer's custom CSS
-		* and add it before the global styles custom CSS.
-		*/
+		 * Dequeue the Customizer's custom CSS
+		 * and add it before the global styles custom CSS.
+		 */
 		remove_action( 'wp_head', 'wp_custom_css_cb', 101 );
 		// Get the custom CSS from the Customizer and add it to the global stylesheet.
 		$custom_css  = wp_get_custom_css();

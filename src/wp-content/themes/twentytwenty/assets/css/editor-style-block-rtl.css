@@ -791,7 +791,7 @@ hr.wp-block-separator.is-style-dots::before {
 /* Block: Pullquote -------------------------- */
 
 .editor-styles-wrapper .wp-block-pullquote {
-	border: none;
+	border: 0 solid;
 	color: inherit;
 	padding: 0;
 	position: relative;
@@ -1063,6 +1063,10 @@ hr.wp-block-separator.is-style-dots::before {
 	font-size: 0.95em;
 	line-height: 1.4;
 	margin-top: 15px;
+}
+
+.wp-block-latest-posts__post-full-content > p:first-child {
+	margin-top: 1em;
 }
 
 /* Block: Shortcode -------------------------- */
