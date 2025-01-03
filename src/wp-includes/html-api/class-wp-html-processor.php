@@ -262,7 +262,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 	 *
 	 * These attributes are not modifiable.
 	 *
-	 * @since 6.7.0
+	 * @since 6.8.0
 	 *
 	 * @var array|null
 	 */
@@ -5884,7 +5884,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 	 * > been explicitly closed.
 	 *
 	 * @since 6.4.0
-	 * @since 6.7.0 Added additional support.
+	 * @since 6.8.0 Added additional support.
 	 *
 	 * @throws WP_HTML_Unsupported_Exception When encountering unsupported HTML input.
 	 *
