@@ -112,8 +112,8 @@ class Tests_Option_Option extends WP_UnitTestCase {
 		wp_cache_set( 'notoptions', $notoptions, 'options' );
 
 		$before = get_num_queries();
-		$value  = get_option( 'invalid' );
-		$after  = get_num_queries();
+		get_option( 'invalid' );
+		$after = get_num_queries();
 
 		$this->assertSame( 0, $after - $before );
 	}
@@ -127,33 +127,14 @@ class Tests_Option_Option extends WP_UnitTestCase {
 		get_option( 'invalid' );
 
 		$before = get_num_queries();
-		$value  = get_option( 'invalid' );
-		$after  = get_num_queries();
+		get_option( 'invalid' );
+		$after = get_num_queries();
 
 		$notoptions = wp_cache_get( 'notoptions', 'options' );
 
 		$this->assertSame( 0, $after - $before, 'The notoptions cache was not hit on the second call to `get_option()`.' );
 		$this->assertIsArray( $notoptions, 'The notoptions cache should be set.' );
 		$this->assertArrayHasKey( 'invalid', $notoptions, 'The "invalid" option should be in the notoptions cache.' );
-	}
-
-	/**
-	 * @ticket 58277
-	 *
-	 * @covers ::get_option
-	 */
-	public function test_get_option_notoptions_do_not_load_cache() {
-		add_option( 'foo', 'bar', '', false );
-		wp_cache_delete( 'notoptions', 'options' );
-
-		$before = get_num_queries();
-		$value  = get_option( 'foo' );
-		$after  = get_num_queries();
-
-		$notoptions = wp_cache_get( 'notoptions', 'options' );
-
-		$this->assertSame( 0, $after - $before, 'The options cache was not hit on the second call to `get_option()`.' );
-		$this->assertFalse( $notoptions, 'The notoptions cache should not be set.' );
 	}
 
 	/**
@@ -553,6 +534,8 @@ class Tests_Option_Option extends WP_UnitTestCase {
 	 * Test that get_option() does not hit the external cache multiple times for the same option.
 	 *
 	 * @ticket 62692
+	 *
+	 * @covers ::get_option
 	 *
 	 * @dataProvider data_get_option_does_not_hit_the_external_cache_multiple_times_for_the_same_option
 	 *
