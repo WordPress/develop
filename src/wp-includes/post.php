@@ -8483,34 +8483,33 @@ function wp_create_initial_post_meta() {
  */
 
 function get_page_by_template( $template, $field = 'ID' ) {
-    $query = new WP_Query(
-        array(
-            'post_type'  => 'page',
-            'meta_query' => array(
-                array(
-                    'key'     => '_wp_page_template',
-                    'value'   => $template,
-                    'compare' => '==',
-                ),
-            ),
-            'fields'     => 'ids',
-        )
-    );
+	$query = new WP_Query(
+		array(
+			'post_type'  => 'page',
+			'meta_query' => array(
+				array(
+					'key'     => '_wp_page_template',
+					'value'   => $template,
+					'compare' => '==',
+				),
+			),
+			'fields'     => 'ids',
+		)
+	);
 
-    if ( $query->have_posts() ) {
-        $template_page_ids = $query->posts;
-        wp_reset_postdata();
-        
-        if ( 'ID' === $field ) {
-            return $template_page_ids;
-        } elseif ( 'title' === $field ) {
-            return array_combine( $template_page_ids, array_map( 'get_the_title', $template_page_ids ) );
-        } elseif ( 'permalink' === $field ) {
-            return array_combine( $template_page_ids, array_map( 'get_permalink', $template_page_ids ) );
-        }
-    }
+	if ( $query->have_posts() ) { 
+		$template_page_ids = $query->posts;
+		wp_reset_postdata();
+		
+		if ( 'ID' === $field ) { 
+			return $template_page_ids;
+		} elseif ( 'title' === $field ) { 
+			return array_combine( $template_page_ids, array_map( 'get_the_title', $template_page_ids ) );
+		} elseif ( 'permalink' === $field ) { 
+			return array_combine( $template_page_ids, array_map( 'get_permalink', $template_page_ids ) );
+		}
+	}
 
-    wp_reset_postdata();
-    return null;
+	wp_reset_postdata();
+	return null;
 }
-
