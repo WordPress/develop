@@ -5307,6 +5307,25 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 	}
 
 	/**
+	 * Returns the adjusted attribute name for a given attribute, taking into
+	 * account the current parsing context, whether HTML, SVG, or MathML.
+	 *
+	 * @since 6.8.0 Subclassed for the HTML Processor.
+	 *
+	 * @param string       $attribute_name Which attribute name to adjust.
+	 *
+	 * @return string|null The qualified attribute name or null if not on matched tag.
+	 */
+	public function get_qualified_attribute_name( $attribute_name ): ?string {
+		if ( $this->is_virtual() ) {
+			$namespace = $this->current_element->token->namespace;
+			return self::lookup_qualified_attribute_name( $namespace, $attribute_name );
+		}
+
+		return parent::get_qualified_attribute_name( $attribute_name );
+	}
+
+	/**
 	 * Updates or creates a new attribute on the currently matched tag with the passed value.
 	 *
 	 * For boolean attributes special handling is provided:
