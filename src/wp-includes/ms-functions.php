@@ -1633,6 +1633,7 @@ function wpmu_welcome_notification( $blog_id, $user_id, $password, $title, $meta
 
 	$welcome_email = get_site_option( 'welcome_email' );
 
+	if ( ! $welcome_email ) {
 		/* translators: Do not translate USERNAME, SITE_NAME, BLOG_URL, PASSWORD: those are placeholders. */
 		$welcome_email = __(
 			'Howdy USERNAME,
