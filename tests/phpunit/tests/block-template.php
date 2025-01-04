@@ -447,7 +447,8 @@ class Tests_Block_Template extends WP_UnitTestCase {
 
 		$templates = get_block_templates();
 
-		$this->assertArrayHasKey( $template_name, $templates );
+		$templates_by_title = array_column( $templates, null, 'title' );
+		$this->assertArrayHasKey( $template_name, $templates_by_title );
 
 		unregister_block_template( $template_name );
 	}
