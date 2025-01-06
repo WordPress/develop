@@ -170,6 +170,8 @@ class WP_Block {
 				}
 			}
 		}
+
+		$this->refresh_parsed_block_dependents();
 	}
 
 	/**
