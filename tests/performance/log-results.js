@@ -87,7 +87,7 @@ const data = new TextEncoder().encode(
 		branch,
 		hash,
 		baseHash,
-		date,
+		timestamp: date,
 		metrics: metrics,
 		baseMetrics: baseMetrics,
 	} )
