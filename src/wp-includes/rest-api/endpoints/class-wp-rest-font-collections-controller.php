@@ -100,7 +100,7 @@ class WP_REST_Font_Collections_Controller extends WP_REST_Controller {
 				continue;
 			}
 
-			/**
+			/*
 			 * Skip preparing the response body for HEAD requests.
 			 * Cannot exit earlier due to backward compatibility reasons,
 			 * as validation occurs in the prepare_item_for_response method.
