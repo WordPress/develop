@@ -81,7 +81,7 @@ const data = new TextEncoder().encode(
 		branch,
 		hash,
 		baseHash,
-		timestamp: parseInt( timestamp, 10 ),
+		timestamp: timestamp,
 		metrics: metrics,
 		baseMetrics: baseMetrics,
 	} )
