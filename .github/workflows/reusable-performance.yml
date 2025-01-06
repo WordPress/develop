@@ -331,6 +331,7 @@ jobs:
       - name: Set commit details
         # Only needed when publishing results.
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached && ! inputs.multisite }}
+        # Write to an environment variable to have the output available in later steps of the job.
         run: echo "COMMITTED_AT=$(git show -s $GITHUB_SHA --format='%cI')" >> $GITHUB_ENV
 
       - name: Publish performance results
