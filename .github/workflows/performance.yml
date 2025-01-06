@@ -33,7 +33,7 @@ jobs:
   # Runs the performance test suite.
   performance:
     name: Performance tests ${{ matrix.memcached && '(with memcached)' || '' }}
-    uses: mukeshpanchal27/wordpress-develop/.github/workflows/reusable-performance.yml@fix/performance-log-data-time
+    uses: WordPress/wordpress-develop/.github/workflows/reusable-performance.yml@trunk
     permissions:
       contents: read
     if: ${{ ( github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' ) }}

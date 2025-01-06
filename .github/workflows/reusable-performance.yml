@@ -312,10 +312,6 @@ jobs:
             const baseRef = await github.rest.git.getRef({ owner: context.repo.owner, repo: context.repo.repo, ref: 'tags/${{ env.BASE_TAG }}' });
             return baseRef.data.object.sha;
 
-      - name: Test commit details
-        # Only needed when publishing results.
-        run: echo "COMMITTED_AT_TEST=$(git show -s $GITHUB_SHA --format='%cI')" >> $GITHUB_ENV
-
       - name: Set commit details
         # Only needed when publishing results.
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached }}
