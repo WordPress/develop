@@ -49,7 +49,7 @@ class WP_Plugins_List_Table extends WP_List_Table {
 		$allowed_statuses = array( 'active', 'inactive', 'recently_activated', 'upgrade', 'mustuse', 'dropins', 'search', 'paused', 'auto-update-enabled', 'auto-update-disabled' );
 
 		/**
-		 * Filters the list of allowed plugin statuses.
+		 * Filters the list of allowed plugin statuses for the list table.
 		 *
 		 * @since 6.8.0
 		 *
