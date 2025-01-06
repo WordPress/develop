@@ -718,7 +718,7 @@ class Tests_Auth extends WP_UnitTestCase {
 		$wpdb->update(
 			$wpdb->users,
 			array(
-				'user_activation_key' => strtotime( '-1 hour' ) . ':' . wp_hash_password( $key ),
+				'user_activation_key' => strtotime( '-1 hour' ) . ':' . wp_hash( $key, 'auth', 'sha1' ),
 			),
 			array(
 				'ID' => $this->user->ID,
@@ -756,7 +756,7 @@ class Tests_Auth extends WP_UnitTestCase {
 		$wpdb->update(
 			$wpdb->users,
 			array(
-				'user_activation_key' => strtotime( '-48 hours' ) . ':' . wp_hash_password( $key ),
+				'user_activation_key' => strtotime( '-48 hours' ) . ':' . wp_hash( $key, 'auth', 'sha1' ),
 			),
 			array(
 				'ID' => $this->user->ID,
@@ -795,7 +795,7 @@ class Tests_Auth extends WP_UnitTestCase {
 		$wpdb->update(
 			$wpdb->users,
 			array(
-				'user_activation_key' => wp_hash_password( $key ),
+				'user_activation_key' => self::$wp_hasher->HashPassword( $key ),
 			),
 			array(
 				'ID' => $this->user->ID,
@@ -877,6 +877,58 @@ class Tests_Auth extends WP_UnitTestCase {
 		$check = check_password_reset_key( '', $this->user->user_login );
 		$this->assertWPError( $check );
 		$this->assertSame( 'invalid_key', $check->get_error_code() );
+	}
+
+	/**
+	 * @ticket 21022
+	 * @ticket 50027
+	 */
+	public function test_user_request_key_handling() {
+		$request_id = wp_create_user_request( 'test@example.com', 'remove_personal_data' );
+		$key        = wp_generate_user_request_key( $request_id );
+
+		// A valid key should be accepted.
+		$check = wp_validate_user_request_key( $request_id, $key );
+		$this->assertNotWPError( $check );
+		$this->assertTrue( $check );
+
+		// An invalid key should rejected.
+		$check = wp_validate_user_request_key( $request_id, 'invalid' );
+		$this->assertWPError( $check );
+		$this->assertSame( 'invalid_key', $check->get_error_code() );
+
+		// An empty key should be rejected.
+		$check = wp_validate_user_request_key( $request_id, '' );
+		$this->assertWPError( $check );
+		$this->assertSame( 'missing_key', $check->get_error_code() );
+	}
+
+	/**
+	 * @ticket 21022
+	 * @ticket 50027
+	 */
+	public function test_phpass_user_request_key_is_allowed() {
+		// A legacy user request key is one hashed using phpass between WordPress 4.3 and x.y.z.
+
+		$request_id = wp_create_user_request( 'test@example.com', 'remove_personal_data' );
+		$key        = wp_generate_password( 20, false );
+
+		wp_update_post(
+			array(
+				'ID'            => $request_id,
+				'post_password' => self::$wp_hasher->HashPassword( $key ),
+			)
+		);
+
+		// A legacy phpass key should remain valid.
+		$check = wp_validate_user_request_key( $request_id, $key );
+		$this->assertNotWPError( $check );
+		$this->assertTrue( $check );
+
+		// An empty key with a legacy key should be rejected.
+		$check = wp_validate_user_request_key( $request_id, '' );
+		$this->assertWPError( $check );
+		$this->assertSame( 'missing_key', $check->get_error_code() );
 	}
 
 	/**

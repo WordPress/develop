@@ -2996,7 +2996,7 @@ function get_password_reset_key( $user ) {
 	 */
 	do_action( 'retrieve_password_key', $user->user_login, $key );
 
-	$hashed = time() . ':' . wp_hash_password( $key );
+	$hashed = time() . ':' . wp_hash( $key, 'auth', 'sha1' );
 
 	$key_saved = wp_update_user(
 		array(
@@ -3064,7 +3064,14 @@ function check_password_reset_key( $key, $login ) {
 		return new WP_Error( 'invalid_key', __( 'Invalid key.' ) );
 	}
 
-	$hash_is_correct = wp_check_password( $key, $pass_key );
+	if ( str_starts_with( $pass_key, '$P$B' ) ) {
+		// Back-compat for old phpass hashes.
+		require_once ABSPATH . WPINC . '/class-phpass.php';
+
+		$hash_is_correct = ( new PasswordHash( 8, true ) )->CheckPassword( $key, $pass_key );
+	} else {
+		$hash_is_correct = hash_equals( $pass_key, wp_hash( $key, 'auth', 'sha1' ) );
+	}
 
 	if ( $hash_is_correct && $expiration_time && time() < $expiration_time ) {
 		return $user;
@@ -4884,12 +4891,12 @@ function wp_generate_user_request_key( $request_id ) {
 	// Generate something random for a confirmation key.
 	$key = wp_generate_password( 20, false );
 
-	// Return the key, hashed.
+	// Save the key, hashed.
 	wp_update_post(
 		array(
 			'ID'            => $request_id,
 			'post_status'   => 'request-pending',
-			'post_password' => wp_hash_password( $key ),
+			'post_password' => wp_hash( $key, 'auth', 'sha1' ),
 		)
 	);
 
@@ -4933,7 +4940,14 @@ function wp_validate_user_request_key( $request_id, $key ) {
 	$expiration_duration = (int) apply_filters( 'user_request_key_expiration', DAY_IN_SECONDS );
 	$expiration_time     = $key_request_time + $expiration_duration;
 
-	if ( ! wp_check_password( $key, $saved_key ) ) {
+	if ( str_starts_with( $saved_key, '$P$B' ) ) {
+		// Back-compat for old phpass hashes.
+		require_once ABSPATH . WPINC . '/class-phpass.php';
+
+		if ( ! ( new PasswordHash( 8, true ) )->CheckPassword( $key, $saved_key ) ) {
+			return new WP_Error( 'invalid_key', __( 'The confirmation key is invalid for this personal data request.' ) );
+		}
+	} elseif ( ! hash_equals( $saved_key, wp_hash( $key, 'auth', 'sha1' ) ) ) {
 		return new WP_Error( 'invalid_key', __( 'The confirmation key is invalid for this personal data request.' ) );
 	}
 

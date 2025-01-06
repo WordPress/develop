@@ -2697,10 +2697,9 @@ if ( ! function_exists( 'wp_check_password' ) ) :
 	/**
 	 * Checks a plaintext password against a hashed password.
 	 *
-	 * Note that this function is used for checking more than just user passwords, for
-	 * example it's used for checking application passwords, post passwords, recovery mode
-	 * keys, user password reset keys, and more. There is not always a user ID associated
-	 * with the password.
+	 * Note that this function is used to check more than just user passwords, for
+	 * example it's also used to check application passwords and post passwords.
+	 * There is not always a user ID associated with the password.
 	 *
 	 * For integration with other applications, this function can be overwritten to
 	 * instead use the other package password hashing algorithm.

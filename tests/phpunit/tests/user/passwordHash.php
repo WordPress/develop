@@ -3,9 +3,9 @@
 /**
  * Tests for the PasswordHash external library.
  *
- * PasswordHash is no longer used to hash passwords, but it is still used as a fallback
- * to verify passwords that were hashed by it. The library therefore needs to remain
- * compatible with the latest versions of PHP.
+ * PasswordHash is no longer used to hash passwords, but it is still used to hash security keys
+ * that don't need to use bcrypt, and as a fallback to verify old passwords that were hashed by
+ * phpass. The library therefore needs to remain compatible with the latest versions of PHP.
  *
  * @covers PasswordHash
  */

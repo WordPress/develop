@@ -92,7 +92,7 @@ final class WP_User_Request {
 	 * Key used to confirm this request.
 	 *
 	 * @since 4.9.6
-	 * @since x.y.z The key is now hashed using bcrypt instead of phpass.
+	 * @since x.y.z The key is now hashed using sha1 via wp_hash() instead of phpass.
 	 *
 	 * @var string
 	 */
