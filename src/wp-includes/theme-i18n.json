@@ -45,6 +45,13 @@
 				}
 			]
 		},
+		"shadow": {
+			"presets": [
+				{
+					"name": "Shadow name"
+				}
+			]
+		},
 		"blocks": {
 			"*": {
 				"typography": {
@@ -82,13 +89,6 @@
 					"aspectRatios": [
 						{
 							"name": "Aspect ratio name"
-						}
-					]
-				},
-				"shadow": {
-					"presets": [
-						{
-							"name": "Shadow name"
 						}
 					]
 				}
