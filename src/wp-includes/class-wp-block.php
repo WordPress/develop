@@ -156,6 +156,11 @@ class WP_Block {
 	 * @since 6.8.0
 	 */
 	public function refresh_context_dependents() {
+		/*
+		 * Merging the `$context` property here is not ideal, but for now needs to happen because of backward compatibility.
+		 * Ideally, the `$context` property itself would not be filterable directly and only the `$available_context` would be filterable.
+		 * However, this needs to be separately explored whether it's possible without breakage.
+		 */
 		$this->available_context = array_merge( $this->available_context, $this->context );
 
 		if ( ! empty( $this->block_type->uses_context ) ) {
