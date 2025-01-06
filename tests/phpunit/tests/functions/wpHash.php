@@ -36,5 +36,4 @@ class Tests_Functions_wpHash extends WP_UnitTestCase {
 
 		wp_hash( 'data', 'auth', 'invalid' );
 	}
-
 }
