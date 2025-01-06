@@ -94,6 +94,7 @@ jobs:
   # - Compare results.
   # - Add workflow summary.
   # - Set the base sha.
+  # - Set commit details.
   # - Publish performance results.
   # - Ensure version-controlled files are not modified or deleted.
   performance:
@@ -311,12 +312,20 @@ jobs:
             const baseRef = await github.rest.git.getRef({ owner: context.repo.owner, repo: context.repo.repo, ref: 'tags/${{ env.BASE_TAG }}' });
             return baseRef.data.object.sha;
 
+      - name: Test commit details
+        # Only needed when publishing results.
+        run: echo "COMMITTED_AT_TEST=$(git show -s $GITHUB_SHA --format='%cI')" >> $GITHUB_ENV
+
+      - name: Set commit details
+        # Only needed when publishing results.
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached }}
+        run: echo "COMMITTED_AT=$(git show -s $GITHUB_SHA --format='%cI')" >> $GITHUB_ENV
+
       - name: Publish performance results
         # Only publish results on pushes to trunk.
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached }}
         env:
           BASE_SHA: ${{ steps.base-sha.outputs.result }}
-          COMMITTED_AT: $(git show -s $GITHUB_SHA --format="%cI")
           CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }}
           HOST_NAME: "www.codevitals.run"
         run: |
