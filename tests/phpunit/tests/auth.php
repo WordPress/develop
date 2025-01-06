@@ -971,6 +971,10 @@ class Tests_Auth extends WP_UnitTestCase {
 		$this->assertEmpty( $activation_key_from_database, 'The `user_activation_key` was not empty in the database.' );
 	}
 
+	/**
+	 * @ticket 21022
+	 * @ticket 50027
+	 */
 	public function test_phpass_password_is_rehashed_after_successful_application_password_authentication() {
 		add_filter( 'application_password_is_api_request', '__return_true' );
 		add_filter( 'wp_is_application_passwords_available', '__return_true' );
@@ -1011,6 +1015,9 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @dataProvider data_usernames
+	 *
+	 * @ticket 21022
+	 * @ticket 50027
 	 */
 	public function test_phpass_password_is_rehashed_after_successful_user_password_authentication( $username_or_email ) {
 		$password = 'password';
@@ -1045,6 +1052,9 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @dataProvider data_usernames
+	 *
+	 * @ticket 21022
+	 * @ticket 50027
 	 */
 	public function test_bcrypt_password_is_rehashed_with_new_cost_after_successful_user_password_authentication( $username_or_email ) {
 		$password = 'password';
