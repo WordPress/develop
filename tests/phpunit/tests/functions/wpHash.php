@@ -20,7 +20,7 @@ class Tests_Functions_wpHash extends WP_UnitTestCase {
 		$this->assertSame( $expected_length, strlen( $hash ) );
 	}
 
-	function data_wp_hash_uses_specified_algorithm() {
+	public function data_wp_hash_uses_specified_algorithm() {
 		return array(
 			array( 'md5', 32 ),
 			array( 'sha1', 40 ),
