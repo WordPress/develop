@@ -330,7 +330,7 @@ jobs:
 
       - name: Set commit details
         # Only needed when publishing results.
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached && ! inputs.multisite }}
         run: echo "COMMITTED_AT=$(git show -s $GITHUB_SHA --format='%cI')" >> $GITHUB_ENV
 
       - name: Publish performance results
