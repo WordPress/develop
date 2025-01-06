@@ -32,7 +32,7 @@ permissions: {}
 jobs:
   # Runs the performance test suite.
   performance:
-    name: Performance tests ${{ matrix.memcached && '(with memcached)' || '' }}
+    name: ${{ matrix.multisite && 'Multisite' || 'Single site' }}
     uses: WordPress/wordpress-develop/.github/workflows/reusable-performance.yml@trunk
     permissions:
       contents: read
@@ -41,8 +41,10 @@ jobs:
       fail-fast: false
       matrix:
         memcached: [ true, false ]
+        multisite: [ true, false ]
     with:
       memcached: ${{ matrix.memcached }}
+      multisite: ${{ matrix.multisite }}
     secrets:
       CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }}
 
