@@ -28,22 +28,22 @@ class Tests_KSES_wpKsesNoNull extends WP_UnitTestCase {
 	 */
 	public function data_wp_kses_no_null_with_null_values() {
 		return array(
-			'null_value'              => array(
+			'null_value'             => array(
 				'content'  => null,
 				'expected' => '',
 				'message'  => 'wp_kses_no_null() should convert null to empty string',
 			),
-			'string_with_null_bytes'  => array(
+			'string_with_null_bytes' => array(
 				'content'  => "Test\x00String",
 				'expected' => 'TestString',
 				'message'  => 'wp_kses_no_null() should remove null bytes from string',
 			),
-			'empty_string'            => array(
+			'empty_string'           => array(
 				'content'  => '',
 				'expected' => '',
 				'message'  => 'wp_kses_no_null() should handle empty string',
 			),
-			'string_without_nulls'    => array(
+			'string_without_nulls'   => array(
 				'content'  => 'Regular string',
 				'expected' => 'Regular string',
 				'message'  => 'wp_kses_no_null() should not modify strings without null bytes',
