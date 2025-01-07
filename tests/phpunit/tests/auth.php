@@ -454,7 +454,7 @@ class Tests_Auth extends WP_UnitTestCase {
 		wp_set_password( $password, self::$user_id );
 
 		// Ensure the password is hashed with bcrypt.
-		$this->assertStringStartsWith( 'wp-$2y$', get_userdata( self::$user_id )->user_pass );
+		$this->assertStringStartsWith( '$wp$2y$', get_userdata( self::$user_id )->user_pass );
 
 		// Authenticate.
 		$user = wp_authenticate( $this->user->user_login, $password );
@@ -718,7 +718,7 @@ class Tests_Auth extends WP_UnitTestCase {
 		$wpdb->update(
 			$wpdb->users,
 			array(
-				'user_activation_key' => strtotime( '-1 hour' ) . ':' . wp_hash( $key, 'auth', 'sha1' ),
+				'user_activation_key' => strtotime( '-1 hour' ) . ':' . wp_hash( $key, 'auth', 'sha256' ),
 			),
 			array(
 				'ID' => $this->user->ID,
@@ -756,7 +756,7 @@ class Tests_Auth extends WP_UnitTestCase {
 		$wpdb->update(
 			$wpdb->users,
 			array(
-				'user_activation_key' => strtotime( '-48 hours' ) . ':' . wp_hash( $key, 'auth', 'sha1' ),
+				'user_activation_key' => strtotime( '-48 hours' ) . ':' . wp_hash( $key, 'auth', 'sha256' ),
 			),
 			array(
 				'ID' => $this->user->ID,
