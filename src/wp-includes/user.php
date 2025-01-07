@@ -2996,7 +2996,8 @@ function get_password_reset_key( $user ) {
 	 */
 	do_action( 'retrieve_password_key', $user->user_login, $key );
 
-	$hashed = time() . ':' . wp_hash( $key, 'auth', 'sha1' );
+	$algo   = function_exists( 'hash' ) ? 'sha256' : 'sha1';
+	$hashed = time() . ':' . wp_hash( $key, 'auth', $algo );
 
 	$key_saved = wp_update_user(
 		array(
@@ -3070,7 +3071,9 @@ function check_password_reset_key( $key, $login ) {
 
 		$hash_is_correct = ( new PasswordHash( 8, true ) )->CheckPassword( $key, $pass_key );
 	} else {
-		$hash_is_correct = hash_equals( $pass_key, wp_hash( $key, 'auth', 'sha1' ) );
+		$algo = function_exists( 'hash' ) ? 'sha256' : 'sha1';
+
+		$hash_is_correct = hash_equals( $pass_key, wp_hash( $key, 'auth', $algo ) );
 	}
 
 	if ( $hash_is_correct && $expiration_time && time() < $expiration_time ) {
@@ -4891,12 +4894,14 @@ function wp_generate_user_request_key( $request_id ) {
 	// Generate something random for a confirmation key.
 	$key = wp_generate_password( 20, false );
 
+	$algo = function_exists( 'hash' ) ? 'sha256' : 'sha1';
+
 	// Save the key, hashed.
 	wp_update_post(
 		array(
 			'ID'            => $request_id,
 			'post_status'   => 'request-pending',
-			'post_password' => wp_hash( $key, 'auth', 'sha1' ),
+			'post_password' => wp_hash( $key, 'auth', $algo ),
 		)
 	);
 
@@ -4940,6 +4945,8 @@ function wp_validate_user_request_key( $request_id, $key ) {
 	$expiration_duration = (int) apply_filters( 'user_request_key_expiration', DAY_IN_SECONDS );
 	$expiration_time     = $key_request_time + $expiration_duration;
 
+	$algo = function_exists( 'hash' ) ? 'sha256' : 'sha1';
+
 	if ( str_starts_with( $saved_key, '$P$B' ) ) {
 		// Back-compat for old phpass hashes.
 		require_once ABSPATH . WPINC . '/class-phpass.php';
@@ -4947,7 +4954,7 @@ function wp_validate_user_request_key( $request_id, $key ) {
 		if ( ! ( new PasswordHash( 8, true ) )->CheckPassword( $key, $saved_key ) ) {
 			return new WP_Error( 'invalid_key', __( 'The confirmation key is invalid for this personal data request.' ) );
 		}
-	} elseif ( ! hash_equals( $saved_key, wp_hash( $key, 'auth', 'sha1' ) ) ) {
+	} elseif ( ! hash_equals( $saved_key, wp_hash( $key, 'auth', $algo ) ) ) {
 		return new WP_Error( 'invalid_key', __( 'The confirmation key is invalid for this personal data request.' ) );
 	}
 
