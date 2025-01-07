@@ -508,7 +508,8 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 				/**
 				 * Filters the maximum bit depth of resized images.
 				 *
-				 * Developers can use this to adjust the maximum bit depth of resized images, for example to enable HDR images.
+				 * Use this to adjust the maximum bit depth of resized images.
+				 * By default the maximum bit depth matches the bit depth of the uploaded image.
 				 *
 				 * @since 6.8.0
 				 *
