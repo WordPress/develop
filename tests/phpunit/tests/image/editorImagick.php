@@ -748,7 +748,6 @@ class Tests_Image_Editor_Imagick extends WP_Image_UnitTestCase {
 		$this->assertSame( 8, $im->getImageDepth() );
 		unlink( $test_file );
 		$im->destroy();
-		remove_filter( 'imagick_resized_image_max_bit_depth', array( $this, '__return_eight' ) );
 	}
 
 	/**
