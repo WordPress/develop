@@ -24,6 +24,10 @@ on:
         required: false
         type: 'boolean'
         default: true
+      gutenberg-version:
+        description: 'A specific version of Gutenberg to install.'
+        required: false
+        type: 'string'
 
 env:
   LOCAL_DIR: build
@@ -68,7 +72,7 @@ jobs:
           show-progress: ${{ runner.debug == '1' && 'true' || 'false' }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -113,7 +117,7 @@ jobs:
 
       - name: Install Gutenberg
         if: ${{ inputs.install-gutenberg }}
-        run: npm run env:cli -- plugin install gutenberg --path=/var/www/${{ env.LOCAL_DIR }}
+        run: npm run env:cli -- plugin install gutenberg${{ inputs.gutenberg-version && format( ' --version={0}', inputs.gutenberg-version ) || '' }} --path=/var/www/${{ env.LOCAL_DIR }}
 
       - name: Install additional languages
         run: |
