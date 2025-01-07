@@ -718,7 +718,7 @@ class Tests_Auth extends WP_UnitTestCase {
 		$wpdb->update(
 			$wpdb->users,
 			array(
-				'user_activation_key' => strtotime( '-1 hour' ) . ':' . wp_hash( $key, 'auth', 'sha256' ),
+				'user_activation_key' => strtotime( '-1 hour' ) . ':' . wp_hash_value( $key ),
 			),
 			array(
 				'ID' => $this->user->ID,
@@ -756,7 +756,7 @@ class Tests_Auth extends WP_UnitTestCase {
 		$wpdb->update(
 			$wpdb->users,
 			array(
-				'user_activation_key' => strtotime( '-48 hours' ) . ':' . wp_hash( $key, 'auth', 'sha256' ),
+				'user_activation_key' => strtotime( '-48 hours' ) . ':' . wp_hash_value( $key ),
 			),
 			array(
 				'ID' => $this->user->ID,
