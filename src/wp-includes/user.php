@@ -437,15 +437,8 @@ function wp_authenticate_application_password( $input_user, $username, $password
 	$hashed_passwords = WP_Application_Passwords::get_user_application_passwords( $user->ID );
 
 	foreach ( $hashed_passwords as $key => $item ) {
-		$valid = wp_check_password( $password, $item['password'], $user->ID );
-
-		if ( ! $valid ) {
+		if ( ! WP_Application_Passwords::check_password( $password, $item['password'] ) ) {
 			continue;
-		}
-
-		if ( wp_password_needs_rehash( $item['password'] ) ) {
-			$item['password'] = wp_hash_password( $password );
-			WP_Application_Passwords::update_application_password( $user->ID, $item['uuid'], $item );
 		}
 
 		$error = new WP_Error();
@@ -469,6 +462,11 @@ function wp_authenticate_application_password( $input_user, $username, $password
 			do_action( 'application_password_failed_authentication', $error );
 
 			return $error;
+		}
+
+		if ( WP_Application_Passwords::password_needs_rehash( $item['password'] ) ) {
+			$item['password'] = WP_Application_Passwords::hash_password( $password );
+			WP_Application_Passwords::update_application_password( $user->ID, $item['uuid'], $item );
 		}
 
 		WP_Application_Passwords::record_application_password_usage( $user->ID, $item['uuid'] );

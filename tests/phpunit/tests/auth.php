@@ -1039,7 +1039,7 @@ class Tests_Auth extends WP_UnitTestCase {
 
 		// Verify that the application password needs rehashing.
 		$hash = WP_Application_Passwords::get_user_application_password( self::$user_id, $uuid )['password'];
-		$this->assertTrue( wp_password_needs_rehash( $hash ) );
+		$this->assertTrue( WP_Application_Passwords::password_needs_rehash( $hash ) );
 
 		// Authenticate.
 		$user = wp_authenticate_application_password( null, self::USER_LOGIN, $password );
@@ -1051,7 +1051,7 @@ class Tests_Auth extends WP_UnitTestCase {
 
 		// Verify that the application password no longer needs rehashing.
 		$hash = WP_Application_Passwords::get_user_application_password( self::$user_id, $uuid )['password'];
-		$this->assertFalse( wp_password_needs_rehash( $hash ) );
+		$this->assertFalse( WP_Application_Passwords::password_needs_rehash( $hash ) );
 
 		// Verify that the user's password has not been touched.
 		$this->assertSame( $user_pass, get_userdata( self::$user_id )->user_pass );
