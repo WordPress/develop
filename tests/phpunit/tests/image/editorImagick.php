@@ -693,11 +693,11 @@ class Tests_Image_Editor_Imagick extends WP_Image_UnitTestCase {
 	}
 
 	/**
-	 * Test filter `imagick_resized_image_max_bit_depth` correctly sets the maximum bit depth of resized images.
+	 * Test filter `image_max_bit_depth` correctly sets the maximum bit depth of resized images.
 	 *
 	 * @ticket 62285
 	 */
-	public function test_imagick_resized_image_max_bit_depth() {
+	public function test_image_max_bit_depth() {
 		$file                 = DIR_TESTDATA . '/images/colors_hdr_p3.avif';
 		$imagick_image_editor = new WP_Image_Editor_Imagick( $file );
 
@@ -738,7 +738,7 @@ class Tests_Image_Editor_Imagick extends WP_Image_UnitTestCase {
 		$im->destroy();
 
 		// Test filter can set 8-bit depth
-		add_filter( 'imagick_resized_image_max_bit_depth', array( $this, '__return_eight' ) );
+		add_filter( 'image_max_bit_depth', array( $this, '__return_eight' ) );
 		$imagick_image_editor = new WP_Image_Editor_Imagick( $file );
 		$imagick_image_editor->load();
 		$imagick_image_editor->resize( 100, 50 );
@@ -751,7 +751,7 @@ class Tests_Image_Editor_Imagick extends WP_Image_UnitTestCase {
 	}
 
 	/**
-	 * Helper function to return 8 for the `imagick_resized_image_max_bit_depth` filter.
+	 * Helper function to return 8 for the `image_max_bit_depth` filter.
 	 *
 	 * @return int
 	 */
