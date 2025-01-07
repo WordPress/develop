@@ -2792,7 +2792,7 @@ All at ###SITENAME###
 
 			$remember = false;
 
-			if ( false !== $logged_in_cookie && ( $logged_in_cookie['expiration'] - time() ) > $default_cookie_life ) {
+			if ( false !== $logged_in_cookie && ( (int) $logged_in_cookie['expiration'] - time() ) > $default_cookie_life ) {
 				$remember = true;
 			}
 
@@ -3106,7 +3106,7 @@ function check_password_reset_key( $key, $login ) {
  *                           Defaults to `$_POST['user_login']` if not set.
  * @return true|WP_Error True when finished, WP_Error object on error.
  */
-function retrieve_password( $user_login = null ) {
+function retrieve_password( $user_login = '' ) {
 	$errors    = new WP_Error();
 	$user_data = false;
 
