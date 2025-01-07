@@ -508,15 +508,17 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 				/**
 				 * Filters the maximum bit depth of resized images.
 				 *
+				 * This filter only applies when resizing using the Imagick editor since GD
+				 * does not support getting or setting bit depth.
+				 *
 				 * Use this to adjust the maximum bit depth of resized images.
-				 * By default the maximum bit depth matches the bit depth of the uploaded image.
 				 *
 				 * @since 6.8.0
 				 *
 				 * @param int $max_depth   The maximum bit depth. Default is the input depth.
 				 * @param int $image_depth The bit depth of the original image.
 				 */
-				$max_depth = apply_filters( 'imagick_resized_image_max_bit_depth', $this->image->getImageDepth(), $this->image->getImageDepth() );
+				$max_depth = apply_filters( 'image_max_bit_depth', $this->image->getImageDepth(), $this->image->getImageDepth() );
 				$this->image->setImageDepth( $max_depth );
 			}
 		} catch ( Exception $e ) {
