@@ -152,6 +152,9 @@ jobs:
   # Though innovation releases are deemed "production grade" and never receive LTS status, they include new features
   # and updates that will be included in the next LTS version.
   #
+  # Because upstream support for innovation releases gets dropped when a new one is released, only the most recent
+  # innovation version is tested.
+  #
   test-innovation-releases:
     name: PHP ${{ matrix.php }}
     uses: ./.github/workflows/reusable-phpunit-tests-v3.yml
