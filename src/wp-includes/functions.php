@@ -9085,3 +9085,41 @@ function wp_is_heic_image_mime_type( $mime_type ) {
 
 	return in_array( $mime_type, $heic_mime_types, true );
 }
+
+/**
+ * Returns a cryptographically secure hash of the message.
+ *
+ * The BLAKE2b algorithm is used by Sodium to hash the message.
+ *
+ * @TODO explain when to use this instead of wp_hash().
+ *
+ * @since x.y.z
+ *
+ * @param string $message The message to hash.
+ * @return string The hash of the message.
+ */
+function wp_hash_value( $message ) {
+	return '$generic$' . sodium_bin2hex( sodium_crypto_generichash( $message, wp_salt() ) );
+}
+
+/**
+ * Checks whether a plaintext message matches the hashed value.
+ *
+ * The function uses Sodium to hash the message and compare it to the hashed value. If the hash
+ * is not a generic hash, the hash is treated as a phpass portable hash.
+ *
+ * @since x.y.z
+ *
+ * @param string $message The plaintext message.
+ * @param string $hash    Hash of the message to check against.
+ * @return bool Whether the message matches the hashed message.
+ */
+function wp_verify_hashed_value( $message, $hash ) {
+	if ( ! str_starts_with( $hash, '$generic$' ) ) {
+		// Back-compat for old phpass hashes.
+		require_once ABSPATH . WPINC . '/class-phpass.php';
+		return ( new PasswordHash( 8, true ) )->CheckPassword( $message, $hash );
+	}
+
+	return hash_equals( substr( $hash, 9 ), wp_hash_value( $message ) );
+}
