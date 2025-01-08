@@ -464,11 +464,6 @@ function wp_authenticate_application_password( $input_user, $username, $password
 			return $error;
 		}
 
-		if ( WP_Application_Passwords::password_needs_rehash( $item['password'] ) ) {
-			$item['password'] = WP_Application_Passwords::hash_password( $password );
-			WP_Application_Passwords::update_application_password( $user->ID, $item['uuid'], $item );
-		}
-
 		WP_Application_Passwords::record_application_password_usage( $user->ID, $item['uuid'] );
 
 		/**
