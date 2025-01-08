@@ -1,4 +1,5 @@
-
+@use 'sass:color';
+@use 'sass:string';
 @import 'variables';
 @import 'mixins';
 
@@ -7,7 +8,7 @@
  * may use the function in their own admin CSS files. See #56811.
  */
 @function url-friendly-colour( $color ) {
-	@return '%23' + str-slice( '#{ $color }', 2, -1 );
+	@return '%23' + string.slice( '#{ $color }', 2, -1 );
 }
 
 body {
