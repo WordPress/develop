@@ -1172,7 +1172,7 @@ class Tests_Image_Functions extends WP_UnitTestCase {
 		}
 
 		if ( imagetypes() & IMG_AVIF ) {
-			$result = @imageavif( imagecreatetruecolor( 16, 16 ), $file );
+			$result = imageavif( imagecreatetruecolor( 16, 16 ), $file );
 
 			$this->assertTrue(
 				$result,
