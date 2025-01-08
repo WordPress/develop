@@ -9099,7 +9099,10 @@ function wp_is_heic_image_mime_type( $mime_type ) {
  * @return string The hash of the message.
  */
 function wp_hash_value( $message ) {
-	return '$generic$' . sodium_bin2hex( sodium_crypto_generichash( $message, wp_salt() ) );
+	// @TODO make use of CRYPTO_GENERICHASH_KEYBYTES_MAX for the max key length. Needs to be compatible with libsdium and sodium_compat.
+	$key = substr( wp_salt(), 0, 64 );
+
+	return '$generic$' . sodium_bin2hex( sodium_crypto_generichash( $message, $key ) );
 }
 
 /**
