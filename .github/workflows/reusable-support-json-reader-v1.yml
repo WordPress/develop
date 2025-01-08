@@ -37,7 +37,6 @@ jobs:
   major-wp-version:
     name: Determine major WordPress version
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' }}
     timeout-minutes: 5
     outputs:
       version: ${{ steps.major-wp-version.outputs.version }}
@@ -69,7 +68,6 @@ jobs:
   php-versions:
     name: Determine PHP versions
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' }}
     needs: [ major-wp-version ]
     timeout-minutes: 5
     outputs:
@@ -102,7 +100,6 @@ jobs:
   mysql-versions:
     name: Determine MySQL versions
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' }}
     needs: [ major-wp-version ]
     timeout-minutes: 5
     outputs:
