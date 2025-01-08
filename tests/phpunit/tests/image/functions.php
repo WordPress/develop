@@ -1155,7 +1155,7 @@ class Tests_Image_Functions extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that PHP actually supports AVIF.
+	 * Test that PHP GD actually supports AVIF.
 	 *
 	 * Tests for a false positive reported by GD.
 	 *
@@ -1167,16 +1167,22 @@ class Tests_Image_Functions extends WP_UnitTestCase {
 		$file   = DIR_TESTDATA . '/images/avif-lossless.avif';
 		$editor = wp_get_image_editor( $file );
 
-		if ( is_wp_error( $editor ) || 'WP_Image_Editor_GD' !== get_class( $editor ) || ! $editor->supports_mime_type( 'image/avif' ) ) {
-			$this->markTestSkipped( 'AVIF is not supported on this system.' );
+		if ( is_wp_error( $editor ) || 'WP_Image_Editor_GD' !== get_class( $editor ) ) {
+			$this->markTestSkipped( 'AVIF is not supported by GD on this system.' );
 		}
 
-		if ( imagetypes() & IMG_AVIF ) {
+		if ( imagetypes() & IMG_AVIF && function_exists( 'imageavif' ) ) {
 			$result = imageavif( imagecreatetruecolor( 16, 16 ), $file );
 
 			$this->assertTrue(
 				$result,
 				'imageavif() should return true.'
+			);
+
+			// Verify that GD->supports_mime_type returns true.
+			$this->assertTrue(
+				$editor->supports_mime_type( 'image/avif' ),
+				'supports_mime_type should return true.'
 			);
 
 			$this->assertGreaterThan(
