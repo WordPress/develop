@@ -3325,7 +3325,7 @@ class WP_Site_Health {
 		 *
 		 * @since 6.8.0
 		 *
-		 * @param string $url The URL used for the caching check. By default, this is the home URL.
+		 * @param string $url The URL used for checking page caching. Default home URL.
 		 */
 		return apply_filters( 'site_status_persistent_page_cache_url', home_url( '/' ) );
 	}
