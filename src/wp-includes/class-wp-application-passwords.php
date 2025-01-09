@@ -483,7 +483,7 @@ class WP_Application_Passwords {
 	 * @param string $password Plaintext password.
 	 * @return string Hashed password.
 	 */
-	public static function hash_password( $password ) {
+	public static function hash_password( string $password ): string {
 		return wp_hash_value( $password );
 	}
 
@@ -496,7 +496,7 @@ class WP_Application_Passwords {
 	 * @param string     $hash     Hash of the password to check against.
 	 * @return bool Whether the password matches the hashed password.
 	 */
-	public static function check_password( $password, $hash ) {
+	public static function check_password( string $password, string $hash ): bool {
 		return wp_verify_hashed_value( $password, $hash );
 	}
 
@@ -512,7 +512,7 @@ class WP_Application_Passwords {
 	 * @param string $hash Hash of a password to check.
 	 * @return bool Whether the hash needs to be rehashed.
 	 */
-	public static function password_needs_rehash( $hash ) {
+	public static function password_needs_rehash( string $hash ): bool {
 		return ! str_starts_with( $hash, '$generic$' );
 	}
 }

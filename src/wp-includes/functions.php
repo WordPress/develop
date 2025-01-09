@@ -9101,7 +9101,7 @@ function wp_is_heic_image_mime_type( $mime_type ) {
  * @param string $message The message to hash.
  * @return string The hash of the message.
  */
-function wp_hash_value( $message ) {
+function wp_hash_value( string $message ): string {
 	$min_key_length = defined( 'SODIUM_CRYPTO_GENERICHASH_KEYBYTES_MIN' )
 		? SODIUM_CRYPTO_GENERICHASH_KEYBYTES_MIN
 		: \ParagonIE_Sodium_Compat::CRYPTO_GENERICHASH_KEYBYTES_MIN;
@@ -9134,7 +9134,7 @@ function wp_hash_value( $message ) {
  * @param string $hash    Hash of the message to check against.
  * @return bool Whether the message matches the hashed message.
  */
-function wp_verify_hashed_value( $message, $hash ) {
+function wp_verify_hashed_value( string $message, string $hash ): bool {
 	if ( ! str_starts_with( $hash, '$generic$' ) ) {
 		// Back-compat for old phpass hashes.
 		require_once ABSPATH . WPINC . '/class-phpass.php';
