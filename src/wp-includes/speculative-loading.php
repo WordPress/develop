@@ -16,10 +16,15 @@
  *                                    loading is disabled.
  */
 function wp_get_speculation_rules_configuration(): ?array {
-	$config = array(
-		'mode'      => 'auto',
-		'eagerness' => 'auto',
-	);
+	// By default, speculative loading is only enabled for sites with pretty permalinks.
+	if ( get_option( 'permalink_structure' ) ) {
+		$config = array(
+			'mode'      => 'auto',
+			'eagerness' => 'auto',
+		);
+	} else {
+		$config = null;
+	}
 
 	/**
 	 * Filters the way that speculation rules are configured.
@@ -37,11 +42,11 @@ function wp_get_speculation_rules_configuration(): ?array {
 	 * @since 6.8.0
 	 * @see https://developer.chrome.com/docs/web-platform/prerender-pages
 	 *
-	 * @param array<string, string>|null $config Associative array with 'mode' and 'eagerness' keys. The default value
-	 *                                           for both of them is 'auto'. Other possible values for 'mode' are
-	 *                                           'prefetch' and 'prerender'. Other possible values for 'eagerness' are
-	 *                                           'eager', 'moderate', and 'conservative'. Alternatively, you may
-	 *                                           return `null` to disable speculative loading entirely.
+	 * @param array<string, string>|null $config Associative array with 'mode' and 'eagerness' keys, or `null`. The
+	 *                                           default value for both of the keys is 'auto'. Other possible values
+	 *                                           for 'mode' are 'prefetch' and 'prerender'. Other possible values for
+	 *                                           'eagerness' are 'eager', 'moderate', and 'conservative'. The value
+	 *                                           `null` is used to disable speculative loading entirely.
 	 */
 	$config = apply_filters( 'wp_speculation_rules_configuration', $config );
 
@@ -137,6 +142,9 @@ function wp_get_speculation_rules( array $configuration ): array {
 			'6.8.0'
 		);
 		$configuration = wp_get_speculation_rules_configuration();
+		if ( null === $configuration ) {
+			return array();
+		}
 	}
 
 	$mode      = $configuration['mode'];
@@ -147,13 +155,22 @@ function wp_get_speculation_rules( array $configuration ): array {
 	$base_href_exclude_paths = array(
 		$prefixer->prefix_path_pattern( '/wp-login.php', 'site' ),
 		$prefixer->prefix_path_pattern( '/wp-admin/*', 'site' ),
-		$prefixer->prefix_path_pattern( '/*\\?*(^|&)_wpnonce=*', 'home' ),
 		$prefixer->prefix_path_pattern( '/*', 'uploads' ),
 		$prefixer->prefix_path_pattern( '/*', 'content' ),
 		$prefixer->prefix_path_pattern( '/*', 'plugins' ),
 		$prefixer->prefix_path_pattern( '/*', 'template' ),
 		$prefixer->prefix_path_pattern( '/*', 'stylesheet' ),
 	);
+
+	/*
+	 * If pretty permalinks are enabled, exclude any URLs with query parameters.
+	 * Otherwise, exclude specifically the URLs with a `_wpnonce` query parameter.
+	 */
+	if ( get_option( 'permalink_structure' ) ) {
+		$base_href_exclude_paths[] = $prefixer->prefix_path_pattern( '/*\\?(.+)', 'home' );
+	} else {
+		$base_href_exclude_paths[] = $prefixer->prefix_path_pattern( '/*\\?*(^|&)_wpnonce=*', 'home' );
+	}
 
 	/**
 	 * Filters the paths for which speculative loading should be disabled.

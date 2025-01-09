@@ -37,6 +37,8 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 				return content_url( 'themes/stylesheet' );
 			}
 		);
+
+		update_option( 'permalink_structure', '/%year%/%monthnum%/%day%/%postname%/' );
 	}
 
 	/**
@@ -138,14 +140,14 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 
 		$this->assertSameSets(
 			array(
-				0 => '/wp-login.php',
-				1 => '/wp-admin/*',
-				2 => '/*\\?*(^|&)_wpnonce=*',
-				3 => '/wp-content/uploads/*',
-				4 => '/wp-content/*',
-				5 => '/wp-content/plugins/*',
-				6 => '/wp-content/themes/stylesheet/*',
-				7 => '/wp-content/themes/template/*',
+				'/wp-login.php',
+				'/wp-admin/*',
+				'/wp-content/uploads/*',
+				'/wp-content/*',
+				'/wp-content/plugins/*',
+				'/wp-content/themes/stylesheet/*',
+				'/wp-content/themes/template/*',
+				'/*\\?(.+)',
 			),
 			$href_exclude_paths,
 			'Snapshot: ' . var_export( $href_exclude_paths, true )
@@ -165,15 +167,42 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		// Ensure the base exclude paths are still present and that the custom path was formatted correctly.
 		$this->assertSameSets(
 			array(
-				0 => '/wp-login.php',
-				1 => '/wp-admin/*',
-				2 => '/*\\?*(^|&)_wpnonce=*',
-				3 => '/wp-content/uploads/*',
-				4 => '/wp-content/*',
-				5 => '/wp-content/plugins/*',
-				6 => '/wp-content/themes/stylesheet/*',
-				7 => '/wp-content/themes/template/*',
-				8 => '/custom-file.php',
+				'/wp-login.php',
+				'/wp-admin/*',
+				'/wp-content/uploads/*',
+				'/wp-content/*',
+				'/wp-content/plugins/*',
+				'/wp-content/themes/stylesheet/*',
+				'/wp-content/themes/template/*',
+				'/*\\?(.+)',
+				'/custom-file.php',
+			),
+			$href_exclude_paths,
+			'Snapshot: ' . var_export( $href_exclude_paths, true )
+		);
+	}
+
+	/**
+	 * Tests the default exclude paths and ensures they cannot be altered via filter.
+	 *
+	 * @ticket 62503
+	 */
+	public function test_wp_get_speculation_rules_href_exclude_paths_without_pretty_permalinks() {
+		update_option( 'permalink_structure', '' );
+
+		$rules              = wp_get_speculation_rules( $this->prefetch_config );
+		$href_exclude_paths = $rules['prefetch'][0]['where']['and'][1]['not']['href_matches'];
+
+		$this->assertSameSets(
+			array(
+				'/wp-login.php',
+				'/wp-admin/*',
+				'/wp-content/uploads/*',
+				'/wp-content/*',
+				'/wp-content/plugins/*',
+				'/wp-content/themes/stylesheet/*',
+				'/wp-content/themes/template/*',
+				'/*\\?*(^|&)_wpnonce=*',
 			),
 			$href_exclude_paths,
 			'Snapshot: ' . var_export( $href_exclude_paths, true )
@@ -206,15 +235,15 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		// Also ensure keys are sequential starting from 0 (that is, that array_is_list()).
 		$this->assertSame(
 			array(
-				0 => '/wp-login.php',
-				1 => '/wp-admin/*',
-				2 => '/*\\?*(^|&)_wpnonce=*',
-				3 => '/wp-content/uploads/*',
-				4 => '/wp-content/*',
-				5 => '/wp-content/plugins/*',
-				6 => '/wp-content/themes/stylesheet/*',
-				7 => '/wp-content/themes/template/*',
-				8 => '/products/*',
+				'/wp-login.php',
+				'/wp-admin/*',
+				'/wp-content/uploads/*',
+				'/wp-content/*',
+				'/wp-content/plugins/*',
+				'/wp-content/themes/stylesheet/*',
+				'/wp-content/themes/template/*',
+				'/*\\?(.+)',
+				'/products/*',
 			),
 			$href_exclude_paths,
 			'Snapshot: ' . var_export( $href_exclude_paths, true )
@@ -227,14 +256,14 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		// Ensure the additional exclusion is not present because the mode is 'prefetch'.
 		$this->assertSame(
 			array(
-				0 => '/wp-login.php',
-				1 => '/wp-admin/*',
-				2 => '/*\\?*(^|&)_wpnonce=*',
-				3 => '/wp-content/uploads/*',
-				4 => '/wp-content/*',
-				5 => '/wp-content/plugins/*',
-				6 => '/wp-content/themes/stylesheet/*',
-				7 => '/wp-content/themes/template/*',
+				'/wp-login.php',
+				'/wp-admin/*',
+				'/wp-content/uploads/*',
+				'/wp-content/*',
+				'/wp-content/plugins/*',
+				'/wp-content/themes/stylesheet/*',
+				'/wp-content/themes/template/*',
+				'/*\\?(.+)',
 			),
 			$href_exclude_paths,
 			'Snapshot: ' . var_export( $href_exclude_paths, true )
@@ -264,19 +293,19 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		$href_exclude_paths = $rules['prerender'][0]['where']['and'][1]['not']['href_matches'];
 		$this->assertSame(
 			array(
-				0  => '/wp-login.php',
-				1  => '/wp-admin/*',
-				2  => '/*\\?*(^|&)_wpnonce=*',
-				3  => '/wp-content/uploads/*',
-				4  => '/wp-content/*',
-				5  => '/wp-content/plugins/*',
-				6  => '/wp-content/themes/stylesheet/*',
-				7  => '/wp-content/themes/template/*',
-				8  => '/unshifted/',
-				9  => '/next/',
-				10 => '/negative-one/',
-				11 => '/one-hundred/',
-				12 => '/letter-a/',
+				'/wp-login.php',
+				'/wp-admin/*',
+				'/wp-content/uploads/*',
+				'/wp-content/*',
+				'/wp-content/plugins/*',
+				'/wp-content/themes/stylesheet/*',
+				'/wp-content/themes/template/*',
+				'/*\\?(.+)',
+				'/unshifted/',
+				'/next/',
+				'/negative-one/',
+				'/one-hundred/',
+				'/letter-a/',
 			),
 			$href_exclude_paths,
 			'Snapshot: ' . var_export( $href_exclude_paths, true )
@@ -313,15 +342,15 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		$href_exclude_paths = $rules['prerender'][0]['where']['and'][1]['not']['href_matches'];
 		$this->assertSame(
 			array(
-				0 => '/wp/wp-login.php',
-				1 => '/wp/wp-admin/*',
-				2 => '/blog/*\\?*(^|&)_wpnonce=*',
-				3 => '/wp-content/uploads/*',
-				4 => '/wp-content/*',
-				5 => '/wp-content/plugins/*',
-				6 => '/wp-content/themes/stylesheet/*',
-				7 => '/wp-content/themes/template/*',
-				8 => '/blog/store/*',
+				'/wp/wp-login.php',
+				'/wp/wp-admin/*',
+				'/wp-content/uploads/*',
+				'/wp-content/*',
+				'/wp-content/plugins/*',
+				'/wp-content/themes/stylesheet/*',
+				'/wp-content/themes/template/*',
+				'/blog/*\\?(.+)',
+				'/blog/store/*',
 			),
 			$href_exclude_paths,
 			'Snapshot: ' . var_export( $href_exclude_paths, true )

@@ -12,6 +12,12 @@
  */
 class Tests_Speculative_Loading_wpGetSpeculationRulesConfiguration extends WP_UnitTestCase {
 
+	public function set_up() {
+		parent::set_up();
+
+		update_option( 'permalink_structure', '/%year%/%monthnum%/%day%/%postname%/' );
+	}
+
 	/**
 	 * Tests that the default configuration is the expected value.
 	 *
@@ -44,6 +50,16 @@ class Tests_Speculative_Loading_wpGetSpeculationRulesConfiguration extends WP_Un
 			),
 			$config_default
 		);
+	}
+
+	/**
+	 * Tests that the speculative loading is disabled by default when not using pretty permalinks.
+	 *
+	 * @ticket 62503
+	 */
+	public function test_wp_get_speculation_rules_configuration_without_pretty_permalinks() {
+		update_option( 'permalink_structure', '' );
+		$this->assertNull( wp_get_speculation_rules_configuration() );
 	}
 
 	/**
