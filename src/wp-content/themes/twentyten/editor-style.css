@@ -5,23 +5,12 @@ Description: Used to style the TinyMCE editor.
 html .mceContentBody {
 	max-width: 640px;
 }
-
 html .mceContentBody,
 .editor-styles-wrapper .wp-block {
 	color: #444;
 	font-family: Georgia, "Bitstream Charter", serif;
 	line-height: 1.5;
 }
-
-.mceContentBody tr th,
-.mceContentBody thead th,
-.mceContentBody label,
-.editor-styles-wrapper tr th,
-.editor-styles-wrapper thead th,
-.editor-styles-wrapper label {
-	font-family: "Helvetica Neue", Arial, Helvetica, "Nimbus Sans L", sans-serif;
-}
-
 p,
 dl,
 td,
@@ -31,7 +20,13 @@ ol,
 blockquote {
 	font-size: 16px;
 }
-
+tr th,
+thead th,
+label,
+tr th,
+thead th {
+	font-family: "Helvetica Neue", Arial, Helvetica, "Nimbus Sans L", sans-serif;
+}
 pre {
 	font-family: "Courier 10 Pitch", Courier, monospace;
 }
