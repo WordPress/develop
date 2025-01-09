@@ -3319,7 +3319,7 @@ class WP_Site_Health {
 	 */
 	public function get_persistent_page_cache_url() {
 		/**
-		 * Filter to modify the URL used for checking page caching in the Site Health tool.
+		 * Filters the URL used for checking page caching in the Site Health tool.
 		 *
 		 * This filter allows you to set a custom URL to determine if persistent page caching is enabled.
 		 *
