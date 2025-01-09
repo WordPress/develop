@@ -3313,7 +3313,7 @@ class WP_Site_Health {
 	/**
 	 * Returns the URL used for checking page caching. By default, this is the home URL.
 	 *
-	 * @since 6.7.0
+	 * @since 6.8.0
 	 *
 	 * @return string The URL for checking page caching.
 	 */
