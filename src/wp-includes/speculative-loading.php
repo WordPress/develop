@@ -156,7 +156,7 @@ function wp_get_speculation_rules( array $configuration ): array {
 	$prefixer = new WP_URL_Pattern_Prefixer();
 
 	$base_href_exclude_paths = array(
-		$prefixer->prefix_path_pattern( '/wp-login.php', 'site' ),
+		$prefixer->prefix_path_pattern( '/wp-*.php', 'site' ),
 		$prefixer->prefix_path_pattern( '/wp-admin/*', 'site' ),
 		$prefixer->prefix_path_pattern( '/*', 'uploads' ),
 		$prefixer->prefix_path_pattern( '/*', 'content' ),

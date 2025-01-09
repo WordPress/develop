@@ -140,7 +140,7 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 
 		$this->assertSameSets(
 			array(
-				'/wp-login.php',
+				'/wp-*.php',
 				'/wp-admin/*',
 				'/wp-content/uploads/*',
 				'/wp-content/*',
@@ -167,7 +167,7 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		// Ensure the base exclude paths are still present and that the custom path was formatted correctly.
 		$this->assertSameSets(
 			array(
-				'/wp-login.php',
+				'/wp-*.php',
 				'/wp-admin/*',
 				'/wp-content/uploads/*',
 				'/wp-content/*',
@@ -195,7 +195,7 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 
 		$this->assertSameSets(
 			array(
-				'/wp-login.php',
+				'/wp-*.php',
 				'/wp-admin/*',
 				'/wp-content/uploads/*',
 				'/wp-content/*',
@@ -235,7 +235,7 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		// Also ensure keys are sequential starting from 0 (that is, that array_is_list()).
 		$this->assertSame(
 			array(
-				'/wp-login.php',
+				'/wp-*.php',
 				'/wp-admin/*',
 				'/wp-content/uploads/*',
 				'/wp-content/*',
@@ -256,7 +256,7 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		// Ensure the additional exclusion is not present because the mode is 'prefetch'.
 		$this->assertSame(
 			array(
-				'/wp-login.php',
+				'/wp-*.php',
 				'/wp-admin/*',
 				'/wp-content/uploads/*',
 				'/wp-content/*',
@@ -293,7 +293,7 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		$href_exclude_paths = $rules['prerender'][0]['where']['and'][1]['not']['href_matches'];
 		$this->assertSame(
 			array(
-				'/wp-login.php',
+				'/wp-*.php',
 				'/wp-admin/*',
 				'/wp-content/uploads/*',
 				'/wp-content/*',
@@ -342,7 +342,7 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		$href_exclude_paths = $rules['prerender'][0]['where']['and'][1]['not']['href_matches'];
 		$this->assertSame(
 			array(
-				'/wp/wp-login.php',
+				'/wp/wp-*.php',
 				'/wp/wp-admin/*',
 				'/wp-content/uploads/*',
 				'/wp-content/*',
