@@ -5,8 +5,7 @@ Description: Used to style the TinyMCE editor.
 html .mceContentBody {
 	max-width: 640px;
 }
-html .mceContentBody,
-.editor-styles-wrapper .wp-block {
+body {
 	color: #444;
 	font-family: Georgia, "Bitstream Charter", serif;
 	line-height: 1.5;

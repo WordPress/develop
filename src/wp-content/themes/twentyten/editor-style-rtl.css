@@ -10,12 +10,9 @@ html .mceContentBody {
 	float: right;
 	width: 640px;
 }
-
-html .mceContentBody,
-.editor-styles-wrapper .wp-block {
+body {
 	font-family: Arial, Tahoma, sans-serif;
 }
-
 /* Text elements */
 ul, ol {
 	margin: 0 -18px 18px 0;
