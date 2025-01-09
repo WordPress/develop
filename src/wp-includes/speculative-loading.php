@@ -16,8 +16,8 @@
  *                                    loading is disabled.
  */
 function wp_get_speculation_rules_configuration(): ?array {
-	// By default, speculative loading is only enabled for sites with pretty permalinks.
-	if ( get_option( 'permalink_structure' ) ) {
+	// By default, speculative loading is only enabled for sites with pretty permalinks when no user is logged in.
+	if ( ! is_user_logged_in() && get_option( 'permalink_structure' ) ) {
 		$config = array(
 			'mode'      => 'auto',
 			'eagerness' => 'auto',
@@ -38,6 +38,9 @@ function wp_get_speculation_rules_configuration(): ?array {
 	 *
 	 * By default, the speculation rules configuration is decided by WordPress Core ("auto"). This filter can be used
 	 * to force a certain configuration, which could for instance load URLs more or less eagerly.
+	 *
+	 * For logged-in users or for sites that are not configured to use pretty permalinks, the default value is `null`,
+	 * indicating that speculative loading is entirely disabled.
 	 *
 	 * @since 6.8.0
 	 * @see https://developer.chrome.com/docs/web-platform/prerender-pages

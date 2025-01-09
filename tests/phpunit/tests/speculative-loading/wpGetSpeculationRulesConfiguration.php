@@ -63,6 +63,16 @@ class Tests_Speculative_Loading_wpGetSpeculationRulesConfiguration extends WP_Un
 	}
 
 	/**
+	 * Tests that the speculative loading is disabled by default for logged-in users.
+	 *
+	 * @ticket 62503
+	 */
+	public function test_wp_get_speculation_rules_configuration_with_logged_in_user() {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$this->assertNull( wp_get_speculation_rules_configuration() );
+	}
+
+	/**
 	 * Tests that the configuration can be filtered and leads to the expected results.
 	 *
 	 * @ticket 62503
