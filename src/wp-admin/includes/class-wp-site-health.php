@@ -3323,7 +3323,7 @@ class WP_Site_Health {
 		 *
 		 * This filter allows you to set a custom URL to determine if persistent page caching is enabled.
 		 *
-		 * @since 6.7.0
+		 * @since 6.8.0
 		 *
 		 * @param string $url The URL used for the caching check. By default, this is the home URL.
 		 */
