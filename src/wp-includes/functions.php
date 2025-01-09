@@ -9095,12 +9095,29 @@ function wp_is_heic_image_mime_type( $mime_type ) {
  *
  * @since x.y.z
  *
+ * @throws TypeError Thrown by Sodium
+ * @throws SodiumException Thrown by Sodium
+ *
  * @param string $message The message to hash.
  * @return string The hash of the message.
  */
 function wp_hash_value( $message ) {
-	// @TODO make use of CRYPTO_GENERICHASH_KEYBYTES_MAX for the max key length. Needs to be compatible with libsdium and sodium_compat.
-	$key = substr( wp_salt(), 0, 64 );
+	$min_key_length = defined( 'SODIUM_CRYPTO_GENERICHASH_KEYBYTES_MIN' )
+		? SODIUM_CRYPTO_GENERICHASH_KEYBYTES_MIN
+		: \ParagonIE_Sodium_Compat::CRYPTO_GENERICHASH_KEYBYTES_MIN;
+	$max_key_length = defined( 'SODIUM_CRYPTO_GENERICHASH_KEYBYTES_MAX' )
+		? SODIUM_CRYPTO_GENERICHASH_KEYBYTES_MAX
+		: \ParagonIE_Sodium_Compat::CRYPTO_GENERICHASH_KEYBYTES_MAX;
+
+	$salt = wp_salt();
+
+	// Constrain the maximum key length.
+	$key = substr( $salt, 0, $max_key_length );
+
+	// Enforce the minimum key length.
+	if ( strlen( $key ) < $min_key_length ) {
+		$key .= str_repeat( '0', $min_key_length - strlen( $key ) );
+	}
 
 	return '$generic$' . sodium_bin2hex( sodium_crypto_generichash( $message, $key ) );
 }
