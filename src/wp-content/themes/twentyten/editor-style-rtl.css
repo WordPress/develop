@@ -4,15 +4,18 @@ Theme Name: Twenty Ten
 /*
 Used to style the TinyMCE editor.
 */
-html .mceContentBody{
+html .mceContentBody {
 	direction: rtl;
 	unicode-bidi: embed;
 	float: right;
 	width: 640px;
 }
-* {
+
+html .mceContentBody,
+.editor-styles-wrapper .wp-block {
 	font-family: Arial, Tahoma, sans-serif;
 }
+
 /* Text elements */
 ul, ol {
 	margin: 0 -18px 18px 0;
