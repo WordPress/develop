@@ -675,6 +675,7 @@ function get_body_class( $css_class = '' ) {
 		$post      = $wp_query->get_queried_object();
 		$post_id   = $post->ID;
 		$post_type = $post->post_type;
+		$classes[] = 'singular';
 
 		if ( is_page_template() ) {
 			$classes[] = "{$post_type}-template";
