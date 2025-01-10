@@ -26,7 +26,7 @@ class Tests_Speculative_Loading_wpIsValidSpeculationRulesMode extends WP_UnitTes
 		}
 	}
 
-	public function data_is_valid_speculation_rules_mode(): array {
+	public static function data_is_valid_speculation_rules_mode(): array {
 		return array(
 			'prefetch'     => array( 'prefetch', true ),
 			'prerender'    => array( 'prerender', true ),

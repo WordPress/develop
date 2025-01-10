@@ -28,7 +28,7 @@ class Tests_Speculative_Loading_wpUrlPatternPrefixer extends WP_UnitTestCase {
 		);
 	}
 
-	public function data_prefix_path_pattern(): array {
+	public static function data_prefix_path_pattern(): array {
 		return array(
 			array( '/', '/my-page/', '/my-page/' ),
 			array( '/', 'my-page/', '/my-page/' ),
@@ -82,7 +82,7 @@ class Tests_Speculative_Loading_wpUrlPatternPrefixer extends WP_UnitTestCase {
 		$this->assertSame( $expected, $contexts[ $context ] );
 	}
 
-	public function data_default_contexts_with_subdirectories(): array {
+	public static function data_default_contexts_with_subdirectories(): array {
 		return array(
 			array( 'home', 'https://example.com/subdir/', '/subdir/' ),
 			array( 'site', 'https://example.com/subdir/wp/', '/subdir/wp/' ),

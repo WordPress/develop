@@ -26,7 +26,7 @@ class Tests_Speculative_Loading_wpIsValidSpeculationRulesEagerness extends WP_Un
 		}
 	}
 
-	public function data_is_valid_speculation_rules_eagerness(): array {
+	public static function data_is_valid_speculation_rules_eagerness(): array {
 		return array(
 			'conservative' => array( 'conservative', true ),
 			'moderate'     => array( 'moderate', true ),

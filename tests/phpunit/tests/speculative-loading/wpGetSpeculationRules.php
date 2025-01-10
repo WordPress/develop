@@ -91,7 +91,7 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		}
 	}
 
-	public function data_eagerness(): array {
+	public static function data_eagerness(): array {
 		return array(
 			array( 'conservative' ),
 			array( 'moderate' ),
