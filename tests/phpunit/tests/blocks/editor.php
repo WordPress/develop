@@ -199,6 +199,7 @@ class Tests_Blocks_Editor extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 52920
+	 * @ticket 61167
 	 */
 	public function test_get_default_block_editor_settings() {
 		$settings = get_default_block_editor_settings();
@@ -300,6 +301,26 @@ class Tests_Blocks_Editor extends WP_UnitTestCase {
 		);
 		$this->assertIsInt( $settings['maxUploadFileSize'] );
 		$this->assertTrue( $settings['__unstableGalleryWithImageBlocks'] );
+
+		// Confirm that `allowedMimeTypes` matches the supported mime types.
+		$allowed_mime_types = get_allowed_mime_types();
+
+		// Check if WebP images can be edited.
+		if ( ! wp_image_editor_supports( array( 'mime_type' => 'image/webp' ) ) ) {
+			unset( $allowed_mime_types['image/webp'] );
+		}
+
+		// Check if AVIF images can be edited.
+		if ( ! wp_image_editor_supports( array( 'mime_type' => 'image/avif' ) ) ) {
+			unset( $allowed_mime_types['image/avif'] );
+		}
+
+		// Check if HEIC images can be edited.
+		if ( ! wp_image_editor_supports( array( 'mime_type' => 'image/heic' ) ) ) {
+			unset( $allowed_mime_types['image/heic'] );
+		}
+
+		$this->assertSameSets( $allowed_mime_types, $settings['allowedMimeTypes'] );
 	}
 
 	/**
