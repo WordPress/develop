@@ -89,7 +89,7 @@ class Tests_Speculative_Loading_wpGetSpeculationRulesConfiguration extends WP_Un
 		$this->assertSame( $expected, wp_get_speculation_rules_configuration() );
 	}
 
-	public function data_wp_get_speculation_rules_configuration_filter(): array {
+	public static function data_wp_get_speculation_rules_configuration_filter(): array {
 		return array(
 			'conservative prefetch'  => array(
 				array(
