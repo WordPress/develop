@@ -14,8 +14,6 @@ if ( !! window.navigation && 'CSSViewTransitionRule' in window ) {
 			// If post URLs start with a date, use that to determine "order".
 			const currentDateMatches = currentPathname.match( /^\/(\d{4})\/(\d{2})\/(\d{2})\// );
 			const destinationDateMatches = destinationPathname.match( /^\/(\d{4})\/(\d{2})\/(\d{2})\// );
-			console.log( currentPathname );
-			console.log( destinationPathname );
 			if ( currentDateMatches && destinationDateMatches ) {
 				const currentDate = new Date( parseInt( currentDateMatches[ 1 ] ), parseInt( currentDateMatches[ 2 ] ) - 1, parseInt( currentDateMatches[ 3 ] ) );
 				const destinationDate = new Date( parseInt( destinationDateMatches[ 1 ] ), parseInt( destinationDateMatches[ 2 ] ) - 1, parseInt( destinationDateMatches[ 3 ] ) );
@@ -40,7 +38,7 @@ if ( !! window.navigation && 'CSSViewTransitionRule' in window ) {
 		return 'unknown';
 	};
 
-	window.addEventListener( 'pageswap', async ( e ) => {
+	window.addEventListener( 'pageswap', ( e ) => {
 		if ( e.viewTransition ) {
 			const transitionType = determineTransitionType( e.activation.from, e.activation.entry );
 
@@ -48,14 +46,14 @@ if ( !! window.navigation && 'CSSViewTransitionRule' in window ) {
 		}
 	} );
 
-	window.addEventListener( 'pagereveal', async ( e ) => {
+	window.addEventListener( 'pagereveal', ( e ) => {
 		if ( e.viewTransition ) {
-			const transitionType = determineTransitionType( navigation.activation.from, navigation.activation.entry );
+			const transitionType = determineTransitionType( window.navigation.activation.from, window.navigation.activation.entry );
 
 			e.viewTransition.types.add( transitionType );
 		}
 	} );
 } else {
-	console.warn( 'View transitions not loaded as the browser is lacking support.' );
+	window.console.warn( 'View transitions not loaded as the browser is lacking support.' );
 }
 
