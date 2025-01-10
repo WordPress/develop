@@ -505,7 +505,7 @@
 
 .editor-styles-wrapper .wp-calendar-table caption {
 	padding: 0.5em;
-	font-weight: 600;
+	font-weight: inherit;
 }
 
 /* Block: Table ------------------------------ */
