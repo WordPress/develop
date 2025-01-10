@@ -45,17 +45,14 @@ window.addEventListener( 'pageswap', async ( e ) => {
 	if ( e.viewTransition ) {
 		const transitionType = determineTransitionType( e.activation.from, e.activation.entry );
 
-		console.log( `pageSwap: ${ transitionType }` );
 		e.viewTransition.types.add( transitionType );
 	}
 } );
 
 window.addEventListener( 'pagereveal', async ( e ) => {
-	console.log( 'pageRevealEvent', e );
 	if ( e.viewTransition ) {
 		const transitionType = determineTransitionType( navigation.activation.from, navigation.activation.entry );
 
-		console.log( `pageReveal: ${ transitionType }` );
 		e.viewTransition.types.add( transitionType );
 	}
 } );
