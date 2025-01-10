@@ -2246,54 +2246,74 @@ HTML;
 	}
 
 	/**
-	 * Tests that the target attribute is preserved in the user description context.
+	 * Tests that the target attribute is preserved in various contexts.
+	 *
+	 * @dataProvider data_target_attribute_preserved_in_descriptions
 	 *
 	 * @ticket 12056
+	 *
+	 * @param string $context  The context to test ('user_description' or 'pre_term_description').
+	 * @param string $input    The input HTML string.
+	 * @param string $expected The expected output HTML string.
 	 */
-	public function test_target_attribute_preserved_in_user_description() {
-		$allowed = wp_kses_allowed_html( 'user_description' );
-		$this->assertTrue( isset( $allowed['a']['target'] ), 'Target attribute not allowed in user description' );
-
-		$input    = '<a href="https://example.com" target="_blank">Example</a>';
-		$expected = '<a href="https://example.com" target="_blank">Example</a>';
-		$this->assertEquals( $expected, wp_kses( $input, 'user_description' ) );
+	public function test_target_attribute_preserved_in_context( $context, $input, $expected ) {
+		$allowed = wp_kses_allowed_html( $context );
+		$this->assertTrue( isset( $allowed['a']['target'] ), "Target attribute not allowed in {$context}" );
+		$this->assertEquals( $expected, wp_kses( $input, $context ) );
 	}
 
 	/**
-	 * Tests that the target attribute is preserved in the term description context.
+	 * Data provider for test_target_attribute_preserved_in_context.
 	 *
-	 * @ticket 12056
+	 * @return array
 	 */
-	public function test_target_attribute_preserved_in_term_description() {
-		$allowed = wp_kses_allowed_html( 'pre_term_description' );
-		$this->assertTrue( isset( $allowed['a']['target'] ), 'Target attribute not allowed in term description' );
-
-		$input    = '<a href="https://example.com" target="_blank">Example</a>';
-		$expected = '<a href="https://example.com" target="_blank">Example</a>';
-		$this->assertEquals( $expected, wp_kses( $input, 'pre_term_description' ) );
+	public function data_target_attribute_preserved_in_descriptions() {
+		return array(
+			array(
+				'user_description',
+				'<a href="https://example.com" target="_blank">Example</a>',
+				'<a href="https://example.com" target="_blank">Example</a>',
+			),
+			array(
+				'pre_term_description',
+				'<a href="https://example.com" target="_blank">Example</a>',
+				'<a href="https://example.com" target="_blank">Example</a>',
+			),
+		);
 	}
 
 	/**
-	 * Tests that the target attribute is preserved in the user description context along with other attributes.
+	 * Tests that specific attributes are preserved in various contexts.
+	 *
+	 * @dataProvider data_allowed_attributes_in_descriptions
 	 *
 	 * @ticket 12056
+	 *
+	 * @param string $context    The context to test ('user_description' or 'pre_term_description').
+	 * @param array  $attributes List of attributes to check for.
 	 */
-	public function test_target_attribute_preserved_in_user_description_with_other_attributes() {
-		$allowed = wp_kses_allowed_html( 'user_description' );
-		$this->assertTrue( isset( $allowed['a']['target'] ), 'Target attribute not allowed in user description' );
-		$this->assertTrue( isset( $allowed['a']['href'] ), 'href attribute not allowed in user description' );
-		$this->assertTrue( isset( $allowed['a']['rel'] ), 'rel attribute not allowed in user description' );
+	public function test_specific_attributes_preserved_in_context( $context, $attributes ) {
+		$allowed = wp_kses_allowed_html( $context );
+		foreach ( $attributes as $attribute ) {
+			$this->assertTrue( isset( $allowed['a'][ $attribute ] ), "{$attribute} attribute not allowed in {$context}" );
+		}
 	}
 
 	/**
-	 * Tests that the target attribute is preserved in the term description context along with other attributes.
+	 * Data provider for test_specific_attributes_preserved_in_context.
 	 *
-	 * @ticket 12056
+	 * @return array
 	 */
-	public function test_target_attribute_preserved_in_term_description_with_other_attributes() {
-		$allowed = wp_kses_allowed_html( 'pre_term_description' );
-		$this->assertTrue( isset( $allowed['a']['target'] ), 'target attribute not allowed in term description' );
-		$this->assertTrue( isset( $allowed['a']['href'] ), 'href attribute not allowed in term description' );
-		$this->assertTrue( isset( $allowed['a']['rel'] ), 'rel attribute not allowed in term description' );
+	public function data_allowed_attributes_in_descriptions() {
+		return array(
+			array(
+				'user_description',
+				array( 'target', 'href', 'rel' ),
+			),
+			array(
+				'pre_term_description',
+				array( 'target', 'href', 'rel' ),
+			),
+		);
 	}
 }
