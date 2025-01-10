@@ -8,6 +8,7 @@
 
 /**
  * @group speculative-loading
+ * @coversDefaultClass WP_URL_Pattern_Prefixer
  */
 class Tests_Speculative_Loading_wpUrlPatternPrefixer extends WP_UnitTestCase {
 
@@ -15,7 +16,7 @@ class Tests_Speculative_Loading_wpUrlPatternPrefixer extends WP_UnitTestCase {
 	 * Tests prefixing URL path patterns with a consistent demo context.
 	 *
 	 * @ticket 62503
-	 * @covers WP_URL_Pattern_Prefixer::prefix_path_pattern
+	 * @covers ::prefix_path_pattern
 	 * @dataProvider data_prefix_path_pattern
 	 */
 	public function test_prefix_path_pattern( string $base_path, string $path_pattern, string $expected ) {
@@ -49,7 +50,7 @@ class Tests_Speculative_Loading_wpUrlPatternPrefixer extends WP_UnitTestCase {
 	 * Tests the values of the default URL pattern contexts.
 	 *
 	 * @ticket 62503
-	 * @covers WP_URL_Pattern_Prefixer::get_default_contexts
+	 * @covers ::get_default_contexts
 	 */
 	public function test_get_default_contexts() {
 		$contexts = WP_URL_Pattern_Prefixer::get_default_contexts();
@@ -64,7 +65,7 @@ class Tests_Speculative_Loading_wpUrlPatternPrefixer extends WP_UnitTestCase {
 	 * Tests the values of the default URL pattern contexts when using subdirectories.
 	 *
 	 * @ticket 62503
-	 * @covers WP_URL_Pattern_Prefixer::get_default_contexts
+	 * @covers ::get_default_contexts
 	 * @dataProvider data_default_contexts_with_subdirectories
 	 */
 	public function test_get_default_contexts_with_subdirectories( string $context, string $unescaped, string $expected ) {
