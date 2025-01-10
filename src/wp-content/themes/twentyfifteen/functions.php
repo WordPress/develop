@@ -482,15 +482,12 @@ function twentyfifteen_scripts() {
 		'20241219'
 	);
 
+	// This script must be loaded prior to rendering, i.e. not in the footer and not deferred or async.
 	wp_enqueue_script(
 		'twentyfifteen-view-transitions',
 		get_template_directory_uri() . '/js/view-transitions.js',
 		array(),
-		'20241219',
-		array(
-			'in_footer' => false,
-			'strategy'  => 'defer',
-		)
+		'20241219'
 	);
 }
 add_action( 'wp_enqueue_scripts', 'twentyfifteen_scripts' );
