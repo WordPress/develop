@@ -213,7 +213,7 @@ function get_default_block_editor_settings() {
 
 	$allowed_mime_types = get_allowed_mime_types();
 
-	// Iterate through mime types and check if they are supported by the image editor.
+	// Iterate through mime types and remove those unsupported by the image editor.
 	foreach ( $allowed_mime_types as $mime_type_extensions => $mime_type ) {
 		if ( ! wp_image_editor_supports( array( 'mime_type' => $mime_type ) ) ) {
 			unset( $allowed_mime_types[ $mime_type_extensions ] );
