@@ -1112,6 +1112,10 @@ function add_role( $role, $display_name, $capabilities = array() ) {
 		return;
 	}
 
+	if ( ! is_array( $capabilities ) ) {
+		return;
+	}
+
 	return wp_roles()->add_role( $role, $display_name, $capabilities );
 }
 
