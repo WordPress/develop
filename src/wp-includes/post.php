@@ -8465,3 +8465,12 @@ function wp_create_initial_post_meta() {
 		)
 	);
 }
+
+/**
+ * Add revision support for changes made via Quick Edit in the WordPress admin.
+ *
+ * This functionality ensures that any updates made through the Quick Edit option 
+ * are tracked as revisions, allowing users to revert changes if needed.
+ *
+ * @param array $post_data An array of sanitized post data.
+ */
