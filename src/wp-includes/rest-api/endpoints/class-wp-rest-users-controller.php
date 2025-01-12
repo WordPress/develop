@@ -367,8 +367,10 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 		if ( $total_users < 1 ) {
 			// Out-of-bounds, run the query again without LIMIT for total count.
 			unset( $prepared_args['number'], $prepared_args['offset'] );
-			$count_query = new WP_User_Query( $prepared_args );
-			$total_users = $count_query->get_total();
+
+			$prepared_args['number'] = 1;
+			$count_query             = new WP_User_Query( $prepared_args );
+			$total_users             = $count_query->get_total();
 		}
 
 		$response->header( 'X-WP-Total', (int) $total_users );
