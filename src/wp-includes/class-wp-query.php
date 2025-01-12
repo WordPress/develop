@@ -788,7 +788,6 @@ class WP_Query {
 	 *     @type bool            $lazy_load_post_meta    Whether to lazy-load post meta. Setting to false will
 	 *                                                   disable cache priming for post meta, so that each
 	 *                                                   get_post_meta() call will hit the database.
-	 *                                                   Defaults to the value of `$update_post_meta_cache`.
 	 *     @type int             $w                      The week number of the year. Default empty. Accepts numbers 0-53.
 	 *     @type int             $year                   The four-digit year. Default empty. Accepts any four-digit year.
 	 * }
