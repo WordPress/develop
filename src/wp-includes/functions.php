@@ -9087,11 +9087,18 @@ function wp_is_heic_image_mime_type( $mime_type ) {
 }
 
 /**
- * Returns a cryptographically secure hash of the message.
+ * Returns a cryptographically secure hash of a message using a fast generic hash function.
+ *
+ * This function does not salt the value prior to being hashed, therefore input to this function should be generated
+ * with sufficiently high entropy if the data is sensitive, preferably greater than 128 bits. This function is used
+ * internally in WordPress core to hash security keys and application passwords, all of which are generated with
+ * high entropy.
+ *
+ * This function is not intended to be used for hashing user-generated passwords. Use wp_hash_password() for that.
+ *
+ * Use the wp_verify_fast_hash() function to verify the hash.
  *
  * The BLAKE2b algorithm is used by Sodium to hash the message.
- *
- * @TODO explain when to use this instead of wp_hash().
  *
  * @since x.y.z
  *
@@ -9105,10 +9112,11 @@ function wp_fast_hash( string $message ): string {
 }
 
 /**
- * Checks whether a plaintext message matches the hashed value.
+ * Checks whether a plaintext message matches the hashed value. Used to verify values hashed via wp_fast_hash().
  *
- * The function uses Sodium to hash the message and compare it to the hashed value. If the hash
- * is not a generic hash, the hash is treated as a phpass portable hash.
+ * The function uses Sodium to hash the message and compare it to the hashed value. If the hash is not a generic hash,
+ * the hash is treated as a phpass portable hash in order to provide backward compatibility for application passwords
+ * which were hashed using phpass prior to WordPress x.y.z.
  *
  * @since x.y.z
  *
