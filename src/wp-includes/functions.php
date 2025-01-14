@@ -9095,8 +9095,7 @@ function wp_is_heic_image_mime_type( $mime_type ) {
  *
  * @since x.y.z
  *
- * @throws TypeError       Thrown by Sodium
- * @throws SodiumException Thrown by Sodium
+ * @throws TypeError Thrown by Sodium if the message is not a string.
  *
  * @param string $message The message to hash.
  * @return string The hash of the message.
@@ -9112,6 +9111,8 @@ function wp_hash_value( string $message ): string {
  * is not a generic hash, the hash is treated as a phpass portable hash.
  *
  * @since x.y.z
+ *
+ * @throws TypeError Thrown by Sodium if the message is not a string.
  *
  * @param string $message The plaintext message.
  * @param string $hash    Hash of the message to check against.

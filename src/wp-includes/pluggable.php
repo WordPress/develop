@@ -2753,8 +2753,7 @@ if ( ! function_exists( 'wp_check_password' ) ) :
 		} elseif ( str_starts_with( $hash, '$P$' ) ) {
 			// Check the password using phpass.
 			require_once ABSPATH . WPINC . '/class-phpass.php';
-			$hasher = new PasswordHash( 8, true );
-			$check  = $hasher->CheckPassword( $password, $hash );
+			$check = ( new PasswordHash( 8, true ) )->CheckPassword( $password, $hash );
 		} else {
 			// Check the password using compat support for any non-prefixed hash.
 			$check = password_verify( $password, $hash );
