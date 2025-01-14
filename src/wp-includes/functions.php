@@ -9095,7 +9095,7 @@ function wp_is_heic_image_mime_type( $mime_type ) {
  *
  * @since x.y.z
  *
- * @throws TypeError Thrown by Sodium
+ * @throws TypeError       Thrown by Sodium
  * @throws SodiumException Thrown by Sodium
  *
  * @param string $message The message to hash.
