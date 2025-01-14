@@ -9091,10 +9091,9 @@ function wp_is_heic_image_mime_type( $mime_type ) {
  *
  * This function does not salt the value prior to being hashed, therefore input to this function should be generated
  * with sufficiently high entropy if the data is sensitive, preferably greater than 128 bits. This function is used
- * internally in WordPress core to hash security keys and application passwords, all of which are generated with
- * high entropy.
+ * internally in WordPress to hash security keys and application passwords which are generated with high entropy.
  *
- * This function is not intended to be used for hashing user-generated passwords. Use wp_hash_password() for that.
+ * This function must not be used for hashing user-generated passwords. Use wp_hash_password() for that.
  *
  * Use the wp_verify_fast_hash() function to verify the hash.
  *
