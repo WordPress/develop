@@ -9089,13 +9089,16 @@ function wp_is_heic_image_mime_type( $mime_type ) {
 /**
  * Returns a cryptographically secure hash of a message using a fast generic hash function.
  *
- * This function does not salt the value prior to being hashed, therefore input to this function should be generated
- * with sufficiently high entropy if the data is sensitive, preferably greater than 128 bits. This function is used
- * internally in WordPress to hash security keys and application passwords which are generated with high entropy.
- *
- * This function must not be used for hashing user-generated passwords. Use wp_hash_password() for that.
- *
  * Use the wp_verify_fast_hash() function to verify the hash.
+ *
+ * This function does not salt the value prior to being hashed, therefore input to this function must originate from
+ * a random generator with sufficiently high entropy, preferably greater than 128 bits. This function is used internally
+ * in WordPress to hash security keys and application passwords which are generated with high entropy.
+ *
+ * Important:
+ *
+ *  - This function must not be used for hashing user-generated passwords. Use wp_hash_password() for that.
+ *  - This function must not be used for hashing other low-entropy input. Use wp_hash() for that.
  *
  * The BLAKE2b algorithm is used by Sodium to hash the message.
  *
