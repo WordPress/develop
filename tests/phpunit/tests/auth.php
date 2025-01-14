@@ -718,7 +718,7 @@ class Tests_Auth extends WP_UnitTestCase {
 		$wpdb->update(
 			$wpdb->users,
 			array(
-				'user_activation_key' => strtotime( '-1 hour' ) . ':' . wp_hash( $key, 'auth', 'sha256' ),
+				'user_activation_key' => strtotime( '-1 hour' ) . ':' . wp_fast_hash( $key ),
 			),
 			array(
 				'ID' => $this->user->ID,
@@ -756,7 +756,7 @@ class Tests_Auth extends WP_UnitTestCase {
 		$wpdb->update(
 			$wpdb->users,
 			array(
-				'user_activation_key' => strtotime( '-48 hours' ) . ':' . wp_hash( $key, 'auth', 'sha256' ),
+				'user_activation_key' => strtotime( '-48 hours' ) . ':' . wp_fast_hash( $key ),
 			),
 			array(
 				'ID' => $this->user->ID,
@@ -1027,39 +1027,19 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * @ticket 21022
 	 * @ticket 50027
 	 */
-	public function test_phpass_password_is_rehashed_after_successful_application_password_authentication() {
+	public function test_phpass_application_password_is_accepted() {
 		add_filter( 'application_password_is_api_request', '__return_true' );
 		add_filter( 'wp_is_application_passwords_available', '__return_true' );
 
-		$password  = 'password';
-		$user_pass = get_userdata( self::$user_id )->user_pass;
+		$password = 'password';
 
 		// Set an application password with the old phpass algorithm.
 		$uuid = self::set_application_password_with_phpass( $password, self::$user_id );
-
-		// Verify that the application password needs rehashing.
-		$hash = WP_Application_Passwords::get_user_application_password( self::$user_id, $uuid )['password'];
-		$this->assertTrue( wp_password_needs_rehash( $hash ) );
 
 		// Authenticate.
 		$user = wp_authenticate_application_password( null, self::USER_LOGIN, $password );
 
 		// Verify that the phpass hash for the application password was valid.
-		$this->assertNotWPError( $user );
-		$this->assertInstanceOf( 'WP_User', $user );
-		$this->assertSame( self::$user_id, $user->ID );
-
-		// Verify that the application password no longer needs rehashing.
-		$hash = WP_Application_Passwords::get_user_application_password( self::$user_id, $uuid )['password'];
-		$this->assertFalse( wp_password_needs_rehash( $hash ) );
-
-		// Verify that the user's password has not been touched.
-		$this->assertSame( $user_pass, get_userdata( self::$user_id )->user_pass );
-
-		// Authenticate a second time to ensure the new hash is valid.
-		$user = wp_authenticate_application_password( null, self::USER_LOGIN, $password );
-
-		// Verify that the bcrypt hashed application password is valid.
 		$this->assertNotWPError( $user );
 		$this->assertInstanceOf( 'WP_User', $user );
 		$this->assertSame( self::$user_id, $user->ID );

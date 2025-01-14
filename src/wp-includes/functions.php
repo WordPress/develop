@@ -9085,3 +9085,52 @@ function wp_is_heic_image_mime_type( $mime_type ) {
 
 	return in_array( $mime_type, $heic_mime_types, true );
 }
+
+/**
+ * Returns a cryptographically secure hash of a message using a fast generic hash function.
+ *
+ * This function does not salt the value prior to being hashed, therefore input to this function should be generated
+ * with sufficiently high entropy if the data is sensitive, preferably greater than 128 bits. This function is used
+ * internally in WordPress to hash security keys and application passwords which are generated with high entropy.
+ *
+ * This function must not be used for hashing user-generated passwords. Use wp_hash_password() for that.
+ *
+ * Use the wp_verify_fast_hash() function to verify the hash.
+ *
+ * The BLAKE2b algorithm is used by Sodium to hash the message.
+ *
+ * @since x.y.z
+ *
+ * @throws TypeError Thrown by Sodium if the message is not a string.
+ *
+ * @param string $message The message to hash.
+ * @return string The hash of the message.
+ */
+function wp_fast_hash( string $message ): string {
+	return '$generic$' . sodium_bin2hex( sodium_crypto_generichash( $message ) );
+}
+
+/**
+ * Checks whether a plaintext message matches the hashed value. Used to verify values hashed via wp_fast_hash().
+ *
+ * The function uses Sodium to hash the message and compare it to the hashed value. If the hash is not a generic hash,
+ * the hash is treated as a phpass portable hash in order to provide backward compatibility for application passwords
+ * which were hashed using phpass prior to WordPress x.y.z.
+ *
+ * @since x.y.z
+ *
+ * @throws TypeError Thrown by Sodium if the message is not a string.
+ *
+ * @param string $message The plaintext message.
+ * @param string $hash    Hash of the message to check against.
+ * @return bool Whether the message matches the hashed message.
+ */
+function wp_verify_fast_hash( string $message, string $hash ): bool {
+	if ( ! str_starts_with( $hash, '$generic$' ) ) {
+		// Back-compat for old phpass hashes.
+		require_once ABSPATH . WPINC . '/class-phpass.php';
+		return ( new PasswordHash( 8, true ) )->CheckPassword( $message, $hash );
+	}
+
+	return hash_equals( substr( $hash, 9 ), wp_fast_hash( $message ) );
+}

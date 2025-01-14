@@ -2698,9 +2698,9 @@ if ( ! function_exists( 'wp_check_password' ) ) :
 	/**
 	 * Checks a plaintext password against a hashed password.
 	 *
-	 * Note that this function is used to check more than just user passwords, for
-	 * example it's also used to check application passwords and post passwords.
-	 * There is not always a user ID associated with the password.
+	 * Note that this function is used to check more than just user passwords, for example
+	 * it's also used to check post passwords and may be used by plugins to check other
+	 * types of password. There is not always a user ID associated with the password.
 	 *
 	 * For integration with other applications, this function can be overwritten to
 	 * instead use the other package password hashing algorithm.
@@ -2753,8 +2753,7 @@ if ( ! function_exists( 'wp_check_password' ) ) :
 		} elseif ( str_starts_with( $hash, '$P$' ) ) {
 			// Check the password using phpass.
 			require_once ABSPATH . WPINC . '/class-phpass.php';
-			$hasher = new PasswordHash( 8, true );
-			$check  = $hasher->CheckPassword( $password, $hash );
+			$check = ( new PasswordHash( 8, true ) )->CheckPassword( $password, $hash );
 		} else {
 			// Check the password using compat support for any non-prefixed hash.
 			$check = password_verify( $password, $hash );
