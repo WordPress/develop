@@ -60,7 +60,7 @@ class WP_Application_Passwords {
 	 *
 	 * @since 5.6.0
 	 * @since 5.7.0 Returns WP_Error if application name already exists.
-	 * @since x.y.z The hashed password value now uses wp_hash_value() instead of phpass.
+	 * @since x.y.z The hashed password value now uses wp_fast_hash() instead of phpass.
 	 *
 	 * @param int   $user_id  User ID.
 	 * @param array $args     {
@@ -125,7 +125,7 @@ class WP_Application_Passwords {
 		 * Fires when an application password is created.
 		 *
 		 * @since 5.6.0
-		 * @since x.y.z @since x.y.z The hashed password value now uses wp_hash_value() instead of phpass.
+		 * @since x.y.z @since x.y.z The hashed password value now uses wp_fast_hash() instead of phpass.
 		 *
 		 * @param int    $user_id      The user ID.
 		 * @param array  $new_item     {
@@ -251,7 +251,7 @@ class WP_Application_Passwords {
 	 * Updates an application password.
 	 *
 	 * @since 5.6.0
-	 * @since x.y.z The actual password should now be hashed using wp_hash_value().
+	 * @since x.y.z The actual password should now be hashed using wp_fast_hash().
 	 *
 	 * @param int    $user_id User ID.
 	 * @param string $uuid    The password's UUID.
@@ -304,7 +304,7 @@ class WP_Application_Passwords {
 			 * Fires when an application password is updated.
 			 *
 			 * @since 5.6.0
-			 * @since x.y.z The password is now hashed using wp_hash_value() instead of phpass.
+			 * @since x.y.z The password is now hashed using wp_fast_hash() instead of phpass.
 			 *              Existing passwords may still be hashed using phpass.
 			 *
 			 * @param int   $user_id The user ID.
@@ -484,7 +484,7 @@ class WP_Application_Passwords {
 	 * @return string Hashed password.
 	 */
 	public static function hash_password( string $password ): string {
-		return wp_hash_value( $password );
+		return wp_fast_hash( $password );
 	}
 
 	/**
@@ -497,7 +497,7 @@ class WP_Application_Passwords {
 	 * @return bool Whether the password matches the hashed password.
 	 */
 	public static function check_password( string $password, string $hash ): bool {
-		return wp_verify_hashed_value( $password, $hash );
+		return wp_verify_fast_hash( $password, $hash );
 	}
 
 	/**
