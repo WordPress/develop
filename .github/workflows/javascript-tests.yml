@@ -48,7 +48,7 @@ jobs:
     name: QUnit Tests
     uses: desrosj/wordpress-develop/.github/workflows/reusable-javascript-tests.yml@update/js-workflow
     with:
-      old-branch: 'true'
+      old-branch: true
     permissions:
       contents: read
     if: ${{ github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' }}
