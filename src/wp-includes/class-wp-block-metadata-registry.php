@@ -103,11 +103,13 @@ class WP_Block_Metadata_Registry {
 		 */
 		$allowed_collection_roots = apply_filters( 'wp_allowed_block_metadata_collection_roots', $allowed_collection_roots );
 
-		$allowed_collection_roots = array_map(
-			static function ( $allowed_root ) {
-				return rtrim( $allowed_root, '/' );
-			},
-			$allowed_collection_roots
+		$allowed_collection_roots = array_unique(
+			array_map(
+				static function ( $allowed_root ) {
+					return rtrim( $allowed_root, '/' );
+				},
+				$allowed_collection_roots
+			)
 		);
 
 		// Check if the path is valid:
@@ -266,7 +268,7 @@ class WP_Block_Metadata_Registry {
 			}
 
 			// Otherwise, if the path is within any of the allowed roots, it is valid.
-			if ( str_starts_with( $allowed_root, $path ) ) {
+			if ( str_starts_with( $path, $allowed_root ) ) {
 				$matching_root_found = true;
 			}
 		}
@@ -300,7 +302,7 @@ class WP_Block_Metadata_Registry {
 			$allowed_collection_roots[] = trailingslashit( wp_normalize_path( WP_CONTENT_DIR ) ) . ltrim( wp_normalize_path( $theme_root ), '/' );
 		}
 
-		self::$default_allowed_collection_roots = $allowed_collection_roots;
+		self::$default_allowed_collection_roots = array_unique( $allowed_collection_roots );
 		return self::$default_allowed_collection_roots;
 	}
 }
