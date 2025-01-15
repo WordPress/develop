@@ -47,6 +47,10 @@ if ( !! window.navigation && 'CSSViewTransitionRule' in window ) {
 	} );
 
 	window.addEventListener( 'pagereveal', ( e ) => {
+		if ( ! window.navigation.activation.from ) {
+			return;
+		}
+
 		if ( e.viewTransition ) {
 			const transitionType = determineTransitionType( window.navigation.activation.from, window.navigation.activation.entry );
 
