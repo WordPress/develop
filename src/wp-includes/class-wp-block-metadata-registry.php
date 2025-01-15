@@ -38,20 +38,12 @@ class WP_Block_Metadata_Registry {
 	private static $last_matched_collection = null;
 
 	/**
-	 * Stores the WordPress 'wp-includes' directory path.
+	 * Stores the default allowed collection root paths.
 	 *
-	 * @since 6.7.0
-	 * @var string|null
+	 * @since 6.8.0
+	 * @var string[]|null
 	 */
-	private static $wpinc_dir = null;
-
-	/**
-	 * Stores the normalized WordPress plugin directory path.
-	 *
-	 * @since 6.7.0
-	 * @var string|null
-	 */
-	private static $plugin_dir = null;
+	private static $default_allowed_collection_roots = null;
 
 	/**
 	 * Registers a block metadata collection.
@@ -92,29 +84,41 @@ class WP_Block_Metadata_Registry {
 	public static function register_collection( $path, $manifest ) {
 		$path = wp_normalize_path( rtrim( $path, '/' ) );
 
-		$wpinc_dir  = self::get_wpinc_dir();
-		$plugin_dir = self::get_plugin_dir();
+		$allowed_collection_roots = self::get_default_allowed_collection_roots();
+
+		/**
+		 * Filters in which root directory paths block metadata collections are allowed.
+		 *
+		 * The default list encompasses the `wp-includes` directory, as well as the root directories for plugins,
+		 * must-use plugins, and themes. This filter can be used to expand the list, e.g. to custom directories with
+		 * symlinked plugins.
+		 *
+		 * Any block metadata collection that is registered must be within one of these directories. It must however
+		 * not match any of these directories exactly, as then the collection may conflict with another one within the
+		 * same root.
+		 *
+		 * @since 6.8.0
+		 *
+		 * @param string[] $allowed_collection_roots List of allowed metadata collection root paths.
+		 */
+		$allowed_collection_roots = apply_filters( 'wp_allowed_block_metadata_collection_roots', $allowed_collection_roots );
+
+		$allowed_collection_roots = array_map(
+			static function ( $allowed_root ) {
+				return rtrim( $allowed_root, '/' );
+			},
+			$allowed_collection_roots
+		);
 
 		// Check if the path is valid:
-		if ( str_starts_with( $path, $plugin_dir ) ) {
-			// For plugins, ensure the path is within a specific plugin directory and not the base plugin directory.
-			$relative_path = substr( $path, strlen( $plugin_dir ) + 1 );
-			$plugin_name   = strtok( $relative_path, '/' );
-
-			if ( empty( $plugin_name ) || $plugin_name === $relative_path ) {
-				_doing_it_wrong(
-					__METHOD__,
-					__( 'Block metadata collections can only be registered for a specific plugin. The provided path is neither a core path nor a valid plugin path.' ),
-					'6.7.0'
-				);
-				return false;
-			}
-		} elseif ( ! str_starts_with( $path, $wpinc_dir ) ) {
-			// If it's neither a plugin directory path nor within 'wp-includes', the path is invalid.
+		if ( ! self::is_valid_collection_path( $path, $allowed_collection_roots ) ) {
 			_doing_it_wrong(
 				__METHOD__,
-				__( 'Block metadata collections can only be registered for a specific plugin. The provided path is neither a core path nor a valid plugin path.' ),
-				'6.7.0'
+				sprintf(
+					__( 'Block metadata collections can only be registered within one of the following directories: %s' ),
+					esc_html( implode( wp_get_list_item_separator(), $allowed_collection_roots ) )
+				),
+				'6.8.0'
 			);
 			return false;
 		}
@@ -244,30 +248,59 @@ class WP_Block_Metadata_Registry {
 	}
 
 	/**
-	 * Gets the WordPress 'wp-includes' directory path.
+	 * Checks whether the given block metadata collection path is valid against the list of allowed collection roots.
 	 *
-	 * @since 6.7.0
+	 * @since 6.8.0
 	 *
-	 * @return string The WordPress 'wp-includes' directory path.
+	 * @param string   $path                     Block metadata collection path, without trailing slash.
+	 * @param string[] $allowed_collection_roots List of allowed collection root paths, without trailing slashes.
+	 * @return bool True if the path is allowed, false otherwise.
 	 */
-	private static function get_wpinc_dir() {
-		if ( ! isset( self::$wpinc_dir ) ) {
-			self::$wpinc_dir = wp_normalize_path( ABSPATH . WPINC );
+	private static function is_valid_collection_path( $path, $allowed_collection_roots ) {
+		$matching_root_found = false;
+
+		foreach ( $allowed_collection_roots as $allowed_root ) {
+			// If the path matches any allowed root exactly, it is invalid.
+			if ( $allowed_root === $path ) {
+				return false;
+			}
+
+			// Otherwise, if the path is within any of the allowed roots, it is valid.
+			if ( str_starts_with( $allowed_root, $path ) ) {
+				$matching_root_found = true;
+			}
 		}
-		return self::$wpinc_dir;
+
+		return $matching_root_found;
 	}
 
 	/**
-	 * Gets the normalized WordPress plugin directory path.
+	 * Gets the default allowed collection root paths.
 	 *
-	 * @since 6.7.0
+	 * @since 6.8.0
 	 *
-	 * @return string The normalized WordPress plugin directory path.
+	 * @return string[] List of directory paths within which metadata collections are allowed.
 	 */
-	private static function get_plugin_dir() {
-		if ( ! isset( self::$plugin_dir ) ) {
-			self::$plugin_dir = wp_normalize_path( WP_PLUGIN_DIR );
+	private static function get_default_allowed_collection_roots() {
+		if ( isset( self::$default_allowed_collection_roots ) ) {
+			return self::$default_allowed_collection_roots;
 		}
-		return self::$plugin_dir;
+
+		$allowed_collection_roots = array(
+			wp_normalize_path( ABSPATH . WPINC ),
+			wp_normalize_path( WPMU_PLUGIN_DIR ),
+			wp_normalize_path( WP_PLUGIN_DIR ),
+		);
+
+		$theme_roots = get_theme_roots();
+		if ( ! is_array( $theme_roots ) ) {
+			$theme_roots = array( $theme_roots );
+		}
+		foreach ( $theme_roots as $theme_root ) {
+			$allowed_collection_roots[] = trailingslashit( wp_normalize_path( WP_CONTENT_DIR ) ) . ltrim( wp_normalize_path( $theme_root ), '/' );
+		}
+
+		self::$default_allowed_collection_roots = $allowed_collection_roots;
+		return self::$default_allowed_collection_roots;
 	}
 }
