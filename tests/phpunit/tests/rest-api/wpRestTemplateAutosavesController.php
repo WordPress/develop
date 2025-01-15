@@ -35,6 +35,11 @@ class Tests_REST_wpRestTemplateAutosavesController extends WP_Test_REST_Controll
 	const TEMPLATE_PART_POST_TYPE = 'wp_template_part';
 
 	/**
+	 * @var string
+	 */
+	const PARENT_POST_TYPE = 'wp_template';
+
+	/**
 	 * Admin user ID.
 	 *
 	 * @since 6.4.0

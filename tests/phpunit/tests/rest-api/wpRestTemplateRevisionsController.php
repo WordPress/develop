@@ -715,17 +715,33 @@ class Tests_REST_wpRestTemplateRevisionsController extends WP_Test_REST_Controll
 	 */
 	public function data_get_item_invalid_parent_id() {
 		return array(
-			'templates'      => array(
+			'templates, GET request'       => array(
 				'template_post',
 				'template_post_2',
 				'templates',
 				self::TEST_THEME . '//' . self::TEMPLATE_NAME_2,
+				'GET',
 			),
-			'template parts' => array(
+			'templates, HEAD request'      => array(
+				'template_post',
+				'template_post_2',
+				'templates',
+				self::TEST_THEME . '//' . self::TEMPLATE_NAME_2,
+				'HEAD',
+			),
+			'template parts, GET request'  => array(
 				'template_part_post',
 				'template_part_post_2',
 				'template-parts',
 				self::TEST_THEME . '//' . self::TEMPLATE_PART_NAME_2,
+				'GET',
+			),
+			'template parts, HEAD request' => array(
+				'template_part_post',
+				'template_part_post_2',
+				'template-parts',
+				self::TEST_THEME . '//' . self::TEMPLATE_PART_NAME_2,
+				'HEAD',
 			),
 		);
 	}
