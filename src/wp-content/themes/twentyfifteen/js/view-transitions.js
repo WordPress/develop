@@ -19,7 +19,7 @@ if ( !! window.navigation && 'CSSViewTransitionRule' in window ) {
 
 		await vtPromise;
 
-		for ( const [ element, name ] of entries ) {
+		for ( const [ element, _ ] of entries ) {
 			if ( ! element ) {
 				continue;
 			}
