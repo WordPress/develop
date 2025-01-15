@@ -44,10 +44,6 @@ jobs:
       - name: Install npm Dependencies
         run: npm ci
 
-      # See https://issues.chromium.org/issues/373753919
-      # and https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
-      - name: Disable AppArmor
-        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
 
       - name: Run QUnit tests
         run: npm run grunt qunit:compiled
