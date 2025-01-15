@@ -852,13 +852,15 @@ function get_attached_file( $attachment_id, $unfiltered = false ) {
  * Updates attachment file path based on attachment ID.
  *
  * Used to update the file path of the attachment, which uses post meta name
- * '_wp_attached_file' to store the path of the attachment.
+ * `_wp_attached_file` to store the path of the attachment.
  *
  * @since 2.1.0
  *
  * @param int    $attachment_id Attachment ID.
  * @param string $file          File path for the attachment.
- * @return bool True on success, false on failure.
+ * @return int|bool Meta ID if the `_wp_attached_file` key didn't exist for the attachment.
+ *                  True on successful update, false on failure or if the `$file` value passed
+ *                  to the function is the same as the one that is already in the database.
  */
 function update_attached_file( $attachment_id, $file ) {
 	if ( ! get_post( $attachment_id ) ) {
@@ -6061,7 +6063,7 @@ function get_page_by_path( $page_path, $output = OBJECT, $post_type = 'page' ) {
 
 	$revparts = array_reverse( $parts );
 
-	$foundid = 0;
+	$found_id = 0;
 	foreach ( (array) $pages as $page ) {
 		if ( $page->post_name === $revparts[0] ) {
 			$count = 0;
@@ -6071,7 +6073,7 @@ function get_page_by_path( $page_path, $output = OBJECT, $post_type = 'page' ) {
 			 * Loop through the given path parts from right to left,
 			 * ensuring each matches the post ancestry.
 			 */
-			while ( '0' !== $p->post_parent && isset( $pages[ $p->post_parent ] ) ) {
+			while ( 0 !== (int) $p->post_parent && isset( $pages[ $p->post_parent ] ) ) {
 				++$count;
 				$parent = $pages[ $p->post_parent ];
 				if ( ! isset( $revparts[ $count ] ) || $parent->post_name !== $revparts[ $count ] ) {
@@ -6080,8 +6082,11 @@ function get_page_by_path( $page_path, $output = OBJECT, $post_type = 'page' ) {
 				$p = $parent;
 			}
 
-			if ( '0' === $p->post_parent && count( $revparts ) === $count + 1 && $p->post_name === $revparts[ $count ] ) {
-				$foundid = $page->ID;
+			if ( 0 === (int) $p->post_parent
+				&& count( $revparts ) === $count + 1
+				&& $p->post_name === $revparts[ $count ]
+			) {
+				$found_id = $page->ID;
 				if ( $page->post_type === $post_type ) {
 					break;
 				}
@@ -6090,10 +6095,10 @@ function get_page_by_path( $page_path, $output = OBJECT, $post_type = 'page' ) {
 	}
 
 	// We cache misses as well as hits.
-	wp_cache_set( $cache_key, $foundid, 'post-queries' );
+	wp_cache_set( $cache_key, $found_id, 'post-queries' );
 
-	if ( $foundid ) {
-		return get_post( $foundid, $output );
+	if ( $found_id ) {
+		return get_post( $found_id, $output );
 	}
 
 	return null;
@@ -7212,7 +7217,7 @@ function wp_check_for_changed_slugs( $post_id, $post, $post_before ) {
 	}
 
 	// We're only concerned with published, non-hierarchical objects.
-	if ( ! ( 'publish' === $post->post_status || ( 'attachment' === get_post_type( $post ) && 'inherit' === $post->post_status ) )
+	if ( ! ( 'publish' === $post->post_status || ( 'attachment' === $post->post_type && 'inherit' === $post->post_status ) 
 		|| is_post_type_hierarchical( $post->post_type )
 	) {
 		return;
@@ -7260,7 +7265,7 @@ function wp_check_for_changed_dates( $post_id, $post, $post_before ) {
 	}
 
 	// We're only concerned with published, non-hierarchical objects.
-	if ( ! ( 'publish' === $post->post_status || ( 'attachment' === get_post_type( $post ) && 'inherit' === $post->post_status ) )
+	if ( ! ( 'publish' === $post->post_status || ( 'attachment' === $post->post_type && 'inherit' === $post->post_status ) )
 		|| is_post_type_hierarchical( $post->post_type )
 	) {
 		return;
