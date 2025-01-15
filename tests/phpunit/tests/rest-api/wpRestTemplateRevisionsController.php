@@ -464,9 +464,9 @@ class Tests_REST_wpRestTemplateRevisionsController extends WP_Test_REST_Controll
 	 */
 	public function data_get_items_endpoint_should_return_unauthorized_https_status_code_for_unauthorized_request() {
 		return array(
-			'templates, GET request'      => array( 'templates', self::TEST_THEME . '//' . self::TEMPLATE_NAME, 'GET' ),
+			'templates, GET request'       => array( 'templates', self::TEST_THEME . '//' . self::TEMPLATE_NAME, 'GET' ),
 			'templates, HEAD request'      => array( 'templates', self::TEST_THEME . '//' . self::TEMPLATE_NAME, 'HEAD' ),
-			'template parts, GET request' => array( 'template-parts', self::TEST_THEME . '//' . self::TEMPLATE_PART_NAME, 'GET' ),
+			'template parts, GET request'  => array( 'template-parts', self::TEST_THEME . '//' . self::TEMPLATE_PART_NAME, 'GET' ),
 			'template parts, HEAD request' => array( 'template-parts', self::TEST_THEME . '//' . self::TEMPLATE_PART_NAME, 'HEAD' ),
 		);
 	}
@@ -495,9 +495,9 @@ class Tests_REST_wpRestTemplateRevisionsController extends WP_Test_REST_Controll
 	 */
 	public function data_get_items_endpoint_should_return_forbidden_https_status_code_for_users_with_insufficient_permissions() {
 		return array(
-			'templates, GET request'      => array( 'templates', self::TEST_THEME . '//' . self::TEMPLATE_NAME, 'GET' ),
+			'templates, GET request'       => array( 'templates', self::TEST_THEME . '//' . self::TEMPLATE_NAME, 'GET' ),
 			'templates, HEAD request'      => array( 'templates', self::TEST_THEME . '//' . self::TEMPLATE_NAME, 'HEAD' ),
-			'template parts, GET request' => array( 'template-parts', self::TEST_THEME . '//' . self::TEMPLATE_PART_NAME, 'GET' ),
+			'template parts, GET request'  => array( 'template-parts', self::TEST_THEME . '//' . self::TEMPLATE_PART_NAME, 'GET' ),
 			'template parts, HEAD request' => array( 'template-parts', self::TEST_THEME . '//' . self::TEMPLATE_PART_NAME, 'HEAD' ),
 		);
 	}
@@ -672,9 +672,9 @@ class Tests_REST_wpRestTemplateRevisionsController extends WP_Test_REST_Controll
 	 */
 	public function data_get_item_not_found() {
 		return array(
-			'templates, GET request'      => array( 'template_post', 'templates', 'GET' ),
+			'templates, GET request'       => array( 'template_post', 'templates', 'GET' ),
 			'templates, HEAD request'      => array( 'template_post', 'templates', 'HEAD' ),
-			'template parts, GET request' => array( 'template_part_post', 'template-parts', 'GET' ),
+			'template parts, GET request'  => array( 'template_part_post', 'template-parts', 'GET' ),
 			'template parts, HEAD request' => array( 'template_part_post', 'template-parts', 'HEAD' ),
 		);
 	}
