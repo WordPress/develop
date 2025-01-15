@@ -828,7 +828,7 @@ class WP_REST_Global_Styles_Revisions_Controller_Test extends WP_Test_REST_Contr
 
 
 	/**
-	 * tests for the pagination
+	 * Tests for the pagination.
 	 *
 	 * @ticket 62292
 	 *
