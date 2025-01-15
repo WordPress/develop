@@ -5,6 +5,12 @@ name: JavaScript tests
 
 on:
   workflow_call:
+    inputs:
+      old-branch:
+        description: 'Whether an old branch of WordPress is being tested.'
+        required: false
+        type: 'boolean'
+        default: false
 
 jobs:
   # Runs the QUnit test suite.
@@ -43,6 +49,12 @@ jobs:
 
       - name: Install npm Dependencies
         run: npm ci
+
+      # See https://issues.chromium.org/issues/373753919
+      # and https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
+      - name: Disable AppArmor
+        if: ${{ inputs.old-branch }}
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
 
       - name: Run QUnit tests
         run: npm run grunt qunit:compiled
