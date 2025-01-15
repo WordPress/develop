@@ -852,13 +852,15 @@ function get_attached_file( $attachment_id, $unfiltered = false ) {
  * Updates attachment file path based on attachment ID.
  *
  * Used to update the file path of the attachment, which uses post meta name
- * '_wp_attached_file' to store the path of the attachment.
+ * `_wp_attached_file` to store the path of the attachment.
  *
  * @since 2.1.0
  *
  * @param int    $attachment_id Attachment ID.
  * @param string $file          File path for the attachment.
- * @return bool True on success, false on failure.
+ * @return int|bool Meta ID if the `_wp_attached_file` key didn't exist for the attachment.
+ *                  True on successful update, false on failure or if the `$file` value passed
+ *                  to the function is the same as the one that is already in the database.
  */
 function update_attached_file( $attachment_id, $file ) {
 	if ( ! get_post( $attachment_id ) ) {
@@ -1135,7 +1137,7 @@ function get_post( $post = null, $output = OBJECT, $filter = 'raw' ) {
 function get_post_ancestors( $post ) {
 	$post = get_post( $post );
 
-	if ( ! $post || empty( $post->post_parent ) || $post->post_parent == $post->ID ) {
+	if ( ! $post || empty( $post->post_parent ) || $post->post_parent === $post->ID ) {
 		return array();
 	}
 
@@ -1146,7 +1148,9 @@ function get_post_ancestors( $post ) {
 
 	while ( $ancestor = get_post( $id ) ) {
 		// Loop detection: If the ancestor has been seen before, break.
-		if ( empty( $ancestor->post_parent ) || ( $ancestor->post_parent == $post->ID ) || in_array( $ancestor->post_parent, $ancestors, true ) ) {
+		if ( empty( $ancestor->post_parent ) || $ancestor->post_parent === $post->ID
+			|| in_array( $ancestor->post_parent, $ancestors, true )
+		) {
 			break;
 		}
 
@@ -2823,7 +2827,7 @@ function is_sticky( $post_id = 0 ) {
 function sanitize_post( $post, $context = 'display' ) {
 	if ( is_object( $post ) ) {
 		// Check if post already filtered for this context.
-		if ( isset( $post->filter ) && $context == $post->filter ) {
+		if ( isset( $post->filter ) && $context === $post->filter ) {
 			return $post;
 		}
 		if ( ! isset( $post->ID ) ) {
@@ -2835,7 +2839,7 @@ function sanitize_post( $post, $context = 'display' ) {
 		$post->filter = $context;
 	} elseif ( is_array( $post ) ) {
 		// Check if post already filtered for this context.
-		if ( isset( $post['filter'] ) && $context == $post['filter'] ) {
+		if ( isset( $post['filter'] ) && $context === $post['filter'] ) {
 			return $post;
 		}
 		if ( ! isset( $post['ID'] ) ) {
@@ -3388,7 +3392,8 @@ function wp_count_attachments( $mime_type = '' ) {
 	);
 
 	$counts = wp_cache_get( $cache_key, 'counts' );
-	if ( false == $counts ) {
+
+	if ( false === $counts ) {
 		$and   = wp_post_mime_type_where( $mime_type );
 		$count = $wpdb->get_results( "SELECT post_mime_type, COUNT( * ) AS num_posts FROM $wpdb->posts WHERE post_type = 'attachment' AND post_status != 'trash' $and GROUP BY post_mime_type", ARRAY_A );
 
@@ -3856,11 +3861,11 @@ function _reset_front_page_settings_for_post( $post_id ) {
 		 * If the page is defined in option page_on_front or post_for_posts,
 		 * adjust the corresponding options.
 		 */
-		if ( get_option( 'page_on_front' ) == $post->ID ) {
+		if ( (int) get_option( 'page_on_front' ) === $post->ID ) {
 			update_option( 'show_on_front', 'posts' );
 			update_option( 'page_on_front', 0 );
 		}
-		if ( get_option( 'page_for_posts' ) == $post->ID ) {
+		if ( (int) get_option( 'page_for_posts' ) === $post->ID ) {
 			update_option( 'page_for_posts', 0 );
 		}
 	}
@@ -6058,9 +6063,9 @@ function get_page_by_path( $page_path, $output = OBJECT, $post_type = 'page' ) {
 
 	$revparts = array_reverse( $parts );
 
-	$foundid = 0;
+	$found_id = 0;
 	foreach ( (array) $pages as $page ) {
-		if ( $page->post_name == $revparts[0] ) {
+		if ( $page->post_name === $revparts[0] ) {
 			$count = 0;
 			$p     = $page;
 
@@ -6068,18 +6073,21 @@ function get_page_by_path( $page_path, $output = OBJECT, $post_type = 'page' ) {
 			 * Loop through the given path parts from right to left,
 			 * ensuring each matches the post ancestry.
 			 */
-			while ( 0 != $p->post_parent && isset( $pages[ $p->post_parent ] ) ) {
+			while ( 0 !== (int) $p->post_parent && isset( $pages[ $p->post_parent ] ) ) {
 				++$count;
 				$parent = $pages[ $p->post_parent ];
-				if ( ! isset( $revparts[ $count ] ) || $parent->post_name != $revparts[ $count ] ) {
+				if ( ! isset( $revparts[ $count ] ) || $parent->post_name !== $revparts[ $count ] ) {
 					break;
 				}
 				$p = $parent;
 			}
 
-			if ( 0 == $p->post_parent && count( $revparts ) === $count + 1 && $p->post_name == $revparts[ $count ] ) {
-				$foundid = $page->ID;
-				if ( $page->post_type == $post_type ) {
+			if ( 0 === (int) $p->post_parent
+				&& count( $revparts ) === $count + 1
+				&& $p->post_name === $revparts[ $count ]
+			) {
+				$found_id = $page->ID;
+				if ( $page->post_type === $post_type ) {
 					break;
 				}
 			}
@@ -6087,10 +6095,10 @@ function get_page_by_path( $page_path, $output = OBJECT, $post_type = 'page' ) {
 	}
 
 	// We cache misses as well as hits.
-	wp_cache_set( $cache_key, $foundid, 'post-queries' );
+	wp_cache_set( $cache_key, $found_id, 'post-queries' );
 
-	if ( $foundid ) {
-		return get_post( $foundid, $output );
+	if ( $found_id ) {
+		return get_post( $found_id, $output );
 	}
 
 	return null;
@@ -6351,7 +6359,7 @@ function get_pages( $args = array() ) {
 			$query_args['author__in'] = array();
 			foreach ( $post_authors as $post_author ) {
 				// Do we have an author id or an author login?
-				if ( 0 == (int) $post_author ) {
+				if ( 0 === (int) $post_author ) {
 					$post_author = get_user_by( 'login', $post_author );
 					if ( empty( $post_author ) ) {
 						continue;
@@ -7204,12 +7212,14 @@ function wp_mime_type_icon( $mime = 0, $preferred_ext = '.png' ) {
  */
 function wp_check_for_changed_slugs( $post_id, $post, $post_before ) {
 	// Don't bother if it hasn't changed.
-	if ( $post->post_name == $post_before->post_name ) {
+	if ( $post->post_name === $post_before->post_name ) {
 		return;
 	}
 
 	// We're only concerned with published, non-hierarchical objects.
-	if ( ! ( 'publish' === $post->post_status || ( 'attachment' === get_post_type( $post ) && 'inherit' === $post->post_status ) ) || is_post_type_hierarchical( $post->post_type ) ) {
+	if ( ! ( 'publish' === $post->post_status || ( 'attachment' === $post->post_type && 'inherit' === $post->post_status ) )
+		|| is_post_type_hierarchical( $post->post_type )
+	) {
 		return;
 	}
 
@@ -7250,12 +7260,14 @@ function wp_check_for_changed_dates( $post_id, $post, $post_before ) {
 	$new_date      = gmdate( 'Y-m-d', strtotime( $post->post_date ) );
 
 	// Don't bother if it hasn't changed.
-	if ( $new_date == $previous_date ) {
+	if ( $new_date === $previous_date ) {
 		return;
 	}
 
 	// We're only concerned with published, non-hierarchical objects.
-	if ( ! ( 'publish' === $post->post_status || ( 'attachment' === get_post_type( $post ) && 'inherit' === $post->post_status ) ) || is_post_type_hierarchical( $post->post_type ) ) {
+	if ( ! ( 'publish' === $post->post_status || ( 'attachment' === $post->post_type && 'inherit' === $post->post_status ) )
+		|| is_post_type_hierarchical( $post->post_type )
+	) {
 		return;
 	}
 
@@ -7351,7 +7363,7 @@ function get_posts_by_author_sql( $post_type, $full = true, $post_author = null,
 				$id = get_current_user_id();
 				if ( null === $post_author || ! $full ) {
 					$post_status_sql .= " OR post_status = 'private' AND post_author = $id";
-				} elseif ( $id == (int) $post_author ) {
+				} elseif ( $id === (int) $post_author ) {
 					$post_status_sql .= " OR post_status = 'private'";
 				} // Else none.
 			} // Else none.
@@ -7927,7 +7939,7 @@ function wp_check_post_hierarchy_for_loops( $post_parent, $post_id ) {
 	}
 
 	// Can't be its own parent.
-	if ( $post_parent == $post_id ) {
+	if ( $post_parent === $post_id ) {
 		return 0;
 	}
 
