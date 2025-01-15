@@ -4933,6 +4933,27 @@ class WP_Query {
 		// Sort post types to ensure same cache key generation.
 		sort( $args['post_type'] );
 
+		/*
+		 * Sort arrays that can be used for ordering prior to cache key generation.
+		 *
+		 * These arrays are sorted in the query generator for the purposes of the
+		 * WHERE clause but the arguments are not modified as they can be used for
+		 * the orderby clase.
+		 *
+		 * Their use in the orderby clause will generate a different SQL query so
+		 * they can be sorted for the cache key generation.
+		 */
+		$sortable_arrays = array(
+			'post__in',
+			'post_name__in',
+			'post_parent__in',
+		);
+		foreach ( $sortable_arrays as $key ) {
+			if ( isset( $args[ $key ] ) && is_array( $args[ $key ] ) ) {
+				sort( $args[ $key ] );
+			}
+		}
+
 		if ( isset( $args['post_status'] ) ) {
 			$args['post_status'] = (array) $args['post_status'];
 			// Sort post status to ensure same cache key generation.
