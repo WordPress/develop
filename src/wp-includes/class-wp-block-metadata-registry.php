@@ -117,6 +117,7 @@ class WP_Block_Metadata_Registry {
 			_doing_it_wrong(
 				__METHOD__,
 				sprintf(
+					/* translators: %s: list of allowed collection roots */
 					__( 'Block metadata collections can only be registered within one of the following directories: %s' ),
 					esc_html( implode( wp_get_list_item_separator(), $allowed_collection_roots ) )
 				),
