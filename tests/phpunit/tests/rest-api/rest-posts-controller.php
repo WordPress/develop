@@ -1712,10 +1712,20 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 		$request = new WP_REST_Request( 'GET', '/wp/v2/media' );
 		rest_get_server()->dispatch( $request );
 
-		$args = $filter->get_args();
-		$last = end( $args );
-		$this->assertIsArray( $last, 'The last value is not an array' );
-		$this->assertSameSets( $parent_ids, $last[1] );
+		$events = $filter->get_events();
+		$args   = wp_list_pluck( $events, 'args' );
+		$primed = false;
+		sort( $parent_ids );
+		foreach ( $args as $arg ) {
+			sort( $arg[1] );
+			if ( $parent_ids === $arg[1] ) {
+				$primed = $arg;
+				break;
+			}
+		}
+
+		$this->assertIsArray( $primed, 'The last value is not an array' );
+		$this->assertSameSets( $parent_ids, $primed[1] );
 	}
 
 	public function test_get_items_pagination_headers() {
@@ -5495,6 +5505,45 @@ Shankle pork chop prosciutto ribeye ham hock pastrami. T-bone shank brisket baco
 			$post->post_name,
 			'The post slug was not set to "sample-slug-2"'
 		);
+	}
+
+	/**
+	 * Test the REST API ignores the post format parameter for post types that do not support them.
+	 *
+	 * @ticket 62646
+	 * @ticket 62014
+	 *
+	 * @covers WP_REST_Posts_Controller::get_items
+	 */
+	public function test_standard_post_format_ignored_for_post_types_that_do_not_support_them() {
+		$initial_theme_support = get_theme_support( 'post-formats' );
+		add_theme_support( 'post-formats', array( 'aside', 'gallery', 'link', 'image', 'quote', 'status', 'video', 'audio', 'chat' ) );
+
+		self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_status' => 'publish',
+			)
+		);
+
+		$request = new WP_REST_Request( 'GET', '/wp/v2/pages' );
+		$request->set_param( 'format', 'invalid_type' );
+
+		$response = rest_get_server()->dispatch( $request );
+
+		/*
+		 * Restore the initial post formats support.
+		 *
+		 * This needs to be done prior to the assertions to avoid unexpected
+		 * results for other tests should an assertion fail.
+		 */
+		if ( $initial_theme_support ) {
+			add_theme_support( 'post-formats', $initial_theme_support[0] );
+		} else {
+			remove_theme_support( 'post-formats' );
+		}
+
+		$this->assertCount( 1, $response->get_data(), 'The response should ignore the post format parameter' );
 	}
 
 	/**

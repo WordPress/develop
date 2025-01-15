@@ -48,10 +48,10 @@ function wp_signon( $credentials = array(), $secure_cookie = '' ) {
 			'remember'      => false,
 		);
 
-		if ( ! empty( $_POST['log'] ) ) {
+		if ( ! empty( $_POST['log'] ) && is_string( $_POST['log'] ) ) {
 			$credentials['user_login'] = wp_unslash( $_POST['log'] );
 		}
-		if ( ! empty( $_POST['pwd'] ) ) {
+		if ( ! empty( $_POST['pwd'] ) && is_string( $_POST['pwd'] ) ) {
 			$credentials['user_password'] = $_POST['pwd'];
 		}
 		if ( ! empty( $_POST['rememberme'] ) ) {
@@ -2366,7 +2366,7 @@ function wp_insert_user( $userdata ) {
 	$admin_color         = empty( $userdata['admin_color'] ) ? 'fresh' : $userdata['admin_color'];
 	$meta['admin_color'] = preg_replace( '|[^a-z0-9 _.\-@]|i', '', $admin_color );
 
-	$meta['use_ssl'] = empty( $userdata['use_ssl'] ) || ! $userdata['use_ssl'] ? '0' : '1';
+	$meta['use_ssl'] = empty( $userdata['use_ssl'] ) ? '0' : '1';
 
 	$meta['show_admin_bar_front'] = empty( $userdata['show_admin_bar_front'] ) ? 'true' : $userdata['show_admin_bar_front'];
 
@@ -2792,7 +2792,7 @@ All at ###SITENAME###
 
 			$remember = false;
 
-			if ( false !== $logged_in_cookie && ( $logged_in_cookie['expiration'] - time() ) > $default_cookie_life ) {
+			if ( false !== $logged_in_cookie && ( (int) $logged_in_cookie['expiration'] - time() ) > $default_cookie_life ) {
 				$remember = true;
 			}
 
@@ -3106,7 +3106,7 @@ function check_password_reset_key( $key, $login ) {
  *                           Defaults to `$_POST['user_login']` if not set.
  * @return true|WP_Error True when finished, WP_Error object on error.
  */
-function retrieve_password( $user_login = null ) {
+function retrieve_password( $user_login = '' ) {
 	$errors    = new WP_Error();
 	$user_data = false;
 
