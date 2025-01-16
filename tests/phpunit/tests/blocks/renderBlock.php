@@ -298,8 +298,7 @@ HTML
 <!-- wp:tests/context-consumer /-->
 HTML
 		);
-		$this->assertTrue( isset( $provided_context['arbitrary'] ), 'Test block is top-level block: Block context should include "arbitrary"' );
-		$this->assertSame( 'ok', $provided_context['arbitrary'], 'Test block is top-level block: "arbitrary" in context should be "ok"' );
+		$this->assertFalse( isset( $provided_context['arbitrary'] ), 'Test block is top-level block: Block context should not include "arbitrary"' );
 
 		do_blocks(
 			<<<HTML
@@ -308,6 +307,16 @@ HTML
 <!-- /wp:group -->
 HTML
 		);
+
+		/*
+		 * These assertions assert something that ideally should not be the case: Inner blocks should respect the
+		 * `uses_context` value just like top-level blocks do. However, due to logic in `WP_Block::render()`, the
+		 * `context` property value itself is filterable when it should rather only apply to the `available_context`
+		 * property.
+		 * However, changing this behavior now would be a backward compatibility break, hence the assertion here.
+		 * Potentially it can be reconsidered in the future, so that these two assertions could be replaced with an
+		 * `assertFalse( isset( $provided_context['arbitrary'] ) )`.
+		 */
 		$this->assertTrue( isset( $provided_context['arbitrary'] ), 'Test block is inner block: Block context should include "arbitrary"' );
 		$this->assertSame( 'ok', $provided_context['arbitrary'], 'Test block is inner block: "arbitrary" in context should be "ok"' );
 	}
