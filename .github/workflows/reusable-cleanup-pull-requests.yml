@@ -21,11 +21,10 @@ jobs:
   # - Searches for pull requests referencing any fixed tickets.
   # - Leaves a comment on each PR before closing.
   close-prs:
-    name: Clean up relevant pull requests
+    name: Find and close PRs
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-    if: ${{ github.repository == 'WordPress/wordpress-develop' }}
 
     steps:
       - name: Find fixed ticket numbers
