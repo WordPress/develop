@@ -124,7 +124,7 @@ class WP_Block_Metadata_Registry {
 				__METHOD__,
 				sprintf(
 					/* translators: %s: list of allowed collection roots */
-					__( 'Block metadata collections can only be registered within one of the following directories: %s' ),
+					__( 'Block metadata collections cannot be registered as one of the following directories or their parent directories: %s' ),
 					esc_html( implode( wp_get_list_item_separator(), $collection_roots ) )
 				),
 				'6.8.0'
