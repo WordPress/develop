@@ -14,9 +14,9 @@ if ( ! defined( 'WP_ADMIN' ) ) {
 	define( 'WP_ADMIN', true );
 }
 
-require_once defined('ABSPATH') 
-    ? ABSPATH . 'wp-load.php' 
-    : dirname(__DIR__) . '/wp-load.php';
+require_once defined( 'ABSPATH' ) 
+    ? ABSPATH . 'wp-load.php'
+		: dirname( __DIR__ ) . '/wp-load.php';
 
 require_once ABSPATH . 'wp-admin/admin.php';
 
