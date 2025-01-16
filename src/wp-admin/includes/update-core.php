@@ -1194,6 +1194,19 @@ function update_core( $from, $to ) {
 		);
 	}
 
+	// Add a warning when the hash PHP extension is missing (only affects PHP < 7.4).
+	if ( ! extension_loaded( 'hash' ) ) {
+		return new WP_Error(
+			'php_not_compatible_hash',
+			sprintf(
+				/* translators: 1: WordPress version number, 2: The PHP extension name needed. */
+				__( 'The update cannot be installed because WordPress %1$s requires the %2$s PHP extension.' ),
+				$wp_version,
+				'hash'
+			)
+		);
+	}
+
 	/** This filter is documented in wp-admin/includes/update-core.php */
 	apply_filters( 'update_feedback', __( 'Preparing to install the latest version&#8230;' ) );
 
