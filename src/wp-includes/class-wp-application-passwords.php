@@ -287,11 +287,6 @@ class WP_Application_Passwords {
 				$save         = true;
 			}
 
-			if ( ! empty( $update['password'] ) && $item['password'] !== $update['password'] ) {
-				$item['password'] = $update['password'];
-				$save             = true;
-			}
-
 			if ( $save ) {
 				$saved = static::set_user_application_passwords( $user_id, $passwords );
 
