@@ -80,16 +80,6 @@ jobs:
 
             // Update all matched pull requests.
             for (const prNumber of prNumbers) {
-              const pr = await github.rest.pulls.get({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: prNumber
-              });
-
-              if ( pr.data.state === 'closed' ) {
-                continue;
-              }
-
               // Comment on the pull request with details.
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
