@@ -44,7 +44,6 @@ jobs:
       - name: Install npm Dependencies
         run: npm ci
 
-
       - name: Run QUnit tests
         run: npm run grunt qunit:compiled
 
