@@ -201,7 +201,69 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 	}
 
 	/**
+	 * @ticket 59516
+	 *
+	 * @covers WP_Query::generate_cache_key
+	 *
+	 * @dataProvider data_orderby_clauses_are_not_normalized
+	 */
+	public function test_orderby_clauses_are_not_normalized( $query_vars1, $query_vars2 ) {
+		global $wpdb;
+
+		$this->assertArrayHasKey( 'orderby', $query_vars1, 'First query vars should have orderby.' );
+		$this->assertArrayHasKey( 'orderby', $query_vars2, 'Second query vars should have orderby.' );
+
+		$fields   = "{$wpdb->posts}.ID";
+		$query1   = new WP_Query( $query_vars1 );
+		$request1 = str_replace( $fields, "{$wpdb->posts}.*", $query1->request );
+
+		$query2   = new WP_Query( $query_vars2 );
+		$request2 = str_replace( $fields, "{$wpdb->posts}.*", $query2->request );
+
+		$reflection = new ReflectionMethod( $query1, 'generate_cache_key' );
+		$reflection->setAccessible( true );
+
+		$this->assertNotSame( $request1, $request2, 'Queries should not match' );
+
+		$cache_key_1 = $reflection->invoke( $query1, $query_vars1, $request1 );
+		$cache_key_2 = $reflection->invoke( $query1, $query_vars2, $request2 );
+
+		$this->assertSame( $cache_key_1, $cache_key_2, 'Cache key should differ.' );
+	}
+
+	public function data_orderby_clauses_are_not_normalized() {
+		return array(
+			'orderby post__in' => array(
+				'query_vars1' => array(
+					'post__in' => array( 1, 2, 3, 4, 5 ),
+					'orderby'  => 'post__in',
+				),
+				'query_vars2' => array(
+					'post__in' => array( 5, 4, 3, 2, 1 ),
+					'orderby'  => 'post__in',
+				),
+			),
+			'post parent in order'    => array(
+				'query_vars1' => array( 'post_parent__in' => array( 1, 2, 3, 4, 5 ), 'orderby' => 'post_parent__in' ),
+				'query_vars2' => array( 'post_parent__in' => array( 5, 4, 3, 2, 1 ), 'orderby' => 'post_parent__in' ),
+			),
+			'orderby post_name__in' => array(
+				'query_vars1' => array(
+					'post_name__in' => array( 'elphaba', 'glinda', 'the-wizard-of-oz', 'doctor-dillamond' ),
+					'orderby'       => 'post_name__in',
+				),
+				'query_vars2' => array(
+					'post_name__in' => array( 'doctor-dillamond', 'elphaba', 'the-wizard-of-oz', 'glinda' ),
+					'orderby'       => 'post_name__in',
+				),
+			),
+		);
+	}
+
+
+	/**
 	 * @ticket 59442
+	 * @ticket 59516
 	 *
 	 * @covers WP_Query::generate_cache_key
 	 *
@@ -325,6 +387,18 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 			'post status order'         => array(
 				'query_vars1' => array( 'post_status' => array( 'draft', 'publish' ) ),
 				'query_vars2' => array( 'post_status' => array( 'publish', 'draft' ) ),
+			),
+			'post in order'            => array(
+				'query_vars1' => array( 'post__in' => array( 1, 2, 3, 4, 5 ) ),
+				'query_vars2' => array( 'post__in' => array( 5, 4, 3, 2, 1 ) ),
+			),
+			'post parent in order'    => array(
+				'query_vars1' => array( 'post_parent__in' => array( 1, 2, 3, 4, 5 ) ),
+				'query_vars2' => array( 'post_parent__in' => array( 5, 4, 3, 2, 1 ) ),
+			),
+			'post name in order'  => array(
+				'query_vars1' => array( 'post_name__in' => array( 'elphaba', 'glinda', 'the-wizard-of-oz', 'doctor-dillamond' ) ),
+				'query_vars2' => array( 'post_name__in' => array( 'doctor-dillamond', 'elphaba', 'the-wizard-of-oz', 'glinda' ) ),
 			),
 			'cache parameters'          => array(
 				'query_vars1' => array(
