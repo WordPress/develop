@@ -56,6 +56,7 @@ module.exports = function(grunt) {
 			'wp-includes/css/dist',
 			'wp-includes/blocks/**/*.css',
 			'!wp-includes/assets/script-loader-packages.min.php',
+			'!wp-includes/assets/script-modules-packages.min.php',
 		],
 
 		// Prepend `dir` to `file`, and keep `!` in place.
@@ -1065,7 +1066,7 @@ module.exports = function(grunt) {
 								files = spawn( 'gh', [ 'api', 'graphql', '-f', query] );
 
 								if ( 0 !== files.status ) {
-									grunt.fatal( 'Unable to fetch Twemoji file list' );
+									grunt.fatal( files.stderr.toString() );
 								}
 
 								try {
@@ -1151,6 +1152,7 @@ module.exports = function(grunt) {
 						flatten: true,
 						src: [
 							BUILD_DIR + 'wp-includes/js/dist/block-editor.js',
+							BUILD_DIR + 'wp-includes/js/dist/commands.js',
 						],
 						dest: BUILD_DIR + 'wp-includes/js/dist/'
 					}
