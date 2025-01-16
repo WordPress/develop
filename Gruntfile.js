@@ -837,6 +837,16 @@ module.exports = function(grunt) {
 					WORKING_DIR + 'wp-includes/js/wp-emoji.min.js'
 				],
 				dest: WORKING_DIR + 'wp-includes/js/wp-emoji-release.min.js'
+			},
+			certificates: {
+				options: {
+					separator: '\n\n'
+				},
+				src: [
+					WORKING_DIR + 'wp-includes/certificates/cacert.pem',
+					WORKING_DIR + 'wp-includes/certificates/legacy-1024bit.pem'
+				],
+				dest: WORKING_DIR + 'wp-includes/certificates/ca-bundle.crt'
 			}
 		},
 		patch:{
@@ -1506,6 +1516,10 @@ module.exports = function(grunt) {
 		'usebanner'
 	] );
 
+	grunt.registerTask( 'build:certificates', [
+		'concat:certificates'
+	] );
+
 	grunt.registerTask( 'build:files', [
 		'clean:files',
 		'copy:files',
@@ -1625,12 +1639,14 @@ module.exports = function(grunt) {
 			grunt.task.run( [
 				'build:js',
 				'build:css',
+				'build:certificates'
 			] );
 		} else {
 			grunt.task.run( [
 				'build:files',
 				'build:js',
 				'build:css',
+				'build:certificates',
 				'replace:source-maps',
 				'verify:build'
 			] );
