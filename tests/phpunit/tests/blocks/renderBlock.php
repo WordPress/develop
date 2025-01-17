@@ -315,7 +315,7 @@ HTML
 		 * property.
 		 * However, changing this behavior now would be a backward compatibility break, hence the assertion here.
 		 * Potentially it can be reconsidered in the future, so that these two assertions could be replaced with an
-		 * `assertFalse( isset( $provided_context['arbitrary'] ) )`.
+		 * `assertArrayNotHasKey( 'arbitrary', $provided_context )`.
 		 */
 		$this->assertArrayHasKey( 'arbitrary', $provided_context, 'Test block is inner block: Block context should include "arbitrary"' );
 		$this->assertSame( 'ok', $provided_context['arbitrary'], 'Test block is inner block: "arbitrary" in context should be "ok"' );
