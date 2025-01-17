@@ -54,7 +54,6 @@ class Tests_Post_PostPasswordRequired extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_post_password_hashed_with_phpass_remains_valid() {
 		$password = 'password';

@@ -179,7 +179,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_wp_check_password_supports_phpass_hash() {
 		$password = 'password';
@@ -197,7 +196,6 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * Notably the bcrypt cost was increased in PHP 8.4: https://wiki.php.net/rfc/bcrypt_cost_2023 .
 	 *
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_wp_check_password_supports_hash_with_increased_bcrypt_cost() {
 		$password = 'password';
@@ -221,7 +219,6 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * A reduction of the cost is unlikely to occur but is fully supported.
 	 *
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_wp_check_password_supports_hash_with_reduced_bcrypt_cost() {
 		$password = 'password';
@@ -238,7 +235,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_wp_check_password_supports_wp_hash_with_default_bcrypt_cost() {
 		$password = 'password';
@@ -252,7 +248,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_wp_check_password_supports_plain_bcrypt_hash_with_default_bcrypt_cost() {
 		$password = 'password';
@@ -268,7 +263,6 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * Ensure wp_check_password() is compatible with Argon2i hashes.
 	 *
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_wp_check_password_supports_argon2i_hash() {
 		if ( ! defined( 'PASSWORD_ARGON2I' ) ) {
@@ -287,7 +281,6 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * @requires PHP >= 7.3
 	 *
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_wp_check_password_supports_argon2id_hash() {
 		if ( ! defined( 'PASSWORD_ARGON2ID' ) ) {
@@ -302,7 +295,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_wp_check_password_does_not_support_md5_hashes() {
 		$password = 'password';
@@ -313,7 +305,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_wp_check_password_does_not_support_plain_text() {
 		$password = 'password';
@@ -324,7 +315,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 *
 	 * @dataProvider data_empty_values
 	 * @param mixed $value
@@ -338,7 +328,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 *
 	 * @dataProvider data_empty_values
 	 * @param mixed $value
@@ -445,7 +434,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_password_is_hashed_with_bcrypt() {
 		$password = 'password';
@@ -467,7 +455,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_invalid_password_at_bcrypt_length_limit_is_rejected() {
 		$limit = str_repeat( 'a', self::$bcrypt_length_limit );
@@ -483,7 +470,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_invalid_password_beyond_bcrypt_length_limit_is_rejected() {
 		$limit = str_repeat( 'a', self::$bcrypt_length_limit + 1 );
@@ -499,7 +485,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_valid_password_at_bcrypt_length_limit_is_accepted() {
 		$limit = str_repeat( 'a', self::$bcrypt_length_limit );
@@ -518,7 +503,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_valid_password_beyond_bcrypt_length_limit_is_accepted() {
 		$limit = str_repeat( 'a', self::$bcrypt_length_limit + 1 );
@@ -541,7 +525,6 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * This ensures that a truncated password is not accepted by WordPress.
 	 *
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_long_truncated_password_is_rejected() {
 		$at_limit     = str_repeat( 'a', self::$bcrypt_length_limit );
@@ -560,7 +543,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_setting_password_beyond_bcrypt_length_limit_is_rejected() {
 		$beyond_limit = str_repeat( 'a', self::$password_length_limit + 1 );
@@ -816,7 +798,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_phpass_user_activation_key_is_allowed() {
 		global $wpdb;
@@ -849,7 +830,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_expired_phpass_user_activation_key_is_rejected() {
 		global $wpdb;
@@ -881,7 +861,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_user_request_key_handling() {
 		$request_id = wp_create_user_request( 'test@example.com', 'remove_personal_data' );
@@ -905,7 +884,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_phpass_user_request_key_is_allowed() {
 		// A legacy user request key is one hashed using phpass between WordPress 4.3 and x.y.z.
@@ -938,7 +916,6 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * Notably the bcrypt cost was increased in PHP 8.4: https://wiki.php.net/rfc/bcrypt_cost_2023 .
 	 *
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function check_password_needs_rehashing() {
 		$password = 'password';
@@ -1025,7 +1002,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_phpass_application_password_is_accepted() {
 		add_filter( 'application_password_is_api_request', '__return_true' );
@@ -1049,7 +1025,6 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * @dataProvider data_usernames
 	 *
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_phpass_password_is_rehashed_after_successful_user_password_authentication( $username_or_email ) {
 		$password = 'password';
@@ -1086,7 +1061,6 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * @dataProvider data_usernames
 	 *
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_bcrypt_password_is_rehashed_with_new_cost_after_successful_user_password_authentication( $username_or_email ) {
 		$password = 'password';
@@ -1145,7 +1119,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_password_hashing_algorithm_can_be_filtered() {
 		$password = 'password';
@@ -1162,7 +1135,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_password_hashing_options_can_be_filtered() {
 		$password = 'password';
@@ -1191,7 +1163,6 @@ class Tests_Auth extends WP_UnitTestCase {
 
 	/**
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_password_checks_support_wp_hasher_fallback() {
 		global $wp_hasher;
@@ -1743,7 +1714,6 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * @covers Tests_Auth::set_user_password_with_phpass
 	 *
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_set_user_password_with_phpass() {
 		// Set the user password with the old phpass algorithm.
@@ -1775,7 +1745,6 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * @covers Tests_Auth::set_application_password_with_phpass
 	 *
 	 * @ticket 21022
-	 * @ticket 50027
 	 */
 	public function test_set_application_password_with_phpass() {
 		// Set an application password with the old phpass algorithm.
