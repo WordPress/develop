@@ -242,7 +242,7 @@ class Tests_Blocks_RenderBlock extends WP_UnitTestCase {
 <!-- /wp:tests/context-provider -->
 HTML
 		);
-		$this->assertTrue( isset( $provided_context['example'] ), 'Test block is top-level block: Context should include "example"' );
+		$this->assertArrayHasKey( 'example', $provided_context, 'Test block is top-level block: Context should include "example"' );
 		$this->assertSame( 'ok', $provided_context['example'], 'Test block is top-level block: "example" in context should be "ok"' );
 
 		// Test inner block context when the provider block is an inner block.
@@ -255,7 +255,7 @@ HTML
 <!-- /wp:group -->
 HTML
 		);
-		$this->assertTrue( isset( $provided_context['example'] ), 'Test block is inner block: Block context should include "example"' );
+		$this->assertArrayHasKey( 'example', $provided_context, 'Test block is inner block: Block context should include "example"' );
 		$this->assertSame( 'ok', $provided_context['example'], 'Test block is inner block: "example" in context should be "ok"' );
 	}
 
@@ -298,7 +298,7 @@ HTML
 <!-- wp:tests/context-consumer /-->
 HTML
 		);
-		$this->assertFalse( isset( $provided_context['arbitrary'] ), 'Test block is top-level block: Block context should not include "arbitrary"' );
+		$this->assertArrayNotHasKey( 'arbitrary', $provided_context, 'Test block is top-level block: Block context should not include "arbitrary"' );
 
 		do_blocks(
 			<<<HTML
@@ -317,7 +317,7 @@ HTML
 		 * Potentially it can be reconsidered in the future, so that these two assertions could be replaced with an
 		 * `assertFalse( isset( $provided_context['arbitrary'] ) )`.
 		 */
-		$this->assertTrue( isset( $provided_context['arbitrary'] ), 'Test block is inner block: Block context should include "arbitrary"' );
+		$this->assertArrayHasKey( 'arbitrary', $provided_context, 'Test block is inner block: Block context should include "arbitrary"' );
 		$this->assertSame( 'ok', $provided_context['arbitrary'], 'Test block is inner block: "arbitrary" in context should be "ok"' );
 	}
 }
