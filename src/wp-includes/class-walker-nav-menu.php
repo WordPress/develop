@@ -45,7 +45,7 @@ class Walker_Nav_Menu extends Walker {
 	 * @since 6.2.0
 	 * @var string
 	 */
-	private $privacy_policy_url = null;
+	private $privacy_policy_url;
 
 	/**
 	 * Constructor.
