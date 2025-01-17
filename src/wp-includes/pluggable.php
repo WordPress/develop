@@ -764,7 +764,13 @@ if ( ! function_exists( 'wp_validate_auth_cookie' ) ) :
 			return false;
 		}
 
-		$pass_frag = substr( $user->user_pass, 8, 4 );
+		if ( str_starts_with( $user->user_pass, '$P$' ) ) {
+			// Retain back-compat support for behaviour when using phpass hashed passwords.
+			$pass_frag = substr( $user->user_pass, 8, 4 );
+		} else {
+			// Otherwise, use a substring from the end of the hash to avoid dealing with potentially long hash prefixes.
+			$pass_frag = substr( $user->user_pass, -4 );
+		}
 
 		$key = wp_hash( $username . '|' . $pass_frag . '|' . $expiration . '|' . $token, $scheme );
 
@@ -867,7 +873,13 @@ if ( ! function_exists( 'wp_generate_auth_cookie' ) ) :
 			$token   = $manager->create( $expiration );
 		}
 
-		$pass_frag = substr( $user->user_pass, 8, 4 );
+		if ( str_starts_with( $user->user_pass, '$P$' ) ) {
+			// Retain back-compat support for behaviour when using phpass hashed passwords.
+			$pass_frag = substr( $user->user_pass, 8, 4 );
+		} else {
+			// Otherwise, use a substring from the end of the hash to avoid dealing with potentially long hash prefixes.
+			$pass_frag = substr( $user->user_pass, -4 );
+		}
 
 		$key = wp_hash( $user->user_login . '|' . $pass_frag . '|' . $expiration . '|' . $token, $scheme );
 
