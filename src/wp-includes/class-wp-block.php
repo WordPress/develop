@@ -141,7 +141,6 @@ class WP_Block {
 		$this->available_context = $available_context;
 
 		$this->refresh_context_dependents();
-		$this->refresh_parsed_block_dependents();
 	}
 
 	/**
