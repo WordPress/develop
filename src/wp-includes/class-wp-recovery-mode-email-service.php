@@ -360,7 +360,7 @@ When seeking help with this issue, you may be asked for some of the following in
 			),
 		);
 
-		if ( null !== $plugin ) {
+		if ( is_array( $plugin ) ) {
 			$debug['plugin'] = sprintf(
 				/* translators: 1: The failing plugins name. 2: The failing plugins version. */
 				__( 'Current plugin: %1$s (version %2$s)' ),
