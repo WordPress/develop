@@ -400,6 +400,14 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars1' => array( 'post_name__in' => array( 'elphaba', 'glinda', 'the-wizard-of-oz', 'doctor-dillamond' ) ),
 				'query_vars2' => array( 'post_name__in' => array( 'doctor-dillamond', 'elphaba', 'the-wizard-of-oz', 'glinda' ) ),
 			),
+			'term queries order (array)' => array(
+				'query_vars_1' => array( 'cat' => array( '1', '2' ) ),
+				'query_vars_2' => array( 'cat' => array( '2', '1' ) ),
+			),
+			'term queries order (string)' => array(
+				'query_vars_1' => array( 'cat' => '1,2' ),
+				'query_vars_2' => array( 'cat' => '2,1' ),
+			),
 			'cache parameters'          => array(
 				'query_vars1' => array(
 					'update_post_meta_cache' => true,
