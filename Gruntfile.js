@@ -812,6 +812,16 @@ module.exports = function(grunt) {
 			dev: webpackConfig( { environment: 'development', buildTarget: WORKING_DIR } ),
 			watch: webpackConfig( { environment: 'development', watch: true } )
 		},
+		downloadfile: {
+			options: {
+				dest: SOURCE_DIR + 'wp-includes/certificates',
+				overwriteEverytime: true
+			},
+			files: {
+				'cacert.pem': 'https://curl.se/ca/cacert.pem',
+				'cacert.pem.sha256': 'https://curl.se/ca/cacert.pem.sha256'
+			}
+		},
 		concat: {
 			tinymce: {
 				options: {
@@ -1249,6 +1259,8 @@ module.exports = function(grunt) {
 
 	// Register tasks.
 
+	grunt.loadNpmTasks( 'grunt-downloadfile' );
+
 	// Webpack task.
 	grunt.loadNpmTasks( 'grunt-webpack' );
 
@@ -1520,6 +1532,11 @@ module.exports = function(grunt) {
 
 	grunt.registerTask( 'build:certificates', [
 		'concat:certificates'
+	] );
+
+	grunt.registerTask( 'update-certificates', [
+		'downloadfile',
+		'build:certificates'
 	] );
 
 	grunt.registerTask( 'build:files', [
