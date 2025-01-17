@@ -211,6 +211,8 @@ module.exports = function(grunt) {
 						src: buildFiles.concat( [
 							'!wp-includes/assets/**', // Assets is extracted into separate copy tasks.
 							'!js/**', // JavaScript is extracted into separate copy tasks.
+							'!wp-includes/certificates/cacert.pem*', // Exclude raw root certificate files that are combined into ca-bundle.crt.
+							'!wp-includes/certificates/legacy-1024bit.pem',
 							'!.{svn,git}', // Exclude version control folders.
 							'!wp-includes/version.php', // Exclude version.php.
 							'!**/*.map', // The build doesn't need .map files.
@@ -843,10 +845,10 @@ module.exports = function(grunt) {
 					separator: '\n\n'
 				},
 				src: [
-					WORKING_DIR + 'wp-includes/certificates/cacert.pem',
-					WORKING_DIR + 'wp-includes/certificates/legacy-1024bit.pem'
+					SOURCE_DIR + 'wp-includes/certificates/cacert.pem',
+					SOURCE_DIR + 'wp-includes/certificates/legacy-1024bit.pem'
 				],
-				dest: WORKING_DIR + 'wp-includes/certificates/ca-bundle.crt'
+				dest: SOURCE_DIR + 'wp-includes/certificates/ca-bundle.crt'
 			}
 		},
 		patch:{
@@ -1643,10 +1645,10 @@ module.exports = function(grunt) {
 			] );
 		} else {
 			grunt.task.run( [
+				'build:certificates',
 				'build:files',
 				'build:js',
 				'build:css',
-				'build:certificates',
 				'replace:source-maps',
 				'verify:build'
 			] );
