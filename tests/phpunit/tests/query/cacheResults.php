@@ -228,7 +228,7 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 		$cache_key_1 = $reflection->invoke( $query1, $query_vars1, $request1 );
 		$cache_key_2 = $reflection->invoke( $query1, $query_vars2, $request2 );
 
-		$this->assertSame( $cache_key_1, $cache_key_2, 'Cache key should differ.' );
+		$this->assertNotSame( $cache_key_1, $cache_key_2, 'Cache key should differ.' );
 	}
 
 	public function data_orderby_clauses_are_not_normalized() {
