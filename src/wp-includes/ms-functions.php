@@ -71,18 +71,23 @@ function get_active_blog_for_user( $user_id ) {
 		}
 	}
 
-	if ( ( ! is_object( $primary ) ) || ( 1 == $primary->archived || 1 == $primary->spam || 1 == $primary->deleted ) ) {
+	if ( ( ! is_object( $primary ) )
+		|| ( '1' === $primary->archived || '1' === $primary->spam || '1' === $primary->deleted )
+	) {
 		$blogs = get_blogs_of_user( $user_id, true ); // If a user's primary blog is shut down, check their other blogs.
 		$ret   = false;
 		if ( is_array( $blogs ) && count( $blogs ) > 0 ) {
 			foreach ( (array) $blogs as $blog_id => $blog ) {
-				if ( get_current_network_id() != $blog->site_id ) {
+				if ( get_current_network_id() !== $blog->site_id ) {
 					continue;
 				}
+
 				$details = get_site( $blog_id );
-				if ( is_object( $details ) && 0 == $details->archived && 0 == $details->spam && 0 == $details->deleted ) {
+				if ( is_object( $details )
+					&& '0' === $details->archived && '0' === $details->spam && '0' === $details->deleted
+				) {
 					$ret = $details;
-					if ( get_user_meta( $user_id, 'primary_blog', true ) != $blog_id ) {
+					if ( (int) get_user_meta( $user_id, 'primary_blog', true ) !== $blog_id ) {
 						update_user_meta( $user_id, 'primary_blog', $blog_id );
 					}
 					if ( ! get_user_meta( $user_id, 'source_domain', true ) ) {
@@ -230,8 +235,10 @@ function add_user_to_blog( $blog_id, $user_id, $role ) {
 function remove_user_from_blog( $user_id, $blog_id = 0, $reassign = 0 ) {
 	global $wpdb;
 
-	switch_to_blog( $blog_id );
 	$user_id = (int) $user_id;
+	$blog_id = (int) $blog_id;
+
+	switch_to_blog( $blog_id );
 
 	/**
 	 * Fires before a user is removed from a site.
@@ -245,15 +252,17 @@ function remove_user_from_blog( $user_id, $blog_id = 0, $reassign = 0 ) {
 	 */
 	do_action( 'remove_user_from_blog', $user_id, $blog_id, $reassign );
 
-	// If being removed from the primary blog, set a new primary
-	// if the user is assigned to multiple blogs.
-	$primary_blog = get_user_meta( $user_id, 'primary_blog', true );
-	if ( $primary_blog == $blog_id ) {
+	/*
+	 * If being removed from the primary blog, set a new primary
+	 * if the user is assigned to multiple blogs.
+	 */
+	$primary_blog = (int) get_user_meta( $user_id, 'primary_blog', true );
+	if ( $primary_blog === $blog_id ) {
 		$new_id     = '';
 		$new_domain = '';
 		$blogs      = get_blogs_of_user( $user_id );
 		foreach ( (array) $blogs as $blog ) {
-			if ( $blog->userblog_id == $blog_id ) {
+			if ( $blog->userblog_id === $blog_id ) {
 				continue;
 			}
 			$new_id     = $blog->userblog_id;
@@ -339,7 +348,7 @@ function get_blog_id_from_url( $domain, $path = '/' ) {
 	$path   = strtolower( $path );
 	$id     = wp_cache_get( md5( $domain . $path ), 'blog-id-cache' );
 
-	if ( -1 == $id ) { // Blog does not exist.
+	if ( -1 === $id ) { // Blog does not exist.
 		return 0;
 	} elseif ( $id ) {
 		return (int) $id;
@@ -460,7 +469,7 @@ function wpmu_validate_user_signup( $user_name, $user_email ) {
 	$orig_username = $user_name;
 	$user_name     = preg_replace( '/\s+/', '', sanitize_user( $user_name, true ) );
 
-	if ( $user_name != $orig_username || preg_match( '/[^a-z0-9]/', $user_name ) ) {
+	if ( $user_name !== $orig_username || preg_match( '/[^a-z0-9]/', $user_name ) ) {
 		$errors->add( 'user_name', __( 'Usernames can only contain lowercase letters (a-z) and numbers.' ) );
 		$user_name = $orig_username;
 	}
@@ -472,10 +481,12 @@ function wpmu_validate_user_signup( $user_name, $user_email ) {
 	}
 
 	$illegal_names = get_site_option( 'illegal_names' );
+
 	if ( ! is_array( $illegal_names ) ) {
 		$illegal_names = array( 'www', 'web', 'root', 'admin', 'main', 'invite', 'administrator' );
 		add_site_option( 'illegal_names', $illegal_names );
 	}
+
 	if ( in_array( $user_name, $illegal_names, true ) ) {
 		$errors->add( 'user_name', __( 'Sorry, that username is not allowed.' ) );
 	}
@@ -507,10 +518,12 @@ function wpmu_validate_user_signup( $user_name, $user_email ) {
 	}
 
 	$limited_email_domains = get_site_option( 'limited_email_domains' );
+
 	if ( is_array( $limited_email_domains ) && ! empty( $limited_email_domains ) ) {
 		$limited_email_domains = array_map( 'strtolower', $limited_email_domains );
-		$emaildomain           = strtolower( substr( $user_email, 1 + strpos( $user_email, '@' ) ) );
-		if ( ! in_array( $emaildomain, $limited_email_domains, true ) ) {
+		$email_domain          = strtolower( substr( $user_email, 1 + strpos( $user_email, '@' ) ) );
+
+		if ( ! in_array( $email_domain, $limited_email_domains, true ) ) {
 			$errors->add( 'user_email', __( 'Sorry, that email address is not allowed!' ) );
 		}
 	}
@@ -628,7 +641,8 @@ function wpmu_validate_blog_signup( $blogname, $blog_title, $user = '' ) {
 
 	$errors        = new WP_Error();
 	$illegal_names = get_site_option( 'illegal_names' );
-	if ( false == $illegal_names ) {
+
+	if ( ! is_array( $illegal_names ) ) {
 		$illegal_names = array( 'www', 'web', 'root', 'admin', 'main', 'invite', 'administrator' );
 		add_site_option( 'illegal_names', $illegal_names );
 	}
@@ -712,13 +726,15 @@ function wpmu_validate_blog_signup( $blogname, $blog_title, $user = '' ) {
 	 * unless it's the user's own username.
 	 */
 	if ( username_exists( $blogname ) ) {
-		if ( ! is_object( $user ) || ( is_object( $user ) && ( $user->user_login != $blogname ) ) ) {
+		if ( ! is_object( $user ) || ( is_object( $user ) && $user->user_login !== $blogname ) ) {
 			$errors->add( 'blogname', __( 'Sorry, that site is reserved!' ) );
 		}
 	}
 
-	// Has someone already signed up for this domain?
-	// TODO: Check email too?
+	/*
+	 * Has someone already signed up for this domain?
+	 * TODO: Check email too?
+	 */
 	$signup = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->signups WHERE domain = %s AND path = %s", $mydomain, $path ) );
 	if ( $signup instanceof stdClass ) {
 		$diff = time() - mysql2date( 'U', $signup->registered );
@@ -937,7 +953,7 @@ function wpmu_signup_blog_notification( $domain, $path, $title, $user_login, $us
 	}
 
 	// Send email with activation link.
-	if ( ! is_subdomain_install() || get_current_network_id() != 1 ) {
+	if ( ! is_subdomain_install() || get_current_network_id() !== 1 ) {
 		$activate_url = network_site_url( "wp-activate.php?key=$key" );
 	} else {
 		$activate_url = "http://{$domain}{$path}wp-activate.php?key=$key"; // @todo Use *_url() API.
@@ -1429,7 +1445,7 @@ function newblog_notify_siteadmin( $blog_id, $deprecated = '' ) {
 
 	$email = get_site_option( 'admin_email' );
 
-	if ( is_email( $email ) == false ) {
+	if ( ! is_email( $email ) ) {
 		return false;
 	}
 
@@ -1490,7 +1506,7 @@ function newuser_notify_siteadmin( $user_id ) {
 
 	$email = get_site_option( 'admin_email' );
 
-	if ( is_email( $email ) == false ) {
+	if ( ! is_email( $email ) ) {
 		return false;
 	}
 
@@ -1616,7 +1632,8 @@ function wpmu_welcome_notification( $blog_id, $user_id, $password, $title, $meta
 	$switched_locale = switch_to_user_locale( $user_id );
 
 	$welcome_email = get_site_option( 'welcome_email' );
-	if ( false == $welcome_email ) {
+
+	if ( ! $welcome_email ) {
 		/* translators: Do not translate USERNAME, SITE_NAME, BLOG_URL, PASSWORD: those are placeholders. */
 		$welcome_email = __(
 			'Howdy USERNAME,
@@ -1939,8 +1956,10 @@ function get_most_recent_post_of_user( $user_id ) {
 	$user_blogs       = get_blogs_of_user( (int) $user_id );
 	$most_recent_post = array();
 
-	// Walk through each blog and get the most recent post
-	// published by $user_id.
+	/*
+	 * Walk through each blog and get the most recent post
+	 * published by $user_id.
+	 */
 	foreach ( (array) $user_blogs as $blog ) {
 		$prefix      = $wpdb->get_blog_prefix( $blog->userblog_id );
 		$recent_post = $wpdb->get_row( $wpdb->prepare( "SELECT ID, post_date_gmt FROM {$prefix}posts WHERE post_author = %d AND post_type = 'post' AND post_status = 'publish' ORDER BY post_date_gmt DESC LIMIT 1", $user_id ), ARRAY_A );
@@ -2015,7 +2034,7 @@ function check_upload_mimes( $mimes ) {
  */
 function update_posts_count( $deprecated = '' ) {
 	global $wpdb;
-	update_option( 'post_count', (int) $wpdb->get_var( "SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_status = 'publish' and post_type = 'post'" ) );
+	update_option( 'post_count', (int) $wpdb->get_var( "SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_status = 'publish' and post_type = 'post'" ), true );
 }
 
 /**
@@ -2075,8 +2094,6 @@ function redirect_this_site( $deprecated = '' ) {
  * Checks whether an upload is too big.
  *
  * @since MU (3.0.0)
- *
- * @blessed
  *
  * @param array $upload An array of information about the newly-uploaded file.
  * @return string|array If the upload is under the size limit, $upload is returned. Otherwise returns an error message.
@@ -2269,7 +2286,7 @@ function add_new_user_to_blog( $user_id, $password, $meta ) {
  *
  * @since MU (3.0.0)
  *
- * @param PHPMailer $phpmailer The PHPMailer instance (passed by reference).
+ * @param PHPMailer\PHPMailer\PHPMailer $phpmailer The PHPMailer instance (passed by reference).
  */
 function fix_phpmailer_messageid( $phpmailer ) {
 	$phpmailer->Hostname = get_network()->domain;
@@ -2293,7 +2310,7 @@ function is_user_spammy( $user = null ) {
 		}
 	}
 
-	return $user && isset( $user->spam ) && 1 == $user->spam;
+	return $user && isset( $user->spam ) && '1' === $user->spam;
 }
 
 /**

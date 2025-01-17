@@ -13,6 +13,10 @@
  * It allows for WordPress to upgrade itself in combination with
  * the wp-admin/includes/update-core.php file.
  *
+ * Note: Newly introduced functions and methods cannot be used here.
+ * All functions must be present in the previous version being upgraded from
+ * as this file is used there too.
+ *
  * @since 2.8.0
  * @since 4.6.0 Moved to its own file from wp-admin/includes/class-wp-upgrader.php.
  *
@@ -121,10 +125,12 @@ class Core_Upgrader extends WP_Upgrader {
 			return new WP_Error( 'locked', $this->strings['locked'] );
 		}
 
-		$download = $this->download_package( $current->packages->$to_download, true );
+		$download = $this->download_package( $current->packages->$to_download, false );
 
-		// Allow for signature soft-fail.
-		// WARNING: This may be removed in the future.
+		/*
+		 * Allow for signature soft-fail.
+		 * WARNING: This may be removed in the future.
+		 */
 		if ( is_wp_error( $download ) && $download->get_error_data( 'softfail-filename' ) ) {
 			// Output the failure error as a normal feedback, and not as an error:
 			/** This filter is documented in wp-admin/includes/update-core.php */
