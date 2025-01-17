@@ -39,29 +39,29 @@ class Walker_Nav_Menu extends Walker {
 		'id'     => 'db_id',
 	);
 
-    /**
-     * The URL to the privacy policy page.
-     *
-     * @since 6.7.2
-     * @var string
-     */
-    private static $privacy_policy_url = null;
+	/**
+	 * The URL to the privacy policy page.
+	 *
+	 * @since 6.7.2
+	 * @var string
+	 */
+	private static $privacy_policy_url = null;
 
-    /**
-     * Get the URL to the privacy policy page.
-     * This method caches the URL to avoid multiple database queries and shared the URL between all instances of the class.
-     * Single query is performed on the first call to this method.
-     *
-     * @since 6.7.2
-     *
-     * @return string The URL to the privacy policy page.
-     */
-    public static function check_privacy_policy_url() {
-        if (null === self::$privacy_policy_url) {
-            self::$privacy_policy_url = get_privacy_policy_url();
-        }
-        return self::$privacy_policy_url;
-    }
+	/**
+	 * Get the URL to the privacy policy page.
+	 * This method caches the URL to avoid multiple database queries and shared the URL between all instances of the class.
+	 * Single query is performed on the first call to this method.
+	 *
+	 * @since 6.7.2
+	 *
+	 * @return string The URL to the privacy policy page.
+	 */
+	public static function check_privacy_policy_url() {
+		if ( null === self::$privacy_policy_url ) {
+			self::$privacy_policy_url = get_privacy_policy_url();
+		}
+		return self::$privacy_policy_url;
+	}
 
 	/**
 	 * Starts the list before the elements are added.
