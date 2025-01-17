@@ -141,7 +141,6 @@ class WP_Block {
 		$this->available_context = $available_context;
 
 		$this->refresh_context_dependents();
-		$this->refresh_parsed_block_dependents();
 	}
 
 	/**
@@ -554,11 +553,13 @@ class WP_Block {
 						/** This filter is documented in wp-includes/blocks.php */
 						$inner_block->context = apply_filters( 'render_block_context', $inner_block->context, $inner_block->parsed_block, $parent_block );
 
+						/*
+						 * The `refresh_context_dependents()` method already calls `refresh_parsed_block_dependents()`.
+						 * Therefore the second condition is irrelevant if the first one is satisfied.
+						 */
 						if ( $inner_block->context !== $inner_block_context ) {
 							$inner_block->refresh_context_dependents();
-						}
-
-						if ( $inner_block->parsed_block !== $source_block ) {
+						} elseif ( $inner_block->parsed_block !== $source_block ) {
 							$inner_block->refresh_parsed_block_dependents();
 						}
 
