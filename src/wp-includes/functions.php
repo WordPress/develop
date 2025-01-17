@@ -9135,5 +9135,5 @@ function wp_verify_fast_hash( string $message, string $hash ): bool {
 		return ( new PasswordHash( 8, true ) )->CheckPassword( $message, $hash );
 	}
 
-	return hash_equals( substr( $hash, 9 ), wp_fast_hash( $message ) );
+	return hash_equals( $hash, wp_fast_hash( $message ) );
 }
