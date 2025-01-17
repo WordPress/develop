@@ -42,7 +42,7 @@ class Walker_Nav_Menu extends Walker {
 	/**
 	 * The URL to the privacy policy page.
 	 *
-	 * @since 6.7.2
+	 * @since 6.2.0
 	 * @var string
 	 */
 	private static $privacy_policy_url = null;
@@ -52,15 +52,15 @@ class Walker_Nav_Menu extends Walker {
 	 * This method caches the URL to avoid multiple database queries and shared the URL between all instances of the class.
 	 * Single query is performed on the first call to this method.
 	 *
-	 * @since 6.7.2
+	 * @since 6.8.0
 	 *
 	 * @return string The URL to the privacy policy page.
 	 */
-	public static function check_privacy_policy_url() {
+	private static function get_privacy_policy_url() {
 		if ( null === self::$privacy_policy_url ) {
-			self::$privacy_policy_url = get_privacy_policy_url();
+			static::$privacy_policy_url = get_privacy_policy_url();
 		}
-		return self::$privacy_policy_url;
+		return static::$privacy_policy_url;
 	}
 
 	/**
@@ -260,7 +260,7 @@ class Walker_Nav_Menu extends Walker {
 		$atts['rel']    = ! empty( $menu_item->xfn ) ? $menu_item->xfn : '';
 
 		if ( ! empty( $menu_item->url ) ) {
-			if ( static::check_privacy_policy_url() === $menu_item->url ) {
+			if ( static::get_privacy_policy_url() === $menu_item->url ) {
 				$atts['rel'] = empty( $atts['rel'] ) ? 'privacy-policy' : $atts['rel'] . ' privacy-policy';
 			}
 
