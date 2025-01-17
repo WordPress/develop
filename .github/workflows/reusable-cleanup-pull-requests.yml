@@ -74,7 +74,7 @@ jobs:
             const commentBody = `A commit was made that fixes the Trac ticket referenced in the description of this pull request.
 
             SVN changeset: [${{ steps.git-svn-id.outputs.svn_revision_number }}](https://core.trac.wordpress.org/changeset/${{ steps.git-svn-id.outputs.svn_revision_number }})
-            GitHub changeset: ${{ github.sha }}
+            GitHub commit: https://github.com/WordPress/wordpress-develop/commit/${{ github.sha }}
 
             This PR will be closed, but please confirm the accuracy of this and reopen if there is more work to be done.`;
 
