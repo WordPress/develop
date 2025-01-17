@@ -68,6 +68,7 @@ jobs:
       fail-fast: false
       matrix:
         theme: [
+          'twentytwentyfive',
           'twentytwentyfour',
           'twentytwentythree',
           'twentytwentytwo',
@@ -131,7 +132,7 @@ jobs:
           show-progress: ${{ runner.debug == '1' && 'true' || 'false' }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -163,6 +164,7 @@ jobs:
       fail-fast: false
       matrix:
         theme: [
+            'twentytwentyfive',
             'twentytwentyfour',
             'twentytwentythree',
             'twentytwentytwo',
@@ -187,11 +189,12 @@ jobs:
           show-progress: ${{ runner.debug == '1' && 'true' || 'false' }}
 
       - name: Upload theme ZIP as an artifact
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
-          if-no-files-found: error
           name: ${{ matrix.theme }}
           path: src/wp-content/themes/${{ matrix.theme }}
+          if-no-files-found: error
+          include-hidden-files: true
 
   slack-notifications:
     name: Slack Notifications
