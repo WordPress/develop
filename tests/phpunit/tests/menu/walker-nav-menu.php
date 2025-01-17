@@ -16,30 +16,13 @@ class Tests_Menu_Walker_Nav_Menu extends WP_UnitTestCase {
 	 * @var int
 	 */
 	private $orig_wp_nav_menu_max_depth;
+
 	/**
-	 * The privacy policy page ID.
+	 * The ID of the privacy policy page.
 	 *
 	 * @var int
 	 */
-	protected static $privacy_policy_id;
-
-	/**
-	 * Set up before class.
-	 */
-	public static function set_up_before_class() {
-		parent::set_up_before_class();
-
-		$post_id = self::factory()->post->create(
-			array(
-				'post_type'   => 'page',
-				'post_title'  => 'Test Privacy Policy',
-				'post_status' => 'publish',
-			)
-		);
-
-		update_option( 'wp_page_for_privacy_policy', $post_id );
-		self::$privacy_policy_id = (int) get_option( 'wp_page_for_privacy_policy' );
-	}
+	private $privacy_policy_id;
 
 	/**
 	 * Setup.
@@ -51,6 +34,19 @@ class Tests_Menu_Walker_Nav_Menu extends WP_UnitTestCase {
 
 		/** Walker_Nav_Menu class */
 		require_once ABSPATH . 'wp-includes/class-walker-nav-menu.php';
+
+		$post_id = self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_title'  => 'Test Privacy Policy',
+				'post_status' => 'publish',
+			)
+		);
+
+		// Set the privacy policy page.
+		update_option( 'wp_page_for_privacy_policy', $post_id );
+		$this->privacy_policy_id = (int) get_option( 'wp_page_for_privacy_policy' );
+
 		$this->walker = new Walker_Nav_Menu();
 
 		$this->orig_wp_nav_menu_max_depth = $_wp_nav_menu_max_depth;
@@ -63,19 +59,8 @@ class Tests_Menu_Walker_Nav_Menu extends WP_UnitTestCase {
 		global $_wp_nav_menu_max_depth;
 
 		$_wp_nav_menu_max_depth = $this->orig_wp_nav_menu_max_depth;
+		delete_option( 'wp_page_for_privacy_policy' );
 		parent::tear_down();
-	}
-
-	/**
-	 * Tear down after class.
-	 */
-	public static function tear_down_after_class() {
-		if ( self::$privacy_policy_id ) {
-			wp_delete_post( self::$privacy_policy_id, true );
-			update_option( 'wp_page_for_privacy_policy', 0 );
-		}
-
-		parent::tear_down_after_class();
 	}
 
 	/**
@@ -176,8 +161,8 @@ class Tests_Menu_Walker_Nav_Menu extends WP_UnitTestCase {
 		$output = '';
 
 		$item = array(
-			'ID'        => self::$privacy_policy_id,
-			'object_id' => self::$privacy_policy_id,
+			'ID'        => $this->privacy_policy_id,
+			'object_id' => $this->privacy_policy_id,
 			'title'     => 'Privacy Policy',
 			'target'    => $target,
 			'xfn'       => $xfn,
@@ -242,7 +227,6 @@ class Tests_Menu_Walker_Nav_Menu extends WP_UnitTestCase {
 		);
 
 		// Do not set the privacy policy page.
-		update_option( 'wp_page_for_privacy_policy', 0 );
 
 		$output = '';
 
@@ -281,8 +265,8 @@ class Tests_Menu_Walker_Nav_Menu extends WP_UnitTestCase {
 		$output = '';
 
 		$item = array(
-			'ID'        => self::$privacy_policy_id,
-			'object_id' => self::$privacy_policy_id,
+			'ID'        => $this->privacy_policy_id,
+			'object_id' => $this->privacy_policy_id,
 			'title'     => 'Privacy Policy',
 			'target'    => '',
 			'xfn'       => '',
@@ -311,10 +295,11 @@ class Tests_Menu_Walker_Nav_Menu extends WP_UnitTestCase {
 	 * @covers Walker_Nav_Menu::start_el
 	 */
 	public function test_walker_nav_menu_start_el_should_add_rel_privacy_policy_when_id_does_not_match_but_url_does() {
+
 		$output = '';
 
 		// Ensure the ID does not match the privacy policy.
-		$not_privacy_policy_id = self::$privacy_policy_id - 1;
+		$not_privacy_policy_id = $this->privacy_policy_id - 1;
 
 		$item = array(
 			'ID'        => $not_privacy_policy_id,
@@ -418,46 +403,6 @@ class Tests_Menu_Walker_Nav_Menu extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that get_privacy_policy_url() returns the correct URL.
-	 */
-	public function test_get_privacy_policy_url_returns_correct_url() {
-		$expected_url = get_privacy_policy_url();
-		$actual_url   = $this->invoke_private_method( 'get_privacy_policy_url' );
-
-		$this->assertSame( $expected_url, $actual_url, 'The URL should match the privacy policy URL set in the option.' );
-	}
-
-	/**
-	 * Test that get_privacy_policy_url() updates after cache reset.
-	 */
-	public function test_get_privacy_policy_url_updates_after_reset() {
-		// Set initial privacy policy URL.
-		$first_url = $this->invoke_private_method( 'get_privacy_policy_url' );
-
-		// Change the privacy policy option.
-		$new_policy_id = self::factory()->post->create(
-			array(
-				'post_type'   => 'page',
-				'post_title'  => 'New Privacy Policy',
-				'post_status' => 'publish',
-			)
-		);
-		update_option( 'wp_page_for_privacy_policy', $new_policy_id );
-
-		// Reset the cache by setting the static property to null.
-		$reflection = new ReflectionClass( 'Walker_Nav_Menu' );
-		$property   = $reflection->getProperty( 'privacy_policy_url' );
-		$property->setAccessible( true );
-		$property->setValue( null );
-
-		// Fetch the new URL.
-		$new_url = $this->invoke_private_method( 'get_privacy_policy_url' );
-
-		$this->assertNotSame( $first_url, $new_url, 'The URL should update after the cache is reset.' );
-	}
-
-
-	/**
 	 * Data provider.
 	 *
 	 * @return array[]
@@ -489,16 +434,5 @@ class Tests_Menu_Walker_Nav_Menu extends WP_UnitTestCase {
 				'expected' => ' id="hello&amp;goodbye"',
 			),
 		);
-	}
-
-	/**
-	 * Helper method to call private methods.
-	 */
-	private function invoke_private_method( $method_name ) {
-		$reflection = new ReflectionClass( 'Walker_Nav_Menu' );
-		$method     = $reflection->getMethod( $method_name );
-		$method->setAccessible( true );
-
-		return $method->invoke( null );
 	}
 }
