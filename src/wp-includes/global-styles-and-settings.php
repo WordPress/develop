@@ -142,7 +142,7 @@ function wp_get_global_styles( $path = array(), $context = array() ) {
  * @since 6.6.0 Resolves relative paths in theme.json styles to theme absolute paths.
  *
  * @param array $types Optional. Types of styles to load.
- *                     It accepts as values 'variables', 'presets', 'styles', 'base-layout-styles'.
+ *                     See {@see 'WP_Theme_JSON::get_stylesheet'} for all valid types.
  *                     If empty, it'll load the following:
  *                     - for themes without theme.json: 'variables', 'presets', 'base-layout-styles'.
  *                     - for themes with theme.json: 'variables', 'presets', 'styles'.
@@ -257,8 +257,46 @@ function wp_add_global_styles_for_blocks() {
 	$tree        = WP_Theme_JSON_Resolver::get_merged_data();
 	$tree        = WP_Theme_JSON_Resolver::resolve_theme_file_uris( $tree );
 	$block_nodes = $tree->get_styles_block_nodes();
+
+	$can_use_cached = ! wp_is_development_mode( 'theme' );
+	$update_cache   = false;
+
+	if ( $can_use_cached ) {
+		// Hash the merged WP_Theme_JSON data to bust cache on settings or styles change.
+		$cache_hash = md5( wp_json_encode( $tree->get_raw_data() ) );
+		$cache_key  = 'wp_styles_for_blocks';
+		$cached     = get_transient( $cache_key );
+
+		// Reset the cached data if there is no value or if the hash has changed.
+		if ( ! is_array( $cached ) || $cached['hash'] !== $cache_hash ) {
+			$cached = array(
+				'hash'   => $cache_hash,
+				'blocks' => array(),
+			);
+
+			// Update the cache if the hash has changed.
+			$update_cache = true;
+		}
+	}
+
 	foreach ( $block_nodes as $metadata ) {
-		$block_css = $tree->get_styles_for_block( $metadata );
+
+		if ( $can_use_cached ) {
+			// Use the block name as the key for cached CSS data. Otherwise, use a hash of the metadata.
+			$cache_node_key = isset( $metadata['name'] ) ? $metadata['name'] : md5( wp_json_encode( $metadata ) );
+
+			if ( isset( $cached['blocks'][ $cache_node_key ] ) ) {
+				$block_css = $cached['blocks'][ $cache_node_key ];
+			} else {
+				$block_css                           = $tree->get_styles_for_block( $metadata );
+				$cached['blocks'][ $cache_node_key ] = $block_css;
+
+				// Update the cache if the cache contents have changed.
+				$update_cache = true;
+			}
+		} else {
+			$block_css = $tree->get_styles_for_block( $metadata );
+		}
 
 		if ( ! wp_should_load_separate_core_block_assets() ) {
 			wp_add_inline_style( 'global-styles', $block_css );
@@ -303,6 +341,10 @@ function wp_add_global_styles_for_blocks() {
 				}
 			}
 		}
+	}
+
+	if ( $update_cache ) {
+		set_transient( $cache_key, $cached );
 	}
 }
 

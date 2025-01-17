@@ -51,6 +51,8 @@ wp_enqueue_script( 'wp-edit-post' );
 
 $rest_path = rest_get_route_for_post( $post );
 
+$active_theme = get_stylesheet();
+
 // Preload common data.
 $preload_paths = array(
 	'/wp/v2/types?context=view',
@@ -65,8 +67,10 @@ $preload_paths = array(
 	sprintf( '%s/autosaves?context=edit', $rest_path ),
 	'/wp/v2/settings',
 	array( '/wp/v2/settings', 'OPTIONS' ),
-	'/wp/v2/global-styles/themes/' . get_stylesheet(),
+	'/wp/v2/global-styles/themes/' . $active_theme . '?context=view',
+	'/wp/v2/global-styles/themes/' . $active_theme . '/variations?context=view',
 	'/wp/v2/themes?context=edit&status=active',
+	array( '/wp/v2/global-styles/' . WP_Theme_JSON_Resolver::get_user_global_styles_post_id(), 'OPTIONS' ),
 	'/wp/v2/global-styles/' . WP_Theme_JSON_Resolver::get_user_global_styles_post_id() . '?context=edit',
 );
 
@@ -105,6 +109,24 @@ wp_add_inline_script(
 	'wp-blocks',
 	'wp.blocks.unstable__bootstrapServerSideBlockDefinitions(' . wp_json_encode( get_block_editor_server_block_settings() ) . ');'
 );
+
+// Preload server-registered block bindings sources.
+$registered_sources = get_all_registered_block_bindings_sources();
+if ( ! empty( $registered_sources ) ) {
+	$filtered_sources = array();
+	foreach ( $registered_sources as $source ) {
+		$filtered_sources[] = array(
+			'name'        => $source->name,
+			'label'       => $source->label,
+			'usesContext' => $source->uses_context,
+		);
+	}
+	$script = sprintf( 'for ( const source of %s ) { wp.blocks.registerBlockBindingsSource( source ); }', wp_json_encode( $filtered_sources ) );
+	wp_add_inline_script(
+		'wp-blocks',
+		$script
+	);
+}
 
 // Get admin url for handling meta boxes.
 $meta_box_url = admin_url( 'post.php' );

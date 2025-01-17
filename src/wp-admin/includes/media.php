@@ -773,7 +773,7 @@ function media_upload_form_handler() {
 				$post['menu_order'] = $attachment['menu_order'];
 			}
 
-			if ( isset( $send_id ) && $attachment_id == $send_id ) {
+			if ( isset( $send_id ) && $attachment_id === $send_id ) {
 				if ( isset( $attachment['post_parent'] ) ) {
 					$post['post_parent'] = $attachment['post_parent'];
 				}
@@ -2277,11 +2277,11 @@ function media_upload_form( $errors = null ) {
 		<label class="screen-reader-text" for="async-upload">
 			<?php
 			/* translators: Hidden accessibility text. */
-			_e( 'Upload' );
+			_ex( 'Upload', 'verb' );
 			?>
 		</label>
 		<input type="file" name="async-upload" id="async-upload" />
-		<?php submit_button( __( 'Upload' ), 'primary', 'html-upload', false ); ?>
+		<?php submit_button( _x( 'Upload', 'verb' ), 'primary', 'html-upload', false ); ?>
 		<a href="#" onclick="try{top.tb_remove();}catch(e){}; return false;"><?php _e( 'Cancel' ); ?></a>
 	</p>
 	<div class="clear"></div>
@@ -3243,7 +3243,7 @@ function edit_form_image_editor( $post ) {
 			__( '<a href="%1$s" %2$s>Learn how to describe the purpose of the image%3$s</a>. Leave empty if the image is purely decorative.' ),
 			/* translators: Localized tutorial, if one exists. W3C Web Accessibility Initiative link has list of existing translations. */
 			esc_url( __( 'https://www.w3.org/WAI/tutorials/images/decision-tree/' ) ),
-			'target="_blank" rel="noopener"',
+			'target="_blank"',
 			sprintf(
 				'<span class="screen-reader-text"> %s</span>',
 				/* translators: Hidden accessibility text. */
