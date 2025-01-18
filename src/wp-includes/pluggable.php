@@ -764,8 +764,8 @@ if ( ! function_exists( 'wp_validate_auth_cookie' ) ) :
 			return false;
 		}
 
-		if ( str_starts_with( $user->user_pass, '$P$' ) ) {
-			// Retain back-compat support for behaviour when using phpass hashed passwords.
+		if ( str_starts_with( $user->user_pass, '$P$' ) || str_starts_with( $user->user_pass, '$2y$' ) ) {
+			// Retain previous behaviour of phpass or vanilla bcrypt hashed passwords.
 			$pass_frag = substr( $user->user_pass, 8, 4 );
 		} else {
 			// Otherwise, use a substring from the end of the hash to avoid dealing with potentially long hash prefixes.
@@ -873,8 +873,8 @@ if ( ! function_exists( 'wp_generate_auth_cookie' ) ) :
 			$token   = $manager->create( $expiration );
 		}
 
-		if ( str_starts_with( $user->user_pass, '$P$' ) ) {
-			// Retain back-compat support for behaviour when using phpass hashed passwords.
+		if ( str_starts_with( $user->user_pass, '$P$' ) || str_starts_with( $user->user_pass, '$2y$' ) ) {
+			// Retain previous behaviour of phpass or vanilla bcrypt hashed passwords.
 			$pass_frag = substr( $user->user_pass, 8, 4 );
 		} else {
 			// Otherwise, use a substring from the end of the hash to avoid dealing with potentially long hash prefixes.
