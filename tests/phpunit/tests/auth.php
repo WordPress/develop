@@ -109,6 +109,28 @@ class Tests_Auth extends WP_UnitTestCase {
 	}
 
 	/**
+	 * @ticket 21022
+	 */
+	public function test_auth_cookie_generated_with_phpass_hash_remains_valid() {
+		self::set_user_password_with_phpass( 'password', self::$user_id );
+
+		$auth_cookie = wp_generate_auth_cookie( self::$user_id, time() + 3600, 'auth' );
+
+		$this->assertSame( self::$user_id, wp_validate_auth_cookie( $auth_cookie, 'auth' ) );
+	}
+
+	/**
+	 * @ticket 21022
+	 */
+	public function test_auth_cookie_generated_with_plain_bcrypt_hash_remains_valid() {
+		self::set_user_password_with_plain_bcrypt( 'password', self::$user_id );
+
+		$auth_cookie = wp_generate_auth_cookie( self::$user_id, time() + 3600, 'auth' );
+
+		$this->assertSame( self::$user_id, wp_validate_auth_cookie( $auth_cookie, 'auth' ) );
+	}
+
+	/**
 	 * @ticket 23494
 	 */
 	public function test_password_trimming() {
@@ -1731,6 +1753,38 @@ class Tests_Auth extends WP_UnitTestCase {
 			$wpdb->users,
 			array(
 				'user_pass' => self::$wp_hasher->HashPassword( $password ),
+			),
+			array(
+				'ID' => $user_id,
+			)
+		);
+		clean_user_cache( $user_id );
+	}
+
+
+	/**
+	 * Test the tests
+	 *
+	 * @covers Tests_Auth::set_user_password_with_plain_bcrypt
+	 *
+	 * @ticket 21022
+	 */
+	public function test_set_user_password_with_plain_bcrypt() {
+		// Set the user password with plain bcrypt.
+		self::set_user_password_with_plain_bcrypt( 'password', self::$user_id );
+
+		// Ensure the password is hashed with bcrypt.
+		$hash = get_userdata( self::$user_id )->user_pass;
+		$this->assertStringStartsWith( '$2y$', $hash );
+	}
+
+	private static function set_user_password_with_plain_bcrypt( string $password, int $user_id ) {
+		global $wpdb;
+
+		$wpdb->update(
+			$wpdb->users,
+			array(
+				'user_pass' => password_hash( 'password', PASSWORD_BCRYPT ),
 			),
 			array(
 				'ID' => $user_id,
