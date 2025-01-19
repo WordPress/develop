@@ -150,14 +150,14 @@ jobs:
           git --version
           locale -a
 
-      - name: Build WordPress
-        run: npm run build
-
       - name: Install npm dependencies
         run: npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
+
+      - name: Build WordPress
+        run: npm run build
 
       - name: Start Docker environment
         run: npm run env:start
