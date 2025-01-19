@@ -33,7 +33,7 @@ jobs:
   # Runs the performance test suite.
   performance:
     name: ${{ matrix.multisite && 'Multisite' || 'Single site' }}
-    uses: WordPress/wordpress-develop/.github/workflows/reusable-performance.yml@trunk
+    uses: ./.github/workflows/reusable-performance.yml
     permissions:
       contents: read
     if: ${{ ( github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' ) }}
