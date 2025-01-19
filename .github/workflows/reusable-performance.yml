@@ -150,6 +150,9 @@ jobs:
           git --version
           locale -a
 
+      - name: Build WordPress
+        run: npm run build
+
       - name: Install npm dependencies
         run: npm ci
 
