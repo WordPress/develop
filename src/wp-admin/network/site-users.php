@@ -374,7 +374,7 @@ if ( current_user_can( 'create_users' ) && apply_filters( 'show_network_site_use
 		</tr>
 	</table>
 	<?php wp_nonce_field( 'add-user', '_wpnonce_add-new-user' ); ?>
-	<?php submit_button( __( 'Add New User' ), 'primary', 'add-user', true, array( 'id' => 'submit-add-user' ) ); ?>
+	<?php submit_button( __( 'Add User' ), 'primary', 'add-user', true, array( 'id' => 'submit-add-user' ) ); ?>
 </form>
 <?php endif; ?>
 </div>
