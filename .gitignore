@@ -42,6 +42,7 @@ wp-tests-config.php
 /packagehash.txt
 /artifacts
 /setup.log
+/coverage
 
 # Files and folders that get created in wp-content
 /src/wp-content/blogs.dir
@@ -64,6 +65,7 @@ wp-tests-config.php
 !/src/wp-content/themes/twentytwentytwo
 !/src/wp-content/themes/twentytwentythree
 !/src/wp-content/themes/twentytwentyfour
+!/src/wp-content/themes/twentytwentyfive
 /src/wp-content/upgrade
 /src/wp-content/uploads
 /src/wp-content/advanced-cache.php
