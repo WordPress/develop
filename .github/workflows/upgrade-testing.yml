@@ -112,8 +112,6 @@ jobs:
           # The PHP <= 7.3/MySQL 8.4 jobs currently fail due to mysql_native_password being disabled by default. See https://core.trac.wordpress.org/ticket/61218.
           - php: '7.2'
             db-version: '8.4'
-          - php: '7.3'
-            db-version: '8.4'
     with:
       os: ${{ matrix.os }}
       php: ${{ matrix.php }}
@@ -141,8 +139,6 @@ jobs:
         exclude:
           # The PHP <= 7.3/MySQL 8.4 jobs currently fail due to mysql_native_password being disabled by default. See https://core.trac.wordpress.org/ticket/61218.
           - php: '7.2'
-            db-version: '8.4'
-          - php: '7.3'
             db-version: '8.4'
     with:
       os: ${{ matrix.os }}
@@ -200,8 +196,6 @@ jobs:
         exclude:
           # The PHP <= 7.3/MySQL 8.4 jobs currently fail due to mysql_native_password being disabled by default. See https://core.trac.wordpress.org/ticket/61218.
           - php: '7.2'
-            db-version: '8.4'
-          - php: '7.3'
             db-version: '8.4'
     with:
       os: ${{ matrix.os }}
