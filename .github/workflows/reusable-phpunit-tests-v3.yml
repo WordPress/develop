@@ -76,6 +76,10 @@ on:
       CODECOV_TOKEN:
         description: 'The Codecov token required for uploading reports.'
         required: false
+      WPT_REPORT_API_KEY:
+        description: 'The WordPress.org Hosting Tests API key.'
+        required: false
+
 env:
   LOCAL_PHP: ${{ inputs.php }}-fpm
   LOCAL_PHP_XDEBUG: ${{ inputs.coverage-report || false }}
