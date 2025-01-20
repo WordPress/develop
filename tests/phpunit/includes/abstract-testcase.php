@@ -1801,7 +1801,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 				return $result;
 			}
 
-			$attempts++;
+			++$attempts;
 			sleep( 5 );
 		}
 
