@@ -146,7 +146,8 @@ jobs:
         if: ${{ inputs.memcached }}
         run: |
           cp tests/phpunit/includes/object-cache.php build/wp-content/object-cache.php
-          docker run --name memcached --net $(basename "$PWD")_wpdevnet -d memcached
+          BASE=$(basename "$PWD")
+          docker run --name memcached --net "${BASE}_wpdevnet" -d memcached
 
       - name: General debug information
         run: |
