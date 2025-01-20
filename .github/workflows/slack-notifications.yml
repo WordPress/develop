@@ -153,15 +153,16 @@ jobs:
       - name: Construct payload and store as an output
         id: create-payload
         run: |
-          echo payload="$( jq \
+          PAYLOAD="$( jq \
             -n \
             --arg workflow_name "${GITHUB_WORKFLOW}" \
             --arg ref_name "${CURRENT_BRANCH}" \
             --arg run_url "https://github.com/WordPress/wordpress-develop/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}" \
             --arg commit_message "${COMMIT_MSG}" \
-            # shellcheck disable=SC2016,SC2086
+            # shellcheck disable=SC2016,SC2086 \
             '{workflow_name: $workflow_name, ref_name: $ref_name, run_url: $run_url, commit_message: $commit_message}'
-          )" >> "$GITHUB_OUTPUT"
+          )"
+          echo "payload=$PAYLOAD" >> "$GITHUB_OUTPUT"
         env:
           COMMIT_MSG: ${{ steps.commit-message.outputs.commit_message_escaped }}
 
