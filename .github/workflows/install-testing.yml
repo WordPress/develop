@@ -122,11 +122,9 @@ jobs:
           tools: ${{ contains( fromJSON('["5.4", "5.5"]'), matrix.php ) && 'wp-cli:2.4.0' || 'wp-cli' }}
 
       - name: Download WordPress
-        run: |
-          wp core download \
-          ${{ inputs.wp-version && '--version="${WP_VERSION}"' || '--version=nightly' }}
+        run: wp core download --version="${WP_VERSION}"
         env:
-          WP_VERSION: ${{ inputs.wp-version }}
+          WP_VERSION: ${{ inputs.wp-version || 'nightly' }}
 
       - name: Create wp-config.php file
         run: wp config create --dbname=test_db --dbuser=root --dbpass=root --dbhost="127.0.0.1:${DB_PORT}"
