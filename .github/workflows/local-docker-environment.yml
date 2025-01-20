@@ -104,7 +104,6 @@ jobs:
       db-type: 'mysql'
       db-version: ${{ matrix.db-version }}
       memcached: ${{ matrix.memcached }}
-      tests-domain: ${{ matrix.tests-domain }}
 
   slack-notifications:
     name: Slack Notifications
