@@ -69,7 +69,7 @@ jobs:
           --health-retries="5"
           -e MYSQL_ROOT_PASSWORD="root"
           -e MYSQL_DATABASE="test_db"
-          --entrypoint sh
+          --entrypoint sh ${{ inputs.db-type }}:${{ inputs.db-version }}
           -c "exec docker-entrypoint.sh mysqld${{ inputs.db-type == 'mysql' && contains( fromJSON('["7.2", "7.3"]'), inputs.php ) && ' --default-authentication-plugin=mysql_native_password' || '' }}"
 
     steps:

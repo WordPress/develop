@@ -110,7 +110,7 @@ jobs:
           --health-retries="5"
           -e MYSQL_ROOT_PASSWORD="root"
           -e MYSQL_DATABASE="test_db"
-          --entrypoint sh
+          --entrypoint sh ${{ matrix.db-type }}:${{ matrix.db-version }}
           -c "exec docker-entrypoint.sh mysqld${{ matrix.db-type == 'mysql' && contains( fromJSON('["7.2", "7.3"]'), matrix.php ) && ' --default-authentication-plugin=mysql_native_password' || '' }}"
 
     steps:
