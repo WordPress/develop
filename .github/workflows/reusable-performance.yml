@@ -132,7 +132,7 @@ jobs:
       # The `workflow_dispatch` event is the only one missing the needed SHA to target.
       - name: Retrieve previous commit SHA (if necessary)
         if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: echo TARGET_SHA="$(git rev-parse HEAD^1)" >> "$GITHUB_ENV"
+        run: echo "TARGET_SHA=$(git rev-parse HEAD^1)" >> "$GITHUB_ENV"
 
       - name: Set up Node.js
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0

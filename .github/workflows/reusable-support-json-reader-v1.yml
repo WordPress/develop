@@ -59,11 +59,11 @@ jobs:
         id: major-wp-version
         run: |
           if [ "${WP_VERSION}" ] && [ "${WP_VERSION}" != "nightly" ] && [ "${WP_VERSION}" != "latest" ] && [ "${WP_VERSION}" != "trunk" ]; then
-            echo version="$(echo "${WP_VERSION}" | tr '.' '-' | cut -d '-' -f1-2)" >> "$GITHUB_OUTPUT"
+            echo "version=$(echo "${WP_VERSION}" | tr '.' '-' | cut -d '-' -f1-2)" >> "$GITHUB_OUTPUT"
           elif [ "${WP_VERSION}" ] && [ "${WP_VERSION}" != "trunk" ]; then
-            echo version="${WP_VERSION}" >> "$GITHUB_OUTPUT"
+            echo "version=${WP_VERSION}" >> "$GITHUB_OUTPUT"
           else
-            echo version="nightly" >> "$GITHUB_OUTPUT"
+            echo "version=nightly" >> "$GITHUB_OUTPUT"
           fi
         env:
           WP_VERSION: ${{ inputs.wp-version }}
@@ -98,9 +98,9 @@ jobs:
         id: php-versions
         run: |
           if [ "${WP_VERSION}" != "latest" ] && [ "${WP_VERSION}" != "nightly" ]; then
-            echo versions="$(jq -r '.["${WP_VERSION}"] | @json' .version-support-php.json)" >> "$GITHUB_OUTPUT" # @TODO finalise
+            echo "versions=$(jq -r '.["${WP_VERSION}"] | @json' .version-support-php.json)" >> "$GITHUB_OUTPUT" # @TODO finalise
           else
-            echo versions="$(jq -r '.[ (keys[-1]) ] | @json' .version-support-php.json)" >> "$GITHUB_OUTPUT"
+            echo "versions=$(jq -r '.[ (keys[-1]) ] | @json' .version-support-php.json)" >> "$GITHUB_OUTPUT"
           fi
         env:
           WP_VERSION: ${{ needs.major-wp-version.outputs.version }}
@@ -135,9 +135,9 @@ jobs:
         id: mysql-versions
         run: |
           if [ "${WP_VERSION}" != "latest" ] && [ "${WP_VERSION}" != "nightly" ]; then
-            echo versions="$(jq -r '.["${WP_VERSION}"] | @json' .version-support-mysql.json)" >> "$GITHUB_OUTPUT" # @todo finalise
+            echo "versions=$(jq -r '.["${WP_VERSION}"] | @json' .version-support-mysql.json)" >> "$GITHUB_OUTPUT" # @todo finalise
           else
-            echo versions="$(jq -r '.[ (keys[-1]) ] | @json' .version-support-mysql.json)" >> "$GITHUB_OUTPUT"
+            echo "versions=$(jq -r '.[ (keys[-1]) ] | @json' .version-support-mysql.json)" >> "$GITHUB_OUTPUT"
           fi
         env:
           WP_VERSION: ${{ needs.major-wp-version.outputs.version }}

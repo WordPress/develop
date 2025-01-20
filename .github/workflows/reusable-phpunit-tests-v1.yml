@@ -91,8 +91,8 @@ jobs:
     steps:
       - name: Configure environment variables
         run: |
-          echo PHP_FPM_UID="$(id -u)" >> "$GITHUB_ENV"
-          echo PHP_FPM_GID="$(id -g)" >> "$GITHUB_ENV"
+          echo "PHP_FPM_UID=$(id -u)" >> "$GITHUB_ENV"
+          echo "PHP_FPM_GID=$(id -g)" >> "$GITHUB_ENV"
 
       - name: Checkout repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -115,7 +115,7 @@ jobs:
       - name: Get composer cache directory
         if: ${{ env.COMPOSER_INSTALL == true }}
         id: composer-cache
-        run: echo composer_dir="$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+        run: echo "composer_dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
       - name: Cache Composer dependencies
         if: ${{ env.COMPOSER_INSTALL == true }}

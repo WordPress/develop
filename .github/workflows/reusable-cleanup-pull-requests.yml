@@ -32,7 +32,7 @@ jobs:
         env:
           COMMIT_MSG_RAW: ${{ github.event.head_commit.message }}
         run: |
-          COMMIT_MESSAGE=$(echo "$COMMIT_MSG_RAW" | sed -n '/^Fixes #/,/\./p')
+          COMMIT_MESSAGE="$(echo "$COMMIT_MSG_RAW" | sed -n '/^Fixes #/,/\./p')"
           echo "fixed_list=$(echo "$COMMIT_MESSAGE" | sed -n 's/.*Fixes #\([0-9]\+\).*/\1/p' | tr '\n' ' ')" >> $GITHUB_OUTPUT
 
       - name: Get the SVN revision
@@ -40,7 +40,7 @@ jobs:
         env:
           COMMIT_MSG_RAW: ${{ github.event.head_commit.message }}
         run: |
-          COMMIT_MESSAGE=$(echo "$COMMIT_MSG_RAW" | sed -n '$p')
+          COMMIT_MESSAGE="$(echo "$COMMIT_MSG_RAW" | sed -n '$p')"
           echo "svn_revision_number=$(echo "$COMMIT_MESSAGE" | sed -n 's/.*git-svn-id: https:\/\/develop.svn.wordpress.org\/[^@]*@\([0-9]*\) .*/\1/p')" >> $GITHUB_OUTPUT
 
       - name: Find pull requests
