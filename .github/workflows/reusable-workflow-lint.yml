@@ -1,0 +1,99 @@
+name: Lint GitHub Actions workflows
+on:
+  workflow_call:
+
+permissions: {}
+
+jobs:
+  actionlint:
+    name: Actionlint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+
+      # https://github.com/rhysd/actionlint
+      - name: Run actionlint
+        uses: docker://rhysd/actionlint:1.7.6
+        with:
+          args: "-color -verbose"
+
+  octoscan:
+    name: Octoscan
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+
+      - name: Run octoscan
+        id: octoscan
+        uses: synacktiv/action-octoscan@6b1cf2343893dfb9e5f75652388bd2dc83f456b0 # v1
+        with:
+          filter_triggers: ''
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3
+        with:
+          sarif_file: ${{steps.octoscan.outputs.sarif_output}}
+          category: octoscan
+
+  zizmor:
+    name: Zizmor
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@38f3f104447c67c051c4a08e39b64a148898af3a # v4
+
+      # https://github.com/woodruffw/zizmor
+      - name: Run zizmor
+        run: uvx zizmor@1.1.1 --format sarif . > results.sarif
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3
+        with:
+          sarif_file: results.sarif
+          category: zizmor
+
+  poutine:
+    name: Poutine
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        persist-credentials: false
+
+    - name: Run Poutine
+      uses: boostsecurityio/poutine-action@84c0a0d32e8d57ae12651222be1eb15351429228 # v0.15.2
+
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3
+      with:
+        sarif_file: results.sarif
+        category: poutine
