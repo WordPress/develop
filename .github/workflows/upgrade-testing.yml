@@ -245,7 +245,7 @@ jobs:
   # the full list of PHP/MySQL combinations.
   upgrade-tests-oldest-wp-mysql:
     name: ${{ matrix.wp }} to ${{ inputs.new-version && inputs.new-version || 'latest' }}
-    uses: WordPress/wordpress-develop/.github/workflows/reusable-upgrade-testing.yml@trunk
+    uses: ./.github/workflows/reusable-upgrade-testing.yml
     if: ${{ github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' }}
     strategy:
       fail-fast: false
