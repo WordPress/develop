@@ -4270,11 +4270,12 @@ function the_shortlink( $text = '', $title = '', $before = '', $after = '' ) {
 		 * Filters the short link anchor tag for a post.
 		 *
 		 * @since 3.0.0
+		 * @since 6.8.0 Removed title attribute.
 		 *
 		 * @param string $link      Shortlink anchor tag.
 		 * @param string $shortlink Shortlink URL.
 		 * @param string $text      Shortlink's text.
-		 * @param string $title     Shortlink's title attribute. Unused.
+		 * @param string $title     Unused.
 		 */
 		$link = apply_filters( 'the_shortlink', $link, $shortlink, $text, $title );
 		echo $before, $link, $after;
