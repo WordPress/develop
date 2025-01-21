@@ -145,6 +145,7 @@ jobs:
       - name: Prepare commit message.
         id: commit-message
         run: |
+          # shellcheck disable=SC2016
           COMMIT_MESSAGE="$(echo "${COMMIT_MSG_RAW}" | awk 'NR==1' | sed 's/`/\\`/g' | sed 's/\"/\\\\\\"/g' | sed 's/\$/\\$/g')"
           echo commit_message_escaped="${COMMIT_MESSAGE}" >> "$GITHUB_OUTPUT"
         env:
@@ -159,7 +160,6 @@ jobs:
             --arg ref_name "${CURRENT_BRANCH}" \
             --arg run_url "https://github.com/WordPress/wordpress-develop/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}" \
             --arg commit_message "${COMMIT_MSG}" \
-            # shellcheck disable=SC2016,SC2086 \
             '{workflow_name: $workflow_name, ref_name: $ref_name, run_url: $run_url, commit_message: $commit_message}'
           )"
           echo "payload=$PAYLOAD" >> "$GITHUB_OUTPUT"
