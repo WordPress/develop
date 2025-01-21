@@ -5,6 +5,7 @@
  * @group formatting
  * @group kses
  */
+
 class Tests_Kses extends WP_UnitTestCase {
 
 	/**
