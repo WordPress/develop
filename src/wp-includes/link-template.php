@@ -4267,7 +4267,7 @@ function the_shortlink( $text = '', $title = '', $before = '', $after = '' ) {
 		$link = sprintf(
 			'<a rel="shortlink" href="%1$s"%2$s>%3$s</a>',
 			esc_url( $shortlink ),
-			empty( $title ) ? '' : ' title="' . $title .'"',
+			empty( $title ) ? '' : ' title="' . $title . '"',
 			$text
 		);
 
