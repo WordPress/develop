@@ -98,7 +98,13 @@ jobs:
         id: php-versions
         run: |
           if [ "${WP_VERSION}" != "latest" ] && [ "${WP_VERSION}" != "nightly" ]; then
-            echo "versions=$(jq -r '.["${WP_VERSION}"] | @json' .version-support-php.json)" >> "$GITHUB_OUTPUT" # @TODO finalise
+            VERSIONS="$( jq \
+              -r \
+              --arg wp_version "${WP_VERSION}" \
+              '.[$wp_version] | @json' \
+              .version-support-php.json
+            )"
+            echo "versions=$VERSIONS" >> "$GITHUB_OUTPUT"
           else
             echo "versions=$(jq -r '.[ (keys[-1]) ] | @json' .version-support-php.json)" >> "$GITHUB_OUTPUT"
           fi
@@ -135,7 +141,13 @@ jobs:
         id: mysql-versions
         run: |
           if [ "${WP_VERSION}" != "latest" ] && [ "${WP_VERSION}" != "nightly" ]; then
-            echo "versions=$(jq -r '.["${WP_VERSION}"] | @json' .version-support-mysql.json)" >> "$GITHUB_OUTPUT" # @todo finalise
+            VERSIONS="$( jq \
+              -r \
+              --arg wp_version "${WP_VERSION}" \
+              '.[$wp_version] | @json' \
+              .version-support-mysql.json
+            )"
+            echo "versions=$VERSIONS" >> "$GITHUB_OUTPUT"
           else
             echo "versions=$(jq -r '.[ (keys[-1]) ] | @json' .version-support-mysql.json)" >> "$GITHUB_OUTPUT"
           fi
