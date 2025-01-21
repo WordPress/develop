@@ -234,13 +234,12 @@ function get_the_author_link() {
 	if ( get_the_author_meta( 'url' ) ) {
 		global $authordata;
 
-		$author_url          = get_the_author_meta( 'url' );
-		$author_display_name = get_the_author();
+		$author_url = get_the_author_meta( 'url' );
 
 		$link = sprintf(
 			'<a href="%1$s" rel="author external">%2$s</a>',
 			esc_url( $author_url ),
-			$author_display_name
+			get_the_author()
 		);
 
 		/**
