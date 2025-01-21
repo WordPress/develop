@@ -186,10 +186,10 @@ jobs:
       - name: Enable themes on Multisite
         if: ${{ inputs.multisite }}
         run: |
-          npm run env:cli -- theme enable twentytwentyone --network --path="/var/www/${{ env.LOCAL_DIR }}"
-          npm run env:cli -- theme enable twentytwentythree --network --path="/var/www/${{ env.LOCAL_DIR }}"
-          npm run env:cli -- theme enable twentytwentyfour --network --path="/var/www/${{ env.LOCAL_DIR }}"
-          npm run env:cli -- theme enable twentytwentyfive --network --path="/var/www/${{ env.LOCAL_DIR }}"
+          npm run env:cli -- theme enable twentytwentyone --network --path="/var/www/${LOCAL_DIR}"
+          npm run env:cli -- theme enable twentytwentythree --network --path="/var/www/${LOCAL_DIR}"
+          npm run env:cli -- theme enable twentytwentyfour --network --path="/var/www/${LOCAL_DIR}"
+          npm run env:cli -- theme enable twentytwentyfive --network --path="/var/www/${LOCAL_DIR}"
 
       - name: Install WordPress Importer plugin
         run: npm run env:cli -- plugin install wordpress-importer --activate --path="/var/www/${LOCAL_DIR}"
