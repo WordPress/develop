@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
 
   ##
@@ -47,6 +45,7 @@ services:
       - PHP_FPM_GID=${PHP_FPM_GID-1000}
       - GITHUB_REF=${GITHUB_REF-false}
       - GITHUB_EVENT_NAME=${GITHUB_EVENT_NAME-false}
+      - HOST_PATH=${PWD-}/${LOCAL_DIR-src}
 
     volumes:
       - ./tools/local-env/php-config.ini:/usr/local/etc/php/conf.d/php-config.ini
@@ -65,7 +64,7 @@ services:
   # The MySQL container.
   ##
   mysql:
-    image: amd64/${LOCAL_DB_TYPE-mysql}:${LOCAL_DB_VERSION-latest}
+    image: ${LOCAL_DB_TYPE-mysql}:${LOCAL_DB_VERSION-latest}
 
     networks:
       - wpdevnet
@@ -81,10 +80,10 @@ services:
       - mysql:/var/lib/mysql
 
     # For compatibility with PHP versions that don't support the caching_sha2_password auth plugin used in MySQL 8.0.
-    command: --default-authentication-plugin=mysql_native_password
+    command: ${LOCAL_DB_AUTH_OPTION-}
 
     healthcheck:
-      test: [ "CMD-SHELL", "if [ \"$LOCAL_DB_TYPE\" = \"mariadb\" ]; then mariadb-admin ping -h localhost; else mysqladmin ping -h localhost; fi" ]
+      test: [ "CMD-SHELL", "if [ \"$LOCAL_DB_TYPE\" = \"mariadb\" ]; then case \"$LOCAL_DB_VERSION\" in 5.5|10.0|10.1|10.2|10.3) mysqladmin ping -h localhost || exit $$?;; *) mariadb-admin ping -h localhost || exit $$?;; esac; else mysqladmin ping -h localhost || exit $$?; fi" ]
       timeout: 5s
       interval: 5s
       retries: 10
@@ -103,6 +102,7 @@ services:
       - LOCAL_PHP_MEMCACHED=${LOCAL_PHP_MEMCACHED-false}
       - PHP_FPM_UID=${PHP_FPM_UID-1000}
       - PHP_FPM_GID=${PHP_FPM_GID-1000}
+      - HOST_PATH=${PWD-}/${LOCAL_DIR-src}
 
     volumes:
       - ./:/var/www
