@@ -42,7 +42,7 @@ class Walker_Nav_Menu extends Walker {
 	/**
 	 * The URL to the privacy policy page.
 	 *
-	 * @since 6.2.0
+	 * @since 6.8.0
 	 * @var string
 	 */
 	private $privacy_policy_url;
