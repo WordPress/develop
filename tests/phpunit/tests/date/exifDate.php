@@ -7,9 +7,9 @@
 class Tests_Date_Exif extends WP_UnitTestCase {
 
 	/**
-	 * @dataProvider data_wp_exif_datetime
-	 *
 	 * @ticket 49413
+	 *
+	 * @dataProvider data_wp_exif_datetime
 	 *
 	 * @param string      $date_string Date string in EXIF format (Y:m:d H:i:s).
 	 * @param string|null $timezone    Optional. Timezone or offset string.
@@ -51,12 +51,12 @@ class Tests_Date_Exif extends WP_UnitTestCase {
 	}
 
 	/**
-	 * @dataProvider data_wp_exif_date2ts
-	 *
 	 * @ticket 49413
 	 *
-	 * @param string    $date_string Date string in EXIF format (Y:m:d H:i:s).
-	 * @param int|bool  $expected    Expected Unix timestamp or false for invalid input.
+	 * @dataProvider data_wp_exif_date2ts
+	 *
+	 * @param string   $date_string Date string in EXIF format (Y:m:d H:i:s).
+	 * @param int|bool $expected    Expected Unix timestamp or false for invalid input.
 	 */
 	public function test_wp_exif_date2ts( $date_string, $expected ) {
 		$timestamp = wp_exif_date2ts( $date_string );

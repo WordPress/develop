@@ -806,13 +806,13 @@ function wp_exif_frac2dec( $str ) {
 }
 
 /**
- * Convert the exif date format to DateTime object
+ * Convert the exif date format to DateTime object.
  *
  * @since 6.8.0
  *
  * @param string $str      A date string expected to be in Exif format (Y:m:d H:i:s).
  * @param string $timezone Optional. Timezone or offset string.
- * @return DateTimeImmutable|false Return false if not valid date
+ * @return DateTimeImmutable|false Return Date and time object, otherwise false.
  */
 function wp_exif_datetime( $str, $timezone = null ) {
 	try {
