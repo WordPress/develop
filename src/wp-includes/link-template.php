@@ -4250,7 +4250,7 @@ function wp_shortlink_header() {
  * @since 6.8.0 Removed default title attribute.
  *
  * @param string $text   Optional. The link text or HTML to be displayed. Defaults to 'This is the short link.'
- * @param string $title  Optional. The tooltip for the link. Must be sanitized. Defaults empty.
+ * @param string $title  Optional. The tooltip for the link. Must be sanitized. Default empty.
  * @param string $before Optional. HTML to display before the link. Default empty.
  * @param string $after  Optional. HTML to display after the link. Default empty.
  */
