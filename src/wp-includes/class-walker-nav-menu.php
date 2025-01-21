@@ -49,6 +49,8 @@ class Walker_Nav_Menu extends Walker {
 
 	/**
 	 * Constructor.
+	 *
+	 * @since 6.8.0
 	 */
 	public function __construct() {
 		$this->privacy_policy_url = get_privacy_policy_url();
