@@ -1214,6 +1214,7 @@ class WP_Query {
 
 		// If query string 'cat' is an array, implode it.
 		if ( is_array( $q['cat'] ) ) {
+			sort( $q['cat'] );
 			$q['cat'] = implode( ',', $q['cat'] );
 		}
 
