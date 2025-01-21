@@ -132,7 +132,7 @@ jobs:
           # used for PHP 8 testing instead.
           if [ "${LOCAL_PHP}" == '8.0-fpm' ]; then
             docker compose run --rm php composer install --ignore-platform-reqs
-            echo PHPUNIT_SCRIPT="php-composer" >> "$GITHUB_ENV"
+            echo "PHPUNIT_SCRIPT=php-composer" >> "$GITHUB_ENV"
           elif [ "${LOCAL_PHP}" == '7.1-fpm' ]; then
             docker compose run --rm php composer update
             git checkout -- composer.lock
