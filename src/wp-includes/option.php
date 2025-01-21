@@ -3300,7 +3300,7 @@ function filter_add_site_metadata( $current, $object_id, $meta_key, $meta_value,
 
 	_doing_it_wrong( 'add_metadata', __( 'This function is deprecated. Use add_network_option() instead.' ), '6.8.0' );
 
-	return add_network_option( $object_id, $meta_key, $meta_value, $unique );
+	return add_network_option( $object_id, $meta_key, $meta_value );
 }
 
 /**
