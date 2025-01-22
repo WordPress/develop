@@ -59,8 +59,6 @@ jobs:
     name: ${{ matrix.wp }} to ${{ inputs.new-version && inputs.new-version || 'latest' }}
     uses: WordPress/wordpress-develop/.github/workflows/reusable-upgrade-testing.yml@trunk
     if: ${{ github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' }}
-    permissions:
-      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -96,8 +94,6 @@ jobs:
     name: ${{ matrix.wp }} to ${{ inputs.new-version && inputs.new-version || 'latest' }}
     uses: WordPress/wordpress-develop/.github/workflows/reusable-upgrade-testing.yml@trunk
     if: ${{ github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' }}
-    permissions:
-      contents: read
     strategy:
       fail-fast: false
       matrix:
