@@ -93,6 +93,6 @@ jobs:
               workflow_id: 'failed-workflow.yml',
               ref: 'trunk',
               inputs: {
-                run_id: context.runId,
+                run_id: `${context.runId}`,
               }
             });
