@@ -86,7 +86,7 @@ function get_categories( $args = '' ) {
  *                             respectively. Default OBJECT.
  * @param string     $filter   Optional. How to sanitize category fields. Default 'raw'.
  * @return WP_Term|array|WP_Error|null Category data in type defined by $output parameter.
- *                                     WP_Term will come with backwards compatible property aliases filled in.
+ *                                     Returns a WP_Term object with backwards compatible property aliases filled in.
  *                                     WP_Error if $category is empty, null if it does not exist.
  */
 function get_category( $category, $output = OBJECT, $filter = 'raw' ) {
