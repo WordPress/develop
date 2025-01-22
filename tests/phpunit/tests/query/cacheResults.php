@@ -220,15 +220,20 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 		$query2   = new WP_Query( $query_vars2 );
 		$request2 = str_replace( $fields, "{$wpdb->posts}.*", $query2->request );
 
-		$reflection = new ReflectionMethod( $query1, 'generate_cache_key' );
-		$reflection->setAccessible( true );
+		$reflection_q1 = new ReflectionProperty( $query1, 'query_cache_key' );
+		$reflection_q1->setAccessible( true );
+
+		$reflection_q2 = new ReflectionProperty( $query2, 'query_cache_key' );
+		$reflection_q2->setAccessible( true );
 
 		$this->assertNotSame( $request1, $request2, 'Queries should not match' );
 
-		$cache_key_1 = $reflection->invoke( $query1, $query_vars1, $request1 );
-		$cache_key_2 = $reflection->invoke( $query1, $query_vars2, $request2 );
+		$cache_key_1 = $reflection_q1->getValue( $query1 );
+		$cache_key_2 = $reflection_q2->getValue( $query2 );
 
 		$this->assertNotSame( $cache_key_1, $cache_key_2, 'Cache key should differ.' );
+		$this->assertNotEmpty( $cache_key_1, 'Cache key for query one should not be empty.' );
+		$this->assertNotEmpty( $cache_key_2, 'Cache key for query two should not be empty.' );
 	}
 
 	public function data_orderby_clauses_are_not_normalized() {
@@ -285,15 +290,20 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 		$query2   = new WP_Query( $query_vars2 );
 		$request2 = str_replace( $fields, "{$wpdb->posts}.*", $query2->request );
 
-		$reflection = new ReflectionMethod( $query1, 'generate_cache_key' );
-		$reflection->setAccessible( true );
+		$reflection_q1 = new ReflectionProperty( $query1, 'query_cache_key' );
+		$reflection_q1->setAccessible( true );
+
+		$reflection_q2 = new ReflectionProperty( $query2, 'query_cache_key' );
+		$reflection_q2->setAccessible( true );
 
 		$this->assertSame( $request1, $request2, 'Queries should match' );
 
-		$cache_key_1 = $reflection->invoke( $query1, $query_vars1, $request1 );
-		$cache_key_2 = $reflection->invoke( $query1, $query_vars2, $request2 );
+		$cache_key_1 = $reflection_q1->getValue( $query1 );
+		$cache_key_2 = $reflection_q2->getValue( $query2 );
 
-		$this->assertSame( $cache_key_1, $cache_key_2, 'Cache key differs the same paramters.' );
+		$this->assertSame( $cache_key_1, $cache_key_2, 'Cache key differs the same effective parameters.' );
+		$this->assertNotEmpty( $cache_key_1, 'Cache key for query one should not be empty.' );
+		$this->assertNotEmpty( $cache_key_2, 'Cache key for query two should not be empty.' );
 	}
 
 	/**
@@ -406,13 +416,17 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars1' => array( 'post_name__in' => array( 'elphaba', 'glinda', 'the-wizard-of-oz', 'doctor-dillamond' ) ),
 				'query_vars2' => array( 'post_name__in' => array( 'doctor-dillamond', 'elphaba', 'the-wizard-of-oz', 'glinda' ) ),
 			),
-			'term queries order (array)'  => array(
+			'cat queries order (array)'  => array(
 				'query_vars_1' => array( 'cat' => array( '1', '2' ) ),
 				'query_vars_2' => array( 'cat' => array( '2', '1' ) ),
 			),
-			'term queries order (string)' => array(
-				'query_vars_1' => array( 'cat' => '1,2' ),
-				'query_vars_2' => array( 'cat' => '2,1' ),
+			'cat queries order (string)' => array(
+				'query_vars_1' => array( 'cat' => '2,1' ),
+				'query_vars_2' => array( 'cat' => '1,2' ),
+			),
+			'category__in queries order (array)'  => array(
+				'query_vars_1' => array( 'category__in' => array( '1', '2' ) ),
+				'query_vars_2' => array( 'category__in' => array( '2', '1' ) ),
 			),
 			'cache parameters'            => array(
 				'query_vars1' => array(
