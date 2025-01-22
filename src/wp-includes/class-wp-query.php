@@ -1300,7 +1300,8 @@ class WP_Query {
 
 		if ( ! empty( $q['category__and'] ) ) {
 			$q['category__and'] = array_map( 'absint', array_unique( (array) $q['category__and'] ) );
-			$tax_query[]        = array(
+			sort( $q['category__and'] );
+			$tax_query[] = array(
 				'taxonomy'         => 'category',
 				'terms'            => $q['category__and'],
 				'field'            => 'term_id',
