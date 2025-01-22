@@ -29,7 +29,7 @@ if ( ! is_user_logged_in() && isset( $_POST['email'] ) && ! empty( $_POST['email
 	// Check if the email belongs to a registered user
 	if ( email_exists( $email ) ) {
 		wp_die(
-			'<p>' . __( 'The email address you entered is already associated with a registered account. Please log in or use a different email address.' ) . '</p>',
+			'<p>' . __( 'The email address you entered is already associated with a registered account. Please log in to continue.' ) . '</p>',
 			__( 'Email Address Error' ),
 			array(
 				'response'  => 403,
