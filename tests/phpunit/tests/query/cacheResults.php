@@ -432,7 +432,7 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars_1' => array( 'category__not_in' => array( '1', '2' ) ),
 				'query_vars_2' => array( 'category__not_in' => array( '2', '1' ) ),
 			),
-			'category__and queries order (array)' => array(
+			'category__and queries order (array)'    => array(
 				'query_vars_1' => array( 'category__and' => array( '1', '2' ) ),
 				'query_vars_2' => array( 'category__and' => array( '2', '1' ) ),
 			),
