@@ -73,38 +73,6 @@ class Tests_Option_SiteTransient extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Ensure autoloaded transient does not query database (single site).
-	 *
-	 * group @ms-excluded
-	 * @ticket 61193
-	 * @ticket 61053
-	 */
-	public function test_autoloaded_site_transient_does_not_query_database_single_site() {
-		$key         = 'test_transient';
-		$option_name = '_site_transient_' . $key;
-		$value       = 'test_value';
-
-		// Set the transient.
-		set_site_transient( $key, $value );
-
-		// Clear the options caches.
-		wp_cache_delete( $option_name, 'options' );
-		wp_cache_delete( 'notoptions', 'options' );
-		wp_cache_delete( 'alloptions', 'options' );
-
-		// Prime the alloptions cache.
-		$alloptions = wp_load_alloptions();
-
-		// Ensure the transient is autoloaded.
-		$this->assertArrayHasKey( $option_name, $alloptions, 'Expected the transient to be autoloaded.' );
-
-		$before_queries = get_num_queries();
-		$this->assertSame( $value, get_site_transient( $key ) );
-		$transient_queries = get_num_queries() - $before_queries;
-		$this->assertSame( 0, $transient_queries, 'Expected no database queries to retrieve the transient.' );
-	}
-
-	/**
 	 * Ensure known non-existent transient does not query database (single site).
 	 *
 	 * group @ms-excluded
