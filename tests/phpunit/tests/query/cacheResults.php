@@ -442,7 +442,7 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 			),
 			'author__in queries order (array)'       => array(
 				'query_vars_1' => array( 'author__in' => array( 1, 2 ) ),
-				'query_vars_2' => array( 'author__in' => array( 1, 2 ) ),
+				'query_vars_2' => array( 'author__in' => array( 2, 1 ) ),
 			),
 			'author__not_in queries order (array)'   => array(
 				'query_vars_1' => array( 'author__not_in' => array( 1, 2 ) ),
