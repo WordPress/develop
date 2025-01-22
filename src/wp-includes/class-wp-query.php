@@ -1319,6 +1319,7 @@ class WP_Query {
 
 		if ( '' !== $q['tag'] && ! $this->is_singular && $this->query_vars_changed ) {
 			if ( str_contains( $q['tag'], ',' ) ) {
+				// @todo Handle normalizing `tag` query string.
 				$tags = preg_split( '/[,\r\n\t ]+/', $q['tag'] );
 				foreach ( (array) $tags as $tag ) {
 					$tag                 = sanitize_term_field( 'slug', $tag, 0, 'post_tag', 'db' );
@@ -1349,7 +1350,7 @@ class WP_Query {
 		if ( ! empty( $q['tag__in'] ) ) {
 			$q['tag__in'] = array_map( 'absint', array_unique( (array) $q['tag__in'] ) );
 			sort( $q['tag__in'] );
-			$tax_query[]  = array(
+			$tax_query[] = array(
 				'taxonomy' => 'post_tag',
 				'terms'    => $q['tag__in'],
 			);
@@ -1367,7 +1368,8 @@ class WP_Query {
 
 		if ( ! empty( $q['tag__and'] ) ) {
 			$q['tag__and'] = array_map( 'absint', array_unique( (array) $q['tag__and'] ) );
-			$tax_query[]   = array(
+			sort( $q['tag__and'] );
+			$tax_query[] = array(
 				'taxonomy' => 'post_tag',
 				'terms'    => $q['tag__and'],
 				'operator' => 'AND',
@@ -1386,7 +1388,8 @@ class WP_Query {
 
 		if ( ! empty( $q['tag_slug__and'] ) ) {
 			$q['tag_slug__and'] = array_map( 'sanitize_title_for_query', array_unique( (array) $q['tag_slug__and'] ) );
-			$tax_query[]        = array(
+			sort( $q['tag_slug__and'] );
+			$tax_query[] = array(
 				'taxonomy' => 'post_tag',
 				'terms'    => $q['tag_slug__and'],
 				'field'    => 'slug',
