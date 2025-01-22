@@ -436,6 +436,14 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars_1' => array( 'author' => '1,2' ),
 				'query_vars_2' => array( 'author' => '2,1' ),
 			),
+			'author__in queries order (array)'  => array(
+				'query_vars_1' => array( 'author__in' => array(1,2) ),
+				'query_vars_2' => array( 'author__in' => array(1,2) ),
+			),
+			'author__not_in queries order (array)'  => array(
+				'query_vars_1' => array( 'author__not_in' => array(1,2) ),
+				'query_vars_2' => array( 'author__not_in' => array(1,2) ),
+			),
 			'cache parameters'            => array(
 				'query_vars1' => array(
 					'update_post_meta_cache' => true,
