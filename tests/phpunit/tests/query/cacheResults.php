@@ -448,6 +448,26 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars_1' => array( 'author__not_in' => array( 1, 2 ) ),
 				'query_vars_2' => array( 'author__not_in' => array( 1, 2 ) ),
 			),
+			'tag_slug__in'                           => array(
+				'query_vars_1' => array( 'tag_slug__in' => array( 'foo', 'bar' ) ),
+				'query_vars_2' => array( 'tag_slug__in' => array( 'bar', 'foo' ) ),
+			),
+			'tag_slug__and'                         => array(
+				'query_vars_1' => array( 'tag_slug__and' => array( 'foo', 'bar' ) ),
+				'query_vars_2' => array( 'tag_slug__and' => array( 'bar', 'foo' ) ),
+			),
+			'tag__in queries order (array)'       => array(
+				'query_vars_1' => array( 'tag__in' => array( 1, 2 ) ),
+				'query_vars_2' => array( 'tag__in' => array( 2, 1 ) ),
+			),
+			'tag__and queries order (array)'   => array(
+				'query_vars_1' => array( 'tag__and' => array( 1, 2 ) ),
+				'query_vars_2' => array( 'tag__and' => array( 2, 1 ) ),
+			),
+			'tag__not_in queries order (array)'   => array(
+				'query_vars_1' => array( 'tag__not_in' => array( 1, 2 ) ),
+				'query_vars_2' => array( 'tag__not_in' => array( 2, 1 ) ),
+			),
 			'cache parameters'                       => array(
 				'query_vars1' => array(
 					'update_post_meta_cache' => true,
