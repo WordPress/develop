@@ -75,7 +75,7 @@ class Tests_Option_SiteTransient extends WP_UnitTestCase {
 	/**
 	 * Ensure known non-existent transient does not query database (single site).
 	 *
-	 * group @ms-excluded
+	 * @group ms-excluded
 	 * @ticket 61193
 	 * @ticket 61053
 	 */
@@ -111,7 +111,7 @@ class Tests_Option_SiteTransient extends WP_UnitTestCase {
 	/**
 	 * Ensure known transient does not query database (single site).
 	 *
-	 * group @ms-excluded
+	 * @group ms-excluded
 	 * @ticket 61193
 	 * @ticket 61053
 	 */
@@ -149,7 +149,7 @@ class Tests_Option_SiteTransient extends WP_UnitTestCase {
 	/**
 	 * Ensure primed transient does not query database (multi site).
 	 *
-	 * group @ms-required
+	 * @group ms-required
 	 * @ticket 61193
 	 * @ticket 61053
 	 */
@@ -180,7 +180,7 @@ class Tests_Option_SiteTransient extends WP_UnitTestCase {
 	/**
 	 * Ensure primed transient does not query database (multi site).
 	 *
-	 * group @ms-required
+	 * @group ms-required
 	 * @ticket 61193
 	 * @ticket 61053
 	 */
@@ -212,7 +212,7 @@ class Tests_Option_SiteTransient extends WP_UnitTestCase {
 	/**
 	 * Ensure primed unknown transient does not query database (multi site).
 	 *
-	 * group @ms-required
+	 * @group ms-required
 	 * @ticket 61193
 	 * @ticket 61053
 	 */
