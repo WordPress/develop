@@ -2375,6 +2375,7 @@ class WP_Query {
 		if ( ! empty( $q['author'] ) && '0' != $q['author'] ) {
 			$q['author'] = addslashes_gpc( '' . urldecode( $q['author'] ) );
 			$authors     = array_unique( array_map( 'intval', preg_split( '/[,\s]+/', $q['author'] ) ) );
+			sort( $authors );
 			foreach ( $authors as $author ) {
 				$key         = $author > 0 ? 'author__in' : 'author__not_in';
 				$q[ $key ][] = abs( $author );
