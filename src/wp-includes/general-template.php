@@ -2517,7 +2517,7 @@ function the_date_xml() {
 }
 
 /**
- * Displays or retrieves the date of the post (once per date)
+ * Displays or retrieves the date of the post (once per date).
  *
  * Will only output the date if the current post's date is different from the
  * previous one output.
@@ -2734,7 +2734,7 @@ function get_the_time( $format = '', $post = null ) {
  *
  * @since 2.0.0
  *
- * @param string      $format    Optional. Format to use for retrieving the time the post.
+ * @param string      $format    Optional. Format to use for retrieving the localized date of the post.
  *                               Accepts 'G', 'U', or PHP date format. Default 'U'.
  * @param bool        $gmt       Optional. Whether to retrieve the GMT time. Default false.
  * @param int|WP_Post $post      Post ID or post object. Default is global `$post` object.
@@ -3014,7 +3014,7 @@ function the_weekday() {
  * @param string $before Optional. Output before the date. Default empty.
  * @param string $after  Optional. Output after the date. Default empty.
  *
- *@global string    $previousweekday The day of the previous post in the loop.
+ * @global string $previousweekday The day of the previous post in the loop.
  *
  * @global WP_Locale $wp_locale       WordPress date and time locale object.
  * @global string    $currentday      The day of the current post in the loop.
