@@ -44,6 +44,8 @@ jQuery( function( $ ) {
 	$( '.health-check-accordion' ).on( 'click', '.health-check-accordion-trigger', function() {
 		var isExpanded = ( 'true' === $( this ).attr( 'aria-expanded' ) );
 
+		window.location.hash = $( this ).attr( 'id' );
+
 		if ( isExpanded ) {
 			$( this ).attr( 'aria-expanded', 'false' );
 			$( '#' + $( this ).attr( 'aria-controls' ) ).attr( 'hidden', true );
@@ -53,8 +55,19 @@ jQuery( function( $ ) {
 		}
 	} );
 
-	// Site Health test handling.
+	// Get hash from query string and open the related accordion.
+	$( window ).on( 'load', function() {
+		var hash = window.location.hash;
+		if ( hash ) {
+			var requestedPanel = $( hash );
+			if ( requestedPanel.length ) {
+				$( requestedPanel ).attr( 'aria-expanded', 'true' );
+				$( '#' + requestedPanel.attr( 'aria-controls' ) ).attr( 'hidden', false );
+			}
+		}
+	} );
 
+	// Site Health test handling.
 	$( '.site-health-view-passed' ).on( 'click', function() {
 		var goodIssuesWrapper = $( '#health-check-issues-good' );
 
