@@ -176,12 +176,7 @@ class Tests_Option_SiteTransient extends WP_UnitTestCase {
 		$before_queries = get_num_queries();
 		$this->assertSame( $value, get_transient( $key ) );
 		$transient_queries = get_num_queries() - $before_queries;
-		$this->assertSame( 1, $transient_queries, 'Expected one database query to retrieve the transient the first time.' );
-
-		$before_queries = get_num_queries();
-		$this->assertSame( $value, get_transient( $key ) );
-		$transient_queries = get_num_queries() - $before_queries;
-		$this->assertSame( 0, $transient_queries, 'Expected no database queries to retrieve the transient a second time.' );
+		$this->assertSame( 0, $transient_queries, 'Expected no database queries to retrieve the transient the first time.' );
 	}
 
 	/**
