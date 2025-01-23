@@ -147,6 +147,44 @@ class Tests_Option_SiteTransient extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Ensure transient cached via setting the option does not trigger a database call (single site).
+	 *
+	 * @group ms-excluded
+	 * @ticket 61193
+	 * @ticket 61053
+	 */
+	public function test_getting_transient_after_a_set_does_not_make_a_database_call_single_site() {
+		$key         = 'test_transient';
+		$option_name = '_transient_' . $key;
+		$value       = 'test_value';
+		$timeout     = YEAR_IN_SECONDS;
+
+		// Clear the options caches.
+		wp_cache_delete( $option_name, 'options' );
+		wp_cache_delete( 'notoptions', 'options' );
+		wp_cache_delete( 'alloptions', 'options' );
+
+		// Set the transient.
+		set_transient( $key, $value, $timeout );
+
+		// Prime the alloptions & transient cache.
+		$alloptions = wp_load_alloptions();
+
+		// Ensure the transient is not autoloaded.
+		$this->assertArrayNotHasKey( $option_name, $alloptions, 'Expected the transient to not be autoloaded.' );
+
+		$before_queries = get_num_queries();
+		$this->assertSame( $value, get_transient( $key ) );
+		$transient_queries = get_num_queries() - $before_queries;
+		$this->assertSame( 1, $transient_queries, 'Expected one database query to retrieve the transient the first time.' );
+
+		$before_queries = get_num_queries();
+		$this->assertSame( $value, get_transient( $key ) );
+		$transient_queries = get_num_queries() - $before_queries;
+		$this->assertSame( 0, $transient_queries, 'Expected no database queries to retrieve the transient a second time.' );
+	}
+
+	/**
 	 * Ensure primed transient does not query database (multi site).
 	 *
 	 * @group ms-required
