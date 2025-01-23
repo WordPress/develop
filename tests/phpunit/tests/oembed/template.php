@@ -350,7 +350,7 @@ class Tests_Embed_Template extends WP_UnitTestCase {
 	 * @ticket 35567
 	 */
 	public function test_is_embeddable_post_non_existent_post() {
-		$this->assertFalse( is_post_embeddable( 0 ) );
+		$this->assertFalse( is_post_embeddable( 99999 ) );
 	}
 
 	/**
