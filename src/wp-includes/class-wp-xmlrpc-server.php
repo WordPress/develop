@@ -4020,7 +4020,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		}
 
 		if ( ! $comment_id ) {
-			return new IXR_Error( 403, __( 'Something went wrong.' ) );
+			return new IXR_Error( 403, __( 'An error occurred while processing your comment. Please ensure all fields are filled correctly and try again.' ) );
 		}
 
 		/**
@@ -5040,7 +5040,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		$posts_list = wp_get_recent_posts( $query );
 
 		if ( ! $posts_list ) {
-			$this->error = new IXR_Error( 500, __( 'Either there are no posts, or something went wrong.' ) );
+			$this->error = new IXR_Error( 500, __( 'No posts found or an error occurred while retrieving posts. Please try again later.' ) );
 			return $this->error;
 		}
 
@@ -6523,7 +6523,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		$posts_list = wp_get_recent_posts( $query );
 
 		if ( ! $posts_list ) {
-			$this->error = new IXR_Error( 500, __( 'Either there are no posts, or something went wrong.' ) );
+			$this->error = new IXR_Error( 500, __( 'No posts found or an error occurred while retrieving posts. Please try again later.' ) );
 			return $this->error;
 		}
 
