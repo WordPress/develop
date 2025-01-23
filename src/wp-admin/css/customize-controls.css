@@ -362,7 +362,12 @@ body.trashing #publish-settings {
 .date-time-fields .date-input.day,
 .date-time-fields .date-input.hour,
 .date-time-fields .date-input.minute {
-	width: 46px;
+	width: 52px;
+}
+
+.wp-core-ui .date-time-fields .day-fields.clear select,
+.wp-core-ui .date-time-fields .time-fields.clear select {
+	vertical-align: top;
 }
 
 .date-time-fields .date-input.year {
