@@ -1513,17 +1513,17 @@ class wp_xmlrpc_server extends IXR_Server {
 		// Do some timestamp voodoo.
 		if ( ! empty( $post_data['post_date_gmt'] ) ) {
 			// We know this is supposed to be GMT, so we're going to slap that Z on there by force.
-			$dateCreated = rtrim( $post_data['post_date_gmt']->getIso(), 'Z' ) . 'Z';
+			$date_created = rtrim( $post_data['post_date_gmt']->getIso(), 'Z' ) . 'Z';
 		} elseif ( ! empty( $post_data['post_date'] ) ) {
-			$dateCreated = $post_data['post_date']->getIso();
+			$date_created = $post_data['post_date']->getIso();
 		}
 
 		// Default to not flagging the post date to be edited unless it's intentional.
 		$post_data['edit_date'] = false;
 
-		if ( ! empty( $dateCreated ) ) {
-			$post_data['post_date']     = iso8601_to_datetime( $dateCreated );
-			$post_data['post_date_gmt'] = iso8601_to_datetime( $dateCreated, 'gmt' );
+		if ( ! empty( $date_created ) ) {
+			$post_data['post_date']     = iso8601_to_datetime( $date_created );
+			$post_data['post_date_gmt'] = iso8601_to_datetime( $date_created, 'gmt' );
 
 			// Flag the post date to be edited.
 			$post_data['edit_date'] = true;
@@ -3504,7 +3504,7 @@ class wp_xmlrpc_server extends IXR_Server {
 
 		$status = wp_delete_term( $category_id, 'category' );
 
-		if ( true == $status ) {
+		if ( true === $status ) {
 			/**
 			 * Fires after a category has been successfully deleted via XML-RPC.
 			 *
@@ -3754,7 +3754,7 @@ class wp_xmlrpc_server extends IXR_Server {
 
 		$status = wp_delete_comment( $comment_id );
 
-		if ( $status ) {
+		if ( true === $status ) {
 			/**
 			 * Fires after a comment has been successfully deleted via XML-RPC.
 			 *
@@ -3837,9 +3837,10 @@ class wp_xmlrpc_server extends IXR_Server {
 		// Do some timestamp voodoo.
 		if ( ! empty( $content_struct['date_created_gmt'] ) ) {
 			// We know this is supposed to be GMT, so we're going to slap that Z on there by force.
-			$dateCreated                 = rtrim( $content_struct['date_created_gmt']->getIso(), 'Z' ) . 'Z';
-			$comment['comment_date']     = get_date_from_gmt( $dateCreated );
-			$comment['comment_date_gmt'] = iso8601_to_datetime( $dateCreated, 'gmt' );
+			$date_created = rtrim( $content_struct['date_created_gmt']->getIso(), 'Z' ) . 'Z';
+
+			$comment['comment_date']     = get_date_from_gmt( $date_created );
+			$comment['comment_date_gmt'] = iso8601_to_datetime( $date_created, 'gmt' );
 		}
 
 		if ( isset( $content_struct['content'] ) ) {
@@ -4883,7 +4884,7 @@ class wp_xmlrpc_server extends IXR_Server {
 			return $blogs;
 		}
 
-		if ( $_SERVER['HTTP_HOST'] == $domain && $_SERVER['REQUEST_URI'] == $path ) {
+		if ( $_SERVER['HTTP_HOST'] === $domain && $_SERVER['REQUEST_URI'] === $path ) {
 			return $blogs;
 		} else {
 			foreach ( (array) $blogs as $blog ) {
@@ -5571,16 +5572,16 @@ class wp_xmlrpc_server extends IXR_Server {
 		// Do some timestamp voodoo.
 		if ( ! empty( $content_struct['date_created_gmt'] ) ) {
 			// We know this is supposed to be GMT, so we're going to slap that Z on there by force.
-			$dateCreated = rtrim( $content_struct['date_created_gmt']->getIso(), 'Z' ) . 'Z';
+			$date_created = rtrim( $content_struct['date_created_gmt']->getIso(), 'Z' ) . 'Z';
 		} elseif ( ! empty( $content_struct['dateCreated'] ) ) {
-			$dateCreated = $content_struct['dateCreated']->getIso();
+			$date_created = $content_struct['dateCreated']->getIso();
 		}
 
 		$post_date     = '';
 		$post_date_gmt = '';
-		if ( ! empty( $dateCreated ) ) {
-			$post_date     = iso8601_to_datetime( $dateCreated );
-			$post_date_gmt = iso8601_to_datetime( $dateCreated, 'gmt' );
+		if ( ! empty( $date_created ) ) {
+			$post_date     = iso8601_to_datetime( $date_created );
+			$post_date_gmt = iso8601_to_datetime( $date_created, 'gmt' );
 		}
 
 		$post_category = array();
@@ -5622,8 +5623,8 @@ class wp_xmlrpc_server extends IXR_Server {
 		}
 
 		// Handle enclosures.
-		$thisEnclosure = isset( $content_struct['enclosure'] ) ? $content_struct['enclosure'] : null;
-		$this->add_enclosure_if_new( $post_id, $thisEnclosure );
+		$enclosure = isset( $content_struct['enclosure'] ) ? $content_struct['enclosure'] : null;
+		$this->add_enclosure_if_new( $post_id, $enclosure );
 
 		$this->attach_uploads( $post_id, $post_content );
 
@@ -5958,17 +5959,17 @@ class wp_xmlrpc_server extends IXR_Server {
 		// Do some timestamp voodoo.
 		if ( ! empty( $content_struct['date_created_gmt'] ) ) {
 			// We know this is supposed to be GMT, so we're going to slap that Z on there by force.
-			$dateCreated = rtrim( $content_struct['date_created_gmt']->getIso(), 'Z' ) . 'Z';
+			$date_created = rtrim( $content_struct['date_created_gmt']->getIso(), 'Z' ) . 'Z';
 		} elseif ( ! empty( $content_struct['dateCreated'] ) ) {
-			$dateCreated = $content_struct['dateCreated']->getIso();
+			$date_created = $content_struct['dateCreated']->getIso();
 		}
 
 		// Default to not flagging the post date to be edited unless it's intentional.
 		$edit_date = false;
 
-		if ( ! empty( $dateCreated ) ) {
-			$post_date     = iso8601_to_datetime( $dateCreated );
-			$post_date_gmt = iso8601_to_datetime( $dateCreated, 'gmt' );
+		if ( ! empty( $date_created ) ) {
+			$post_date     = iso8601_to_datetime( $date_created );
+			$post_date_gmt = iso8601_to_datetime( $date_created, 'gmt' );
 
 			// Flag the post date to be edited.
 			$edit_date = true;
@@ -6018,8 +6019,8 @@ class wp_xmlrpc_server extends IXR_Server {
 		}
 
 		// Handle enclosures.
-		$thisEnclosure = isset( $content_struct['enclosure'] ) ? $content_struct['enclosure'] : null;
-		$this->add_enclosure_if_new( $post_id, $thisEnclosure );
+		$enclosure = isset( $content_struct['enclosure'] ) ? $content_struct['enclosure'] : null;
+		$this->add_enclosure_if_new( $post_id, $enclosure );
 
 		$this->attach_uploads( $ID, $post_content );
 
@@ -6086,9 +6087,9 @@ class wp_xmlrpc_server extends IXR_Server {
 			$post_modified_gmt = $this->_convert_date_gmt( $postdata['post_modified_gmt'], $postdata['post_modified'] );
 
 			$categories = array();
-			$catids     = wp_get_post_categories( $post_id );
-			foreach ( $catids as $catid ) {
-				$categories[] = get_cat_name( $catid );
+			$cat_ids    = wp_get_post_categories( $post_id );
+			foreach ( $cat_ids as $cat_id ) {
+				$categories[] = get_cat_name( $cat_id );
 			}
 
 			$tagnames = array();
@@ -6238,9 +6239,9 @@ class wp_xmlrpc_server extends IXR_Server {
 			$post_modified_gmt = $this->_convert_date_gmt( $entry['post_modified_gmt'], $entry['post_modified'] );
 
 			$categories = array();
-			$catids     = wp_get_post_categories( $entry['ID'] );
-			foreach ( $catids as $catid ) {
-				$categories[] = get_cat_name( $catid );
+			$cat_ids    = wp_get_post_categories( $entry['ID'] );
+			foreach ( $cat_ids as $cat_id ) {
+				$categories[] = get_cat_name( $cat_id );
 			}
 
 			$tagnames = array();
@@ -6433,9 +6434,10 @@ class wp_xmlrpc_server extends IXR_Server {
 		$upload = wp_upload_bits( $name, null, $bits );
 		if ( ! empty( $upload['error'] ) ) {
 			/* translators: 1: File name, 2: Error message. */
-			$errorString = sprintf( __( 'Could not write file %1$s (%2$s).' ), $name, $upload['error'] );
-			return new IXR_Error( 500, $errorString );
+			$error_string = sprintf( __( 'Could not write file %1$s (%2$s).' ), $name, $upload['error'] );
+			return new IXR_Error( 500, $error_string );
 		}
+
 		// Construct the attachment array.
 		$post_id = 0;
 		if ( ! empty( $data['post_id'] ) ) {
@@ -6445,6 +6447,7 @@ class wp_xmlrpc_server extends IXR_Server {
 				return new IXR_Error( 401, __( 'Sorry, you are not allowed to edit this post.' ) );
 			}
 		}
+
 		$attachment = array(
 			'post_title'     => $name,
 			'post_content'   => '',
@@ -6638,16 +6641,16 @@ class wp_xmlrpc_server extends IXR_Server {
 		do_action( 'xmlrpc_call', 'mt.getPostCategories', $args, $this );
 
 		$categories = array();
-		$catids     = wp_get_post_categories( (int) $post_id );
+		$cat_ids    = wp_get_post_categories( (int) $post_id );
 		// First listed category will be the primary category.
-		$isPrimary = true;
-		foreach ( $catids as $catid ) {
+		$is_primary = true;
+		foreach ( $cat_ids as $cat_id ) {
 			$categories[] = array(
-				'categoryName' => get_cat_name( $catid ),
-				'categoryId'   => (string) $catid,
-				'isPrimary'    => $isPrimary,
+				'categoryName' => get_cat_name( $cat_id ),
+				'categoryId'   => (string) $cat_id,
+				'isPrimary'    => $is_primary,
 			);
-			$isPrimary    = false;
+			$is_primary   = false;
 		}
 
 		return $categories;
@@ -6692,12 +6695,12 @@ class wp_xmlrpc_server extends IXR_Server {
 			return new IXR_Error( 401, __( 'Sorry, you are not allowed to edit this post.' ) );
 		}
 
-		$catids = array();
+		$cat_ids = array();
 		foreach ( $categories as $cat ) {
-			$catids[] = $cat['categoryId'];
+			$cat_ids[] = $cat['categoryId'];
 		}
 
-		wp_set_post_categories( $post_id, $catids );
+		wp_set_post_categories( $post_id, $cat_ids );
 
 		return true;
 	}
@@ -6885,6 +6888,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		 */
 		$urltest = parse_url( $pagelinkedto );
 		$post_id = url_to_postid( $pagelinkedto );
+
 		if ( $post_id ) {
 			// $way
 		} elseif ( isset( $urltest['path'] ) && preg_match( '#p/[0-9]{1,}#', $urltest['path'], $match ) ) {
@@ -6917,15 +6921,15 @@ class wp_xmlrpc_server extends IXR_Server {
 			// TODO: Attempt to extract a post ID from the given URL.
 			return $this->pingback_error( 33, __( 'The specified target URL cannot be used as a target. It either does not exist, or it is not a pingback-enabled resource.' ) );
 		}
-		$post_id = (int) $post_id;
 
-		$post = get_post( $post_id );
+		$post_id = (int) $post_id;
+		$post    = get_post( $post_id );
 
 		if ( ! $post ) { // Post not found.
 			return $this->pingback_error( 33, __( 'The specified target URL cannot be used as a target. It either does not exist, or it is not a pingback-enabled resource.' ) );
 		}
 
-		if ( url_to_postid( $pagelinkedfrom ) == $post_id ) {
+		if ( url_to_postid( $pagelinkedfrom ) === $post_id ) {
 			return $this->pingback_error( 0, __( 'The source URL and the target URL cannot both point to the same resource.' ) );
 		}
 
