@@ -331,7 +331,7 @@ function wp_oembed_register_route() {
  * Adds oEmbed discovery links in the head element of the website.
  *
  * @since 4.4.0
- * @since x.x.x Output was adjusted to only embed if the post supports it.
+ * @since 6.8.0 Output was adjusted to only embed if the post supports it.
  */
 function wp_oembed_add_discovery_links() {
 	$output = '';
@@ -539,7 +539,7 @@ function get_post_embed_html( $width, $height, $post = null ) {
  * Retrieves the oEmbed response data for a given post.
  *
  * @since 4.4.0
- * @since x.x.x Output was adjusted to only embed if the post type supports it.
+ * @since 6.8.0 Output was adjusted to only embed if the post type supports it.
  *
  * @param WP_Post|int $post  Post ID or post object.
  * @param int         $width The requested width.
