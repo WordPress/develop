@@ -653,10 +653,10 @@ class Tests_Post_Types extends WP_UnitTestCase {
 	 */
 	public function test_register_post_type_is_embeddable_should_default_to_value_of_public() {
 		$post_type = register_post_type( $this->post_type );
-		$this->assertFalse( $post_type->is_embeddable, 'Non-public post type should not be embeddable by default' );
+		$this->assertFalse( $post_type->embeddable, 'Non-public post type should not be embeddable by default' );
 
 		$post_type = register_post_type( $this->post_type, array( 'public' => true ) );
-		$this->assertTrue( $post_type->is_embeddable, 'Public post type should be embeddable by default' );
+		$this->assertTrue( $post_type->embeddable, 'Public post type should be embeddable by default' );
 	}
 
 	/**
@@ -664,16 +664,16 @@ class Tests_Post_Types extends WP_UnitTestCase {
 	 * @ticket 35567
 	 */
 	public function test_register_post_type_override_is_embeddable() {
-		$post_type = register_post_type( $this->post_type, array( 'is_embeddable' => true ) );
-		$this->assertTrue( $post_type->is_embeddable, 'Post type should be embeddable even though it is not public' );
+		$post_type = register_post_type( $this->post_type, array( 'embeddable' => true ) );
+		$this->assertTrue( $post_type->embeddable, 'Post type should be embeddable even though it is not public' );
 
 		$post_type = register_post_type(
 			$this->post_type,
 			array(
-				'public'        => true,
-				'is_embeddable' => false,
+				'public'     => true,
+				'embeddable' => false,
 			)
 		);
-		$this->assertFalse( $post_type->is_embeddable, 'Post type should not be embeddable even though it is public' );
+		$this->assertFalse( $post_type->embeddable, 'Post type should not be embeddable even though it is public' );
 	}
 }

@@ -355,7 +355,7 @@ class Tests_Embed_Template extends WP_UnitTestCase {
 	 * @ticket 35567
 	 */
 	public function test_is_embeddable_post_should_return_false_for_non_embeddable_post_type() {
-		register_post_type( 'not_embeddable', array( 'is_embeddable' => false ) );
+		register_post_type( 'not_embeddable', array( 'embeddable' => false ) );
 
 		$post = self::factory()->post->create_and_get(
 			array(
@@ -370,7 +370,7 @@ class Tests_Embed_Template extends WP_UnitTestCase {
 	 * @ticket 35567
 	 */
 	public function test_is_embeddable_post_should_return_true_for_embeddable_post_type() {
-		register_post_type( 'embeddable', array( 'is_embeddable' => true ) );
+		register_post_type( 'embeddable', array( 'embeddable' => true ) );
 
 		$post = self::factory()->post->create_and_get(
 			array(
@@ -385,7 +385,7 @@ class Tests_Embed_Template extends WP_UnitTestCase {
 	 * @ticket 35567
 	 */
 	public function test_is_embeddable_post_filtered() {
-		register_post_type( 'not_embeddable', array( 'is_embeddable' => false ) );
+		register_post_type( 'not_embeddable', array( 'embeddable' => false ) );
 
 		$post = self::factory()->post->create_and_get(
 			array(

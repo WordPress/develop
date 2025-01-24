@@ -2490,12 +2490,13 @@ function is_post_embeddable( $post = null ) {
 		return false;
 	}
 
-	$is_embeddable = false;
-
 	$post_type = get_post_type_object( $post->post_type );
-	if ( $post_type ) {
-		$is_embeddable = $post_type->is_embeddable;
+
+	if ( ! $post_type ) {
+		return false;
 	}
+
+	$is_embeddable = $post_type->embeddable;
 
 	/**
 	 * Filter whether a post is embeddable.
