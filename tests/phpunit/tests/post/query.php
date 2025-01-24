@@ -832,21 +832,24 @@ class Tests_Post_Query extends WP_UnitTestCase {
 	 */
 	public function test_wp_query_orderby_rand() {
 		$number_of_posts = 3;
-		self::factory()->post->create_many($number_of_posts);
+		self::factory()->post->create_many( $number_of_posts );
 
-		$args = array( 'orderby' => 'rand', 'fields' => 'ids' );
-		$q = new WP_Query( $args );
+		$args = array(
+			'orderby' => 'rand',
+			'fields'  => 'ids',
+		);
+		$q    = new WP_Query( $args );
 		$this->assertSame( $number_of_posts, $q->found_posts );
 
 		$q2 = new WP_Query( $args );
 		$this->assertSame( $number_of_posts, $q2->found_posts );
 
-		for ( $i = 0; $i < 10; $i ++ ) {
-			foreach ($q->posts as  $key => $value ){
+		for ( $i = 0; $i < 10; $i++ ) {
+			foreach ( $q->posts as $key => $value ) {
 
-				if( $value !== $q2->posts[ $key ] ){
+				if ( $value !== $q2->posts[ $key ] ) {
 					$this->assertTrue( true );
-					break(2);
+					break( 2 );
 				}
 			}
 			$q2 = new WP_Query( $args );
