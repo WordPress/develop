@@ -893,11 +893,11 @@ switch ( $action ) {
 
 		/**
 		 * Filters the label for the username or email address field on the lost password form.
-		 * 
+		 *
 		 * Default is 'Username or Email Address'.
-		 * 
-		 * @since 5.7.0
-		 * 
+		 *
+		 * @since 6.8.0
+		 *
 		 * @param string $lostpasswordform_user_login_label The label for the username or email address field.
 		 */
 		$lostpasswordform_user_login_label = apply_filters( 'lostpasswordform_user_login_label', __( 'Username or Email Address' ) );
@@ -1174,19 +1174,24 @@ switch ( $action ) {
 		);
 
 		/**
-		 * Filters the labels for the registration form fields.
-		 * 
-		 * Default is 'Username' and 'Email'.
-		 * 
-		 * @param array $registerform_labels An array of labels for the registration form fields.
+		 * Filters the label for the username or email address field on the lost password form.
+		 *
+		 * Default is 'Username or Email Address'.
+		 *
+		 * @since 6.8.0
+		 *
+		 * @param string $lostpasswordform_user_login_label The label for the username or email address field.
 		 */
-		$registerform_labels = apply_filters( 'registerform_labels', [
-			'registerform_user_login_label' => __( 'Username' ),
-			'registerform_user_email_label' => __( 'Email' ),
-		]);
+		$registerform_labels = apply_filters(
+			'registerform_labels',
+			array(
+				'registerform_user_login_label' => __( 'Username' ),
+				'registerform_user_email_label' => __( 'Email' ),
+			)
+		);
 
 		$registerform_user_login_label = $registerform_labels['registerform_user_login_label'];
-		$registerform_user_email_label = $registerform_labels['registerform_user_email_label'];		
+		$registerform_user_email_label = $registerform_labels['registerform_user_email_label'];
 		?>
 		<form name="registerform" id="registerform" action="<?php echo esc_url( site_url( 'wp-login.php?action=register', 'login_post' ) ); ?>" method="post" novalidate="novalidate">
 			<p>
@@ -1533,9 +1538,11 @@ switch ( $action ) {
 
 		/**
 		 * Filters the label for the username or email address field on the login form.
-		 * 
+		 *
 		 * Default is 'Username or Email Address'.
-		 * 
+		 *
+		 * @since 6.8.0
+		 *
 		 * @param string $loginform_user_login_label The label for the username or email address field.
 		 */
 		$loginform_user_login_label = apply_filters( 'loginform_user_login_label', __( 'Username or Email Address' ) );
