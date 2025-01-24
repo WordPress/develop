@@ -242,7 +242,6 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	border: 1px solid #151515;
 }
 
 .welcome-panel-header {
