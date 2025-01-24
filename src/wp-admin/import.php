@@ -237,6 +237,15 @@ if ( current_user_can( 'install_plugins' ) ) {
 }
 ?>
 
+<?php
+/**
+ * Fires at the end of the Import screen.
+ *
+ * @since 6.8.0
+ */
+do_action( 'import_filters' );
+?>
+
 </div>
 
 <?php
