@@ -124,7 +124,7 @@ class Tests_Post_wpGetPostAutosave extends WP_UnitTestCase {
 		wp_update_post(
 			array(
 				'ID'           => $autosave->ID,
-				'post_content' => 'Autosaved content updated'
+				'post_content' => 'Autosaved content updated',
 			)
 		);
 
