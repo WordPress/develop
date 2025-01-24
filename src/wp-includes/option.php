@@ -1598,12 +1598,14 @@ function set_transient( $transient, $value, $expiration = 0 ) {
 		 *
 		 * @since 3.0.0
 		 * @since 3.6.0 The `$value` and `$expiration` parameters were added.
+		 * @since 6.8.0 Renamed from 'setted_transient' to 'set_transient' for correct grammar.
 		 *
 		 * @param string $transient  The name of the transient.
 		 * @param mixed  $value      Transient value.
 		 * @param int    $expiration Time until expiration in seconds.
 		 */
-		do_action( 'setted_transient', $transient, $value, $expiration );
+		do_action( 'set_transient', $transient, $value, $expiration );
+		do_action_deprecated( 'setted_transient', array( $transient, $value, $expiration ), '6.8.0', 'set_transient' );
 	}
 
 	return $result;
