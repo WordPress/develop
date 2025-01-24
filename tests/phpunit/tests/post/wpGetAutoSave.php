@@ -132,5 +132,4 @@ class Tests_Post_wpGetPostAutosave extends WP_UnitTestCase {
 		$this->assertInstanceOf( 'WP_Post', $autosave );
 		$this->assertSame( 'Autosaved content updated', $autosave->post_content, 'Post content does not match.' );
 	}
-
 }
