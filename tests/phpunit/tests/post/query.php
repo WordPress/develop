@@ -828,7 +828,7 @@ class Tests_Post_Query extends WP_UnitTestCase {
 	}
 
 	/**
-	 *
+	 * @ticket 18836
 	 */
 	public function test_wp_query_orderby_rand() {
 		$number_of_posts = 3;
