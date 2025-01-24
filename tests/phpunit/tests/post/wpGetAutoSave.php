@@ -122,9 +122,9 @@ class Tests_Post_wpGetPostAutosave extends WP_UnitTestCase {
 		$this->assertSame( 'Autosaved content', $autosave->post_content, 'Post content does not match.' );
 
 		wp_update_post(
-			array( 
-			'ID'           => $autosave->ID,
-			'post_content' => 'Autosaved content updated'
+			array(
+				'ID'           => $autosave->ID,
+				'post_content' => 'Autosaved content updated'
 			)
 		);
 
