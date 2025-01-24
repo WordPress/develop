@@ -98,7 +98,7 @@ class Tests_Post_wpGetPostAutosave extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test when an autosave exists for a post.
+	 * Test when an autosave is updated. 
 	 *
 	 * @ticket 62658
 	 */
