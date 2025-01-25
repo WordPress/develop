@@ -207,9 +207,9 @@ function show_blog_form( $blogname = '', $blog_title = '', $errors = '' ) {
 		$blog_public_on_checked  = '';
 		$blog_public_off_checked = '';
 	if ( isset( $_POST['blog_public'] ) && '0' === $_POST['blog_public'] ) {
-		$blog_public_off_checked = 'checked="checked"';
+		$blog_public_off_checked = 'checked';
 	} else {
-		$blog_public_on_checked = 'checked="checked"';
+		$blog_public_on_checked = 'checked';
 	}
 	?>
 

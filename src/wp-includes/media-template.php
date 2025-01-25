@@ -1019,7 +1019,7 @@ function wp_print_media_templates() {
 
 		<span class="setting">
 			<input type="checkbox" id="playlist-settings-show-list" data-setting="tracklist" <# if ( emptyModel ) { #>
-				checked="checked"
+				checked
 			<# } #> />
 			<label for="playlist-settings-show-list" class="checkbox-label-inline">
 				<# if ( isVideo ) { #>
@@ -1033,7 +1033,7 @@ function wp_print_media_templates() {
 		<# if ( ! isVideo ) { #>
 		<span class="setting">
 			<input type="checkbox" id="playlist-settings-show-artist" data-setting="artists" <# if ( emptyModel ) { #>
-				checked="checked"
+				checked
 			<# } #> />
 			<label for="playlist-settings-show-artist" class="checkbox-label-inline">
 				<?php _e( 'Show Artist Name in Tracklist' ); ?>
@@ -1043,7 +1043,7 @@ function wp_print_media_templates() {
 
 		<span class="setting">
 			<input type="checkbox" id="playlist-settings-show-images" data-setting="images" <# if ( emptyModel ) { #>
-				checked="checked"
+				checked
 			<# } #> />
 			<label for="playlist-settings-show-images" class="checkbox-label-inline">
 				<?php _e( 'Show Images' ); ?>
@@ -1264,7 +1264,7 @@ function wp_print_media_templates() {
 							</div>
 							<div class="advanced-link">
 								<span class="setting link-target">
-									<input type="checkbox" id="image-details-link-target" data-setting="linkTargetBlank" value="_blank" <# if ( data.model.linkTargetBlank ) { #>checked="checked"<# } #>>
+									<input type="checkbox" id="image-details-link-target" data-setting="linkTargetBlank" value="_blank" <# if ( data.model.linkTargetBlank ) { #>checked<# } #>>
 									<label for="image-details-link-target" class="checkbox-label"><?php _e( 'Open link in a new tab' ); ?></label>
 								</span>
 								<span class="setting link-rel">

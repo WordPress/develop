@@ -2526,7 +2526,7 @@ function comment_form( $args = array(), $post = null ) {
 
 	// Define attributes in HTML5 or XHTML syntax.
 	$required_attribute = ( $html5 ? ' required' : ' required="required"' );
-	$checked_attribute  = ( $html5 ? ' checked' : ' checked="checked"' );
+	$checked_attribute  = ( $html5 ? ' checked' : ' checked' );
 
 	// Identify required fields visually and create a message about the indicator.
 	$required_indicator = ' ' . wp_required_field_indicator();
