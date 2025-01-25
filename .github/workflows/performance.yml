@@ -83,6 +83,38 @@ jobs:
       - name: Add workflow summary
         run: cat "${RUNNER_TEMP}/summary.md" >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Set the base sha
+        # Only needed when publishing results.
+        # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! matrix.memcached && ! matrix.multisite }}
+        if: ${{ ! matrix.memcached && ! matrix.multisite }}
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        id: base-sha
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const baseRef = await github.rest.git.getRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'tags/' + process.env.BASE_TAG,
+            });
+            return baseRef.data.object.sha;
+
+      - name: Publish performance results
+        # Only publish results on pushes to trunk.
+        # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! matrix.memcached && ! matrix.multisite }}
+        if: ${{ ! matrix.memcached && ! matrix.multisite }}
+        env:
+          BASE_SHA: ${{ steps.base-sha.outputs.result }}
+          CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }}
+          # HOST_NAME: www.codevitals.run
+          HOST_NAME: yellow-ice-88.webhook.cool
+        run: |
+          if [ -z "$CODEVITALS_PROJECT_TOKEN" ]; then
+            echo "Performance results could not be published. 'CODEVITALS_PROJECT_TOKEN' is not set"
+            exit 1
+          fi
+          COMMITTED_AT="$(git show -s "$GITHUB_SHA" --format='%cI')"
+          node ./tests/performance/log-results.js "$CODEVITALS_PROJECT_TOKEN" trunk "$GITHUB_SHA" "$BASE_SHA" "$COMMITTED_AT" "$HOST_NAME"
 
   slack-notifications:
     name: Slack Notifications
