@@ -167,9 +167,35 @@ jobs:
 
       - name: Download previous build artifact (target branch or previous commit)
         if: ${{ inputs.subject == 'before' }}
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        id: get-previous-build
         with:
-          name: wordpress-build-${{ env.TARGET_SHA }}
+          script: |
+            const artifacts = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'wordpress-build-' + process.env.TARGET_SHA,
+            });
+            const matchArtifact = artifacts.data.artifacts[0];
+            if ( ! matchArtifact ) {
+              core.setFailed( 'No artifact found!' );
+              return false;
+            }
+            const download = await github.rest.actions.downloadArtifact( {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: matchArtifact.id,
+              archive_format: 'zip',
+            } );
+            const fs = require( 'fs' );
+            fs.writeFileSync( process.env.GITHUB_WORKSPACE + '/before.zip', Buffer.from( download.data ) )
+            return true;
+
+      - name: Unzip the build
+        if: ${{ inputs.subject == 'before' }}
+        run: |
+          unzip "${GITHUB_WORKSPACE}/before.zip"
+          unzip -o "${GITHUB_WORKSPACE}/wordpress.zip"
 
       - name: Set the environment to the baseline version
         if: ${{ inputs.subject == 'base' }}
