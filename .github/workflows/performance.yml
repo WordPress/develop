@@ -43,8 +43,8 @@ jobs:
         memcached: [ true, false ]
         multisite: [ true, false ]
         subject: [ 'current', 'before', 'base' ]
-        # @TODO only include `base` when the branch is `trunk`:
-        # github.event_name == 'push' && github.ref == 'refs/heads/trunk'
+        # @TODO only include `base` when:
+        # github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached && ! inputs.multisite
     with:
       memcached: ${{ matrix.memcached }}
       multisite: ${{ matrix.multisite }}
