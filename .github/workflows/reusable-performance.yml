@@ -161,6 +161,9 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Start Docker environment
+        run: npm run env:start
+
       - name: Build WordPress
         if: ${{ inputs.subject == 'current' }}
         run: npm run build
@@ -203,9 +206,6 @@ jobs:
           VERSION="${BASE_TAG}"
           VERSION="${VERSION%.0}"
           npm run env:cli -- core download --version="$VERSION" --force --path="/var/www/${LOCAL_DIR}"
-
-      - name: Start Docker environment
-        run: npm run env:start
 
       - name: Install object cache drop-in
         if: ${{ inputs.memcached }}
