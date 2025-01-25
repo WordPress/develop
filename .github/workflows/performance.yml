@@ -110,6 +110,9 @@ jobs:
           # HOST_NAME: www.codevitals.run
           HOST_NAME: yellow-ice-88.webhook.cool
         run: |
+          # ========
+          CODEVITALS_PROJECT_TOKEN=test
+          # ========
           if [ -z "$CODEVITALS_PROJECT_TOKEN" ]; then
             echo "Performance results could not be published. 'CODEVITALS_PROJECT_TOKEN' is not set"
             exit 1
