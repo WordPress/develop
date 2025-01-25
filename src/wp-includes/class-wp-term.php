@@ -242,19 +242,19 @@ final class WP_Term {
 
 				return sanitize_term( $data, $data->taxonomy, 'raw' );
 
-				// Backwards compatibility aliases.
-				case 'cat_ID':
-					return $this->term_id;
-				case 'category_count':
-					return $this->count;
-				case 'category_description':
-					return $this->description;
-				case 'cat_name':
-					return $this->name;
-				case 'category_nicename':
-					return $this->slug;
-				case 'category_parent':
-					return $this->parent;
+			// Backwards compatibility aliases.
+			case 'cat_ID':
+				return $this->term_id;
+			case 'category_count':
+				return $this->count;
+			case 'category_description':
+				return $this->description;
+			case 'cat_name':
+				return $this->name;
+			case 'category_nicename':
+				return $this->slug;
+			case 'category_parent':
+				return $this->parent;
 		}
 	}
 
