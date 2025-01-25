@@ -17,8 +17,9 @@ on:
         default: 'build'
       BASE_TAG:
         description: 'The version being used for baseline measurements.'
-        required: true
+        required: false
         type: 'string'
+        default: '6.7.0'
       php-version:
         description: 'The PHP version to use.'
         required: false
@@ -206,7 +207,8 @@ jobs:
       - name: Set the environment to the baseline version
         if: ${{ inputs.subject == 'base' }}
         run: |
-          npm run env:cli -- core download --version="$BASE_TAG" --force --path="/var/www/${LOCAL_DIR}"
+          VERSION="${BASE_TAG%.0}"
+          npm run env:cli -- core download --version="$VERSION" --force --path="/var/www/${LOCAL_DIR}"
 
       - name: Install object cache drop-in
         if: ${{ inputs.memcached }}
@@ -226,6 +228,9 @@ jobs:
 
       - name: Install WordPress
         run: npm run env:install
+
+      - name: Check version number
+        run: npm run env:cli -- core version --path="/var/www/${LOCAL_DIR}"
 
       - name: Enable themes on Multisite
         if: ${{ inputs.multisite }}
