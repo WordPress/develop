@@ -98,6 +98,8 @@ jobs:
               ref: 'tags/' + process.env.BASE_TAG,
             });
             return baseRef.data.object.sha;
+        env:
+          BASE_TAG: ${{ needs.performance.outputs.BASE_TAG }}
 
       - name: Publish performance results
         # Only publish results on pushes to trunk.
