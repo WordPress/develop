@@ -36,17 +36,21 @@ jobs:
     uses: ./.github/workflows/reusable-performance.yml
     permissions:
       contents: read
-    if: ${{ ( github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' ) }}
+    if: ${{ ( github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' ) && ! contains( github.event.before, '00000000' ) }}
     strategy:
       fail-fast: false
       matrix:
         memcached: [ true, false ]
         multisite: [ true, false ]
+        subject: [ 'current', 'before', 'base' ]
+        # @TODO only include `base` when the branch is `trunk`:
+        # github.event_name == 'push' && github.ref == 'refs/heads/trunk'
     with:
       memcached: ${{ matrix.memcached }}
       multisite: ${{ matrix.multisite }}
-    secrets:
-      CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }}
+      subject: ${{ matrix.subject }}
+      BASE_TAG: '6.7.0'
+
 
   slack-notifications:
     name: Slack Notifications
