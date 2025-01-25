@@ -118,7 +118,7 @@ jobs:
   # - Publish performance results.
   # - Ensure version-controlled files are not modified or deleted.
   performance:
-    name: ${{ inputs.memcached && 'Memcached' || 'Default' }} ${{ inputs.subject }}
+    name: ${{ inputs.memcached && 'Memcached' || 'Default' }} (${{ inputs.subject }})
     runs-on: ubuntu-latest
     permissions:
       contents: read
