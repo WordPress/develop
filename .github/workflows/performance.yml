@@ -32,7 +32,7 @@ permissions: {}
 jobs:
   # Runs the performance test suite.
   performance:
-    name: ${{ matrix.multisite && 'Multisite' || 'Single site' }}
+    name: Test ${{ matrix.multisite && 'Multisite' || 'Single site' }}
     uses: ./.github/workflows/reusable-performance.yml
     permissions:
       contents: read
@@ -49,10 +49,10 @@ jobs:
       memcached: ${{ matrix.memcached }}
       multisite: ${{ matrix.multisite }}
       subject: ${{ matrix.subject }}
-      BASE_TAG: '6.7.0'
+      BASE_TAG: '6.7'
 
   compare:
-    name: Compare ${{ matrix.multisite && 'Multisite' || 'Single site' }}
+    name: Compare ${{ matrix.multisite && 'Multisite' || 'Single site' }} / ${{ matrix.memcached && 'Memcached' || 'Default' }}
     runs-on: ubuntu-latest
     needs: [ performance ]
     strategy:
