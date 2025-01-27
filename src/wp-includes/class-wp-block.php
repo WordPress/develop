@@ -439,7 +439,9 @@ class WP_Block {
 				}
 			}
 
-			$source_args  = ! empty( $block_binding['args'] ) && is_array( $block_binding['args'] ) ? $block_binding['args'] : array();
+			$source_args = ! empty( $block_binding['args'] ) && is_array( $block_binding['args'] ) ? $block_binding['args'] : array();
+			// Populate the $this->attributes property because $block_binding_source->get_value() may need to access it.
+			$this->populate_attributes();
 			$source_value = $block_binding_source->get_value( $source_args, $this, $attribute_name );
 
 			// If the value is not null, process the HTML based on the block and the attribute.
@@ -742,12 +744,13 @@ class WP_Block {
 
 	/**
 	 * Populates the block attributes.
+	 * It must always be called before accessing the attributes property.
 	 *
 	 * @since 6.6.0
 	 */
 	protected function populate_attributes() {
-		// Originally, attributes could only be populated if the $attributes dynamic property had not been initialized.
-		// Therefore, this method should exit if the $attributes property has already been initialized.
+		// Initially, attributes could only be populated if the $attributes dynamic property was uninitialized.
+		// Consequently, this method should terminate if the $attributes property has already been initialized.
 		if ( array_key_exists( 'attributes', get_object_vars( $this ) ) ) {
 			return;
 		}
