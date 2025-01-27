@@ -280,7 +280,7 @@ jobs:
       - name: Run performance tests
         run: npm run test:performance
         env:
-          TEST_RESULTS_PREFIX: ${{ inputs.subject != 'base' && inputs.subject || '' }}
+          TEST_RESULTS_PREFIX: ${{ inputs.subject != 'current' && inputs.subject || '' }}
 
       - name: Archive artifacts
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
