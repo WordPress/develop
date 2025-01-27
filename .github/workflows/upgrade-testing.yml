@@ -59,8 +59,6 @@ jobs:
     name: ${{ matrix.wp }} to ${{ inputs.new-version && inputs.new-version || 'latest' }}
     uses: ./.github/workflows/reusable-upgrade-testing.yml
     if: ${{ github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' }}
-    permissions:
-      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -96,8 +94,6 @@ jobs:
     name: ${{ matrix.wp }} to ${{ inputs.new-version && inputs.new-version || 'latest' }}
     uses: ./.github/workflows/reusable-upgrade-testing.yml
     if: ${{ github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' }}
-    permissions:
-      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -111,8 +107,6 @@ jobs:
         exclude:
           # The PHP <= 7.3/MySQL 8.4 jobs currently fail due to mysql_native_password being disabled by default. See https://core.trac.wordpress.org/ticket/61218.
           - php: '7.2'
-            db-version: '8.4'
-          - php: '7.3'
             db-version: '8.4'
     with:
       os: ${{ matrix.os }}
@@ -141,8 +135,6 @@ jobs:
         exclude:
           # The PHP <= 7.3/MySQL 8.4 jobs currently fail due to mysql_native_password being disabled by default. See https://core.trac.wordpress.org/ticket/61218.
           - php: '7.2'
-            db-version: '8.4'
-          - php: '7.3'
             db-version: '8.4'
     with:
       os: ${{ matrix.os }}
@@ -200,8 +192,6 @@ jobs:
         exclude:
           # The PHP <= 7.3/MySQL 8.4 jobs currently fail due to mysql_native_password being disabled by default. See https://core.trac.wordpress.org/ticket/61218.
           - php: '7.2'
-            db-version: '8.4'
-          - php: '7.3'
             db-version: '8.4'
     with:
       os: ${{ matrix.os }}
@@ -322,6 +312,6 @@ jobs:
               workflow_id: 'failed-workflow.yml',
               ref: 'trunk',
               inputs: {
-                run_id: '${{ github.run_id }}'
+                run_id: `${context.runId}`,
               }
             });

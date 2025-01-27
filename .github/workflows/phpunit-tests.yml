@@ -144,7 +144,7 @@ jobs:
       multisite: ${{ matrix.multisite }}
       memcached: ${{ matrix.memcached }}
       phpunit-config: ${{ matrix.multisite && 'tests/phpunit/multisite.xml' || 'phpunit.xml.dist' }}
-      report: ${{ matrix.report || false }}
+      report: ${{ false }}
 
   #
   # Creates PHPUnit test jobs to test MariaDB and MySQL innovation releases.
@@ -193,7 +193,7 @@ jobs:
       multisite: ${{ matrix.multisite }}
       memcached: ${{ matrix.memcached }}
       phpunit-config: ${{ matrix.multisite && 'tests/phpunit/multisite.xml' || 'phpunit.xml.dist' }}
-      report: ${{ matrix.report || false }}
+      report: ${{ false }}
 
   #
   # Runs specific individual test groups.
@@ -263,6 +263,6 @@ jobs:
               workflow_id: 'failed-workflow.yml',
               ref: 'trunk',
               inputs: {
-                run_id: '${{ github.run_id }}'
+                run_id: `${context.runId}`,
               }
             });
