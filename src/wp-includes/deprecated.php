@@ -705,7 +705,7 @@ function dropdown_cats($optionall = 1, $all = 'All', $orderby = 'ID', $order = '
 
 	$show_option_none = '';
 	if ( $optionnone )
-	$show_option_none = _x( 'None', 'Categories dropdown (show_option_none parameter)' );
+		$show_option_none = _x( 'None', 'Categories dropdown (show_option_none parameter)' );
 
 	$vars = compact('show_option_all', 'show_option_none', 'orderby', 'order',
 					'show_last_update', 'show_count', 'hide_empty', 'selected', 'exclude');
@@ -3673,6 +3673,7 @@ function post_permalink( $post = 0 ) {
 function wp_get_http( $url, $file_path = false, $red = 1 ) {
 	_deprecated_function( __FUNCTION__, '4.4.0', 'WP_Http' );
 
+	// Add 60 seconds to the script timeout to ensure the remote request has enough time.
 	if ( function_exists( 'set_time_limit' ) ) {
 		@set_time_limit( 60 );
 	}
@@ -5189,7 +5190,7 @@ function wp_get_duotone_filter_property( $preset ) {
  * Returns the duotone filter SVG string for the preset.
  *
  * @since 5.9.1
- * @deprecated 6.3.0
+ * @deprecated 6.3.0 Use WP_Duotone::get_filter_svg_from_preset() instead.
  *
  * @access private
  *
@@ -5197,7 +5198,7 @@ function wp_get_duotone_filter_property( $preset ) {
  * @return string Duotone SVG filter.
  */
 function wp_get_duotone_filter_svg( $preset ) {
-	_deprecated_function( __FUNCTION__, '6.3.0' );
+	_deprecated_function( __FUNCTION__, '6.3.0', 'WP_Duotone::get_filter_svg_from_preset()' );
 	return WP_Duotone::get_filter_svg_from_preset( $preset );
 }
 
@@ -6002,7 +6003,7 @@ function wp_update_https_detection_errors() {
 	 */
 	$support_errors = apply_filters( 'pre_wp_update_https_detection_errors', null );
 	if ( is_wp_error( $support_errors ) ) {
-		update_option( 'https_detection_errors', $support_errors->errors );
+		update_option( 'https_detection_errors', $support_errors->errors, false );
 		return;
 	}
 
@@ -6315,7 +6316,7 @@ function wp_interactivity_process_directives_of_interactive_blocks( array $parse
  * Gets the global styles custom CSS from theme.json.
  *
  * @since 6.2.0
- * @deprecated 6.7.0 Use {@see 'wp_get_global_stylesheet'} instead.
+ * @deprecated 6.7.0 Use {@see 'wp_get_global_stylesheet'} instead for top-level custom CSS, or {@see 'WP_Theme_JSON::get_styles_for_block'} for block-level custom CSS.
  *
  * @return string The global styles custom CSS.
  */
@@ -6386,4 +6387,40 @@ function wp_enqueue_global_styles_custom_css() {
 	if ( ! empty( $custom_css ) ) {
 		wp_add_inline_style( 'global-styles', $custom_css );
 	}
+}
+
+/**
+ * Generate block style variation instance name.
+ *
+ * @since 6.6.0
+ * @deprecated 6.7.0 Use `wp_unique_id( $variation . '--' )` instead.
+ *
+ * @access private
+ *
+ * @param array  $block     Block object.
+ * @param string $variation Slug for the block style variation.
+ *
+ * @return string The unique variation name.
+ */
+function wp_create_block_style_variation_instance_name( $block, $variation ) {
+	_deprecated_function( __FUNCTION__, '6.7.0', 'wp_unique_id' );
+	return $variation . '--' . md5( serialize( $block ) );
+}
+
+/**
+ * Returns whether the current user has the specified capability for a given site.
+ *
+ * @since 3.0.0
+ * @since 5.3.0 Formalized the existing and already documented `...$args` parameter
+ *              by adding it to the function signature.
+ * @since 5.8.0 Wraps current_user_can() after switching to blog.
+ * @deprecated 6.7.0 Use current_user_can_for_site() instead.
+ *
+ * @param int    $blog_id    Site ID.
+ * @param string $capability Capability name.
+ * @param mixed  ...$args    Optional further parameters, typically starting with an object ID.
+ * @return bool Whether the user has the given capability.
+ */
+function current_user_can_for_blog( $blog_id, $capability, ...$args ) {
+	return current_user_can_for_site( $blog_id, $capability, ...$args );
 }

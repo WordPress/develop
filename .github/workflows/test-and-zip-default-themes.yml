@@ -68,6 +68,7 @@ jobs:
       fail-fast: false
       matrix:
         theme: [
+          'twentytwentyfive',
           'twentytwentyfour',
           'twentytwentythree',
           'twentytwentytwo',
@@ -90,10 +91,13 @@ jobs:
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.ref }}
           show-progress: ${{ runner.debug == '1' && 'true' || 'false' }}
+          persist-credentials: false
 
       - name: Check for zero-byte (empty) files
         run: |
-          [[ ! $(find src/wp-content/themes/${{ matrix.theme }} -empty) ]]
+          [[ ! $(find "src/wp-content/themes/${THEME}" -empty) ]]
+        env:
+          THEME: ${{ matrix.theme }}
 
   # Tests the build script for themes that have one.
   #
@@ -129,9 +133,10 @@ jobs:
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.ref }}
           show-progress: ${{ runner.debug == '1' && 'true' || 'false' }}
+          persist-credentials: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -163,6 +168,7 @@ jobs:
       fail-fast: false
       matrix:
         theme: [
+            'twentytwentyfive',
             'twentytwentyfour',
             'twentytwentythree',
             'twentytwentytwo',
@@ -185,17 +191,19 @@ jobs:
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.ref }}
           show-progress: ${{ runner.debug == '1' && 'true' || 'false' }}
+          persist-credentials: false
 
       - name: Upload theme ZIP as an artifact
-        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
-          if-no-files-found: error
           name: ${{ matrix.theme }}
           path: src/wp-content/themes/${{ matrix.theme }}
+          if-no-files-found: error
+          include-hidden-files: true
 
   slack-notifications:
     name: Slack Notifications
-    uses: WordPress/wordpress-develop/.github/workflows/slack-notifications.yml@trunk
+    uses: ./.github/workflows/slack-notifications.yml
     permissions:
       actions: read
       contents: read
@@ -238,6 +246,6 @@ jobs:
               workflow_id: 'failed-workflow.yml',
               ref: 'trunk',
               inputs: {
-                run_id: '${{ github.run_id }}'
+                run_id: `${context.runId}`,
               }
             });

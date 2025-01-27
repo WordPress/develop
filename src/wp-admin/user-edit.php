@@ -14,7 +14,7 @@ require_once ABSPATH . 'wp-admin/includes/translation-install.php';
 
 $action          = ! empty( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : '';
 $user_id         = ! empty( $_REQUEST['user_id'] ) ? absint( $_REQUEST['user_id'] ) : 0;
-$wp_http_referer = ! empty( $_REQUEST['wp_http_referer'] ) ? sanitize_text_field( $_REQUEST['wp_http_referer'] ) : '';
+$wp_http_referer = ! empty( $_REQUEST['wp_http_referer'] ) ? sanitize_url( $_REQUEST['wp_http_referer'] ) : '';
 
 $current_user = wp_get_current_user();
 
@@ -296,7 +296,7 @@ switch ( $action ) {
 				<h2><?php _e( 'Personal Options' ); ?></h2>
 
 				<table class="form-table" role="presentation">
-					<?php if ( ! ( IS_PROFILE_PAGE && ! $user_can_edit ) ) : ?>
+					<?php if ( ! ( IS_PROFILE_PAGE && ! $user_can_edit ) && 'false' === $profile_user->rich_editing ) : ?>
 						<tr class="user-rich-editing-wrap">
 							<th scope="row"><?php _e( 'Visual Editor' ); ?></th>
 							<td>
@@ -984,6 +984,8 @@ switch ( $action ) {
 					?>
 				</label>
 				<input id="new-application-password-value" type="text" class="code" readonly="readonly" value="{{ data.password }}" />
+				<button type="button" class="button copy-button" data-clipboard-text="{{ data.password }}"><?php _e( 'Copy' ); ?></button>
+				<span class="success hidden" aria-hidden="true"><?php _e( 'Copied!' ); ?></span>
 			</p>
 			<p><?php _e( 'Be sure to save this in a safe location. You will not be able to retrieve it.' ); ?></p>
 			<button type="button" class="notice-dismiss">

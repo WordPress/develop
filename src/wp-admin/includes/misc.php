@@ -1416,29 +1416,6 @@ function wp_admin_canonical_url() {
 }
 
 /**
- * Sends a referrer policy header so referrers are not sent externally from administration screens.
- *
- * @since 4.9.0
- */
-function wp_admin_headers() {
-	$policy = 'strict-origin-when-cross-origin';
-
-	/**
-	 * Filters the admin referrer policy header value.
-	 *
-	 * @since 4.9.0
-	 * @since 4.9.5 The default value was changed to 'strict-origin-when-cross-origin'.
-	 *
-	 * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
-	 *
-	 * @param string $policy The admin referrer policy header value. Default 'strict-origin-when-cross-origin'.
-	 */
-	$policy = apply_filters( 'admin_referrer_policy', $policy );
-
-	header( sprintf( 'Referrer-Policy: %s', $policy ) );
-}
-
-/**
  * Outputs JS that reloads the page if the user navigated to it with the Back or Forward button.
  *
  * Used on the Edit Post and Add New Post screens. Needed to ensure the page is not loaded from browser cache,
@@ -1477,7 +1454,7 @@ function update_option_new_admin_email( $old_value, $value ) {
 		'hash'     => $hash,
 		'newemail' => $value,
 	);
-	update_option( 'adminhash', $new_admin_email );
+	update_option( 'adminhash', $new_admin_email, false );
 
 	$switched_locale = switch_to_user_locale( get_current_user_id() );
 

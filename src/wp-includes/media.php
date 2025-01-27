@@ -6,6 +6,11 @@
  * @subpackage Media
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 /**
  * Retrieves additional image sizes.
  *
@@ -288,7 +293,7 @@ function image_downsize( $id, $size = 'medium' ) {
  *     If true, image will be cropped to the specified dimensions using center positions.
  *     If an array, the image will be cropped using the array to specify the crop location:
  *
- *     @type string $0 The x crop position. Accepts 'left' 'center', or 'right'.
+ *     @type string $0 The x crop position. Accepts 'left', 'center', or 'right'.
  *     @type string $1 The y crop position. Accepts 'top', 'center', or 'bottom'.
  * }
  */
@@ -350,7 +355,7 @@ function remove_image_size( $name ) {
  *     If true, image will be cropped to the specified dimensions using center positions.
  *     If an array, the image will be cropped using the array to specify the crop location:
  *
- *     @type string $0 The x crop position. Accepts 'left' 'center', or 'right'.
+ *     @type string $0 The x crop position. Accepts 'left', 'center', or 'right'.
  *     @type string $1 The y crop position. Accepts 'top', 'center', or 'bottom'.
  * }
  */
@@ -530,7 +535,7 @@ function wp_constrain_dimensions( $current_width, $current_height, $max_width = 
  *     If true, image will be cropped to the specified dimensions using center positions.
  *     If an array, the image will be cropped using the array to specify the crop location:
  *
- *     @type string $0 The x crop position. Accepts 'left' 'center', or 'right'.
+ *     @type string $0 The x crop position. Accepts 'left', 'center', or 'right'.
  *     @type string $1 The y crop position. Accepts 'top', 'center', or 'bottom'.
  * }
  * @return array|false Returned array matches parameters for `imagecopyresampled()`. False on failure.
@@ -684,7 +689,7 @@ function image_resize_dimensions( $orig_w, $orig_h, $dest_w, $dest_h, $crop = fa
  *     If true, image will be cropped to the specified dimensions using center positions.
  *     If an array, the image will be cropped using the array to specify the crop location:
  *
- *     @type string $0 The x crop position. Accepts 'left' 'center', or 'right'.
+ *     @type string $0 The x crop position. Accepts 'left', 'center', or 'right'.
  *     @type string $1 The y crop position. Accepts 'top', 'center', or 'bottom'.
  * }
  * @return array|false Metadata array on success. False if no image was created.
@@ -1135,6 +1140,20 @@ function wp_get_attachment_image( $attachment_id, $size = 'thumbnail', $icon = f
 					}
 				}
 			}
+		}
+
+		/** This filter is documented in wp-includes/media.php */
+		$add_auto_sizes = apply_filters( 'wp_img_tag_add_auto_sizes', true );
+
+		// Adds 'auto' to the sizes attribute if applicable.
+		if (
+			$add_auto_sizes &&
+			isset( $attr['loading'] ) &&
+			'lazy' === $attr['loading'] &&
+			isset( $attr['sizes'] ) &&
+			! wp_sizes_attribute_includes_valid_auto( $attr['sizes'] )
+		) {
+			$attr['sizes'] = 'auto, ' . $attr['sizes'];
 		}
 
 		/**
@@ -1917,6 +1936,9 @@ function wp_filter_content_tags( $content, $context = null ) {
 			// Add loading optimization attributes if applicable.
 			$filtered_image = wp_img_tag_add_loading_optimization_attrs( $filtered_image, $context );
 
+			// Adds 'auto' to the sizes attribute if applicable.
+			$filtered_image = wp_img_tag_add_auto_sizes( $filtered_image );
+
 			/**
 			 * Filters an img tag within the content for a given context.
 			 *
@@ -1964,6 +1986,103 @@ function wp_filter_content_tags( $content, $context = null ) {
 }
 
 /**
+ * Adds 'auto' to the sizes attribute to the image, if the image is lazy loaded and does not already include it.
+ *
+ * @since 6.7.0
+ *
+ * @param string $image The image tag markup being filtered.
+ * @return string The filtered image tag markup.
+ */
+function wp_img_tag_add_auto_sizes( string $image ): string {
+	/**
+	 * Filters whether auto-sizes for lazy loaded images is enabled.
+	 *
+	 * @since 6.7.1
+	 *
+	 * @param boolean $enabled Whether auto-sizes for lazy loaded images is enabled.
+	 */
+	if ( ! apply_filters( 'wp_img_tag_add_auto_sizes', true ) ) {
+		return $image;
+	}
+
+	$processor = new WP_HTML_Tag_Processor( $image );
+
+	// Bail if there is no IMG tag.
+	if ( ! $processor->next_tag( array( 'tag_name' => 'IMG' ) ) ) {
+		return $image;
+	}
+
+	// Bail early if the image is not lazy-loaded.
+	$loading = $processor->get_attribute( 'loading' );
+	if ( ! is_string( $loading ) || 'lazy' !== strtolower( trim( $loading, " \t\f\r\n" ) ) ) {
+		return $image;
+	}
+
+	/*
+	 * Bail early if the image doesn't have a width attribute.
+	 * Per WordPress Core itself, lazy-loaded images should always have a width attribute.
+	 * However, it is possible that lazy-loading could be added by a plugin, where we don't have that guarantee.
+	 * As such, it still makes sense to ensure presence of a width attribute here in order to use `sizes=auto`.
+	 */
+	$width = $processor->get_attribute( 'width' );
+	if ( ! is_string( $width ) || '' === $width ) {
+		return $image;
+	}
+
+	$sizes = $processor->get_attribute( 'sizes' );
+
+	// Bail early if the image is not responsive.
+	if ( ! is_string( $sizes ) ) {
+		return $image;
+	}
+
+	// Don't add 'auto' to the sizes attribute if it already exists.
+	if ( wp_sizes_attribute_includes_valid_auto( $sizes ) ) {
+		return $image;
+	}
+
+	$processor->set_attribute( 'sizes', "auto, $sizes" );
+	return $processor->get_updated_html();
+}
+
+/**
+ * Checks whether the given 'sizes' attribute includes the 'auto' keyword as the first item in the list.
+ *
+ * Per the HTML spec, if present it must be the first entry.
+ *
+ * @since 6.7.0
+ *
+ * @param string $sizes_attr The 'sizes' attribute value.
+ * @return bool True if the 'auto' keyword is present, false otherwise.
+ */
+function wp_sizes_attribute_includes_valid_auto( string $sizes_attr ): bool {
+	list( $first_size ) = explode( ',', $sizes_attr, 2 );
+	return 'auto' === strtolower( trim( $first_size, " \t\f\r\n" ) );
+}
+
+/**
+ * Prints a CSS rule to fix potential visual issues with images using `sizes=auto`.
+ *
+ * This rule overrides the similar rule in the default user agent stylesheet, to avoid images that use e.g.
+ * `width: auto` or `width: fit-content` to appear smaller.
+ *
+ * @since 6.7.1
+ * @see https://html.spec.whatwg.org/multipage/rendering.html#img-contain-size
+ * @see https://core.trac.wordpress.org/ticket/62413
+ */
+function wp_print_auto_sizes_contain_css_fix() {
+	/** This filter is documented in wp-includes/media.php */
+	$add_auto_sizes = apply_filters( 'wp_img_tag_add_auto_sizes', true );
+	if ( ! $add_auto_sizes ) {
+		return;
+	}
+
+	?>
+	<style>img:is([sizes="auto" i], [sizes^="auto," i]) { contain-intrinsic-size: 3000px 1500px }</style>
+	<?php
+}
+
+/**
  * Adds optimization attributes to an `img` HTML tag.
  *
  * @since 6.3.0
@@ -1973,6 +2092,7 @@ function wp_filter_content_tags( $content, $context = null ) {
  * @return string Converted `img` tag with optimization attributes added.
  */
 function wp_img_tag_add_loading_optimization_attrs( $image, $context ) {
+	$src               = preg_match( '/ src=["\']?([^"\']*)/i', $image, $matche_src ) ? $matche_src[1] : null;
 	$width             = preg_match( '/ width=["\']([0-9]+)["\']/', $image, $match_width ) ? (int) $match_width[1] : null;
 	$height            = preg_match( '/ height=["\']([0-9]+)["\']/', $image, $match_height ) ? (int) $match_height[1] : null;
 	$loading_val       = preg_match( '/ loading=["\']([A-Za-z]+)["\']/', $image, $match_loading ) ? $match_loading[1] : null;
@@ -1987,6 +2107,7 @@ function wp_img_tag_add_loading_optimization_attrs( $image, $context ) {
 	$optimization_attrs = wp_get_loading_optimization_attributes(
 		'img',
 		array(
+			'src'           => $src,
 			'width'         => $width,
 			'height'        => $height,
 			'loading'       => $loading_val,
@@ -4123,7 +4244,22 @@ function _wp_image_editor_choose( $args = array() ) {
 	 *                                'WP_Image_Editor_Imagick', 'WP_Image_Editor_GD'.
 	 */
 	$implementations = apply_filters( 'wp_image_editors', array( 'WP_Image_Editor_Imagick', 'WP_Image_Editor_GD' ) );
-	$supports_input  = false;
+
+	$editors = wp_cache_get( 'wp_image_editor_choose', 'image_editor' );
+
+	if ( ! is_array( $editors ) ) {
+		$editors = array();
+	}
+
+	// Cache the chosen editor implementation based on specific args and available implementations.
+	$cache_key = md5( serialize( array( $args, $implementations ) ) );
+
+	if ( isset( $editors[ $cache_key ] ) ) {
+		return $editors[ $cache_key ];
+	}
+
+	// Assume no support until a capable implementation is identified.
+	$editor = false;
 
 	foreach ( $implementations as $implementation ) {
 		if ( ! call_user_func( array( $implementation, 'test' ), $args ) ) {
@@ -4157,15 +4293,20 @@ function _wp_image_editor_choose( $args = array() ) {
 			 * This implementation supports the input type but not the output type.
 			 * Keep looking to see if we can find an implementation that supports both.
 			 */
-			$supports_input = $implementation;
+			$editor = $implementation;
 			continue;
 		}
 
 		// Favor the implementation that supports both input and output mime types.
-		return $implementation;
+		$editor = $implementation;
+		break;
 	}
 
-	return $supports_input;
+	$editors[ $cache_key ] = $editor;
+
+	wp_cache_set( 'wp_image_editor_choose', $editors, 'image_editor', DAY_IN_SECONDS );
+
+	return $editor;
 }
 
 /**
@@ -4319,7 +4460,6 @@ function wp_plupload_default_settings() {
  *     @type string $url                   Direct URL to the attachment file (from wp-content).
  *     @type int    $width                 If the attachment is an image, represents the width of the image in pixels.
  * }
- *
  */
 function wp_prepare_attachment_for_js( $attachment ) {
 	$attachment = get_post( $attachment );
@@ -5315,6 +5455,31 @@ function wp_maybe_generate_attachment_metadata( $attachment ) {
 function attachment_url_to_postid( $url ) {
 	global $wpdb;
 
+	/**
+	 * Filters the attachment ID to allow short-circuit the function.
+	 *
+	 * Allows plugins to short-circuit attachment ID lookups. Plugins making
+	 * use of this function should return:
+	 *
+	 * - 0 (integer) to indicate the attachment is not found,
+	 * - attachment ID (integer) to indicate the attachment ID found,
+	 * - null to indicate WordPress should proceed with the lookup.
+	 *
+	 * Warning: The post ID may be null or zero, both of which cast to a
+	 * boolean false. For information about casting to booleans see the
+	 * {@link https://www.php.net/manual/en/language.types.boolean.php PHP documentation}.
+	 * Use the === operator for testing the post ID when developing filters using
+	 * this hook.
+	 *
+	 * @param int|null $post_id The result of the post ID lookup. Null to indicate
+	 *                          no lookup has been attempted. Default null.
+	 * @param string   $url     The URL being looked up.
+	 */
+	$post_id = apply_filters( 'pre_attachment_url_to_postid', null, $url );
+	if ( null !== $post_id ) {
+		return (int) $post_id;
+	}
+
 	$dir  = wp_get_upload_dir();
 	$path = $url;
 
@@ -5514,9 +5679,7 @@ function wp_show_heic_upload_error( $plupload_settings ) {
  */
 function wp_getimagesize( $filename, ?array &$image_info = null ) {
 	// Don't silence errors when in debug mode, unless running unit tests.
-	if ( defined( 'WP_DEBUG' ) && WP_DEBUG
-		&& ! defined( 'WP_RUN_CORE_TESTS' )
-	) {
+	if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! defined( 'WP_RUN_CORE_TESTS' ) ) {
 		if ( 2 === func_num_args() ) {
 			$info = getimagesize( $filename, $image_info );
 		} else {
@@ -5547,11 +5710,18 @@ function wp_getimagesize( $filename, ?array &$image_info = null ) {
 		return $info;
 	}
 
+	$image_mime_type = wp_get_image_mime( $filename );
+
+	// Not an image?
+	if ( false === $image_mime_type ) {
+		return false;
+	}
+
 	/*
 	 * For PHP versions that don't support WebP images,
 	 * extract the image size info from the file headers.
 	 */
-	if ( 'image/webp' === wp_get_image_mime( $filename ) ) {
+	if ( 'image/webp' === $image_mime_type ) {
 		$webp_info = wp_get_webp_info( $filename );
 		$width     = $webp_info['width'];
 		$height    = $webp_info['height'];
@@ -5573,7 +5743,7 @@ function wp_getimagesize( $filename, ?array &$image_info = null ) {
 	}
 
 	// For PHP versions that don't support AVIF images, extract the image size info from the file headers.
-	if ( 'image/avif' === wp_get_image_mime( $filename ) ) {
+	if ( 'image/avif' === $image_mime_type ) {
 		$avif_info = wp_get_avif_info( $filename );
 
 		$width  = $avif_info['width'];
@@ -5596,11 +5766,13 @@ function wp_getimagesize( $filename, ?array &$image_info = null ) {
 	}
 
 	// For PHP versions that don't support HEIC images, extract the size info using Imagick when available.
-	if ( 'image/heic' === wp_get_image_mime( $filename ) ) {
+	if ( wp_is_heic_image_mime_type( $image_mime_type ) ) {
 		$editor = wp_get_image_editor( $filename );
+
 		if ( is_wp_error( $editor ) ) {
 			return false;
 		}
+
 		// If the editor for HEICs is Imagick, use it to get the image size.
 		if ( $editor instanceof WP_Image_Editor_Imagick ) {
 			$size = $editor->get_size();
@@ -6113,25 +6285,33 @@ function wp_high_priority_element_flag( $value = null ) {
  * @return string[] An array of mime type mappings.
  */
 function wp_get_image_editor_output_format( $filename, $mime_type ) {
+	$output_format = array(
+		'image/heic'          => 'image/jpeg',
+		'image/heif'          => 'image/jpeg',
+		'image/heic-sequence' => 'image/jpeg',
+		'image/heif-sequence' => 'image/jpeg',
+	);
+
 	/**
 	 * Filters the image editor output format mapping.
 	 *
-	 * Enables filtering the mime type used to save images. By default,
-	 * the mapping array is empty, so the mime type matches the source image.
+	 * Enables filtering the mime type used to save images. By default HEIC/HEIF images
+	 * are converted to JPEGs.
 	 *
 	 * @see WP_Image_Editor::get_output_format()
 	 *
 	 * @since 5.8.0
-	 * @since 6.7.0 The default was changed from array() to array( 'image/heic' => 'image/jpeg' ).
+	 * @since 6.7.0 The default was changed from an empty array to an array
+	 *              containing the HEIC/HEIF images mime types.
 	 *
 	 * @param string[] $output_format {
 	 *     An array of mime type mappings. Maps a source mime type to a new
-	 *     destination mime type. Default maps uploaded HEIC images to JPEG output.
+	 *     destination mime type. By default maps HEIC/HEIF input to JPEG output.
 	 *
 	 *     @type string ...$0 The new mime type.
 	 * }
 	 * @param string $filename  Path to the image.
 	 * @param string $mime_type The source image mime type.
 	 */
-	return apply_filters( 'image_editor_output_format', array( 'image/heic' => 'image/jpeg' ), $filename, $mime_type );
+	return apply_filters( 'image_editor_output_format', $output_format, $filename, $mime_type );
 }

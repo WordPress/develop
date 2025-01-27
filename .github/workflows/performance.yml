@@ -32,21 +32,25 @@ permissions: {}
 jobs:
   # Runs the performance test suite.
   performance:
-    name: Performance tests ${{ matrix.memcached && '(with memcached)' || '' }}
-    uses: WordPress/wordpress-develop/.github/workflows/reusable-performance.yml@trunk
+    name: ${{ matrix.multisite && 'Multisite' || 'Single site' }}
+    uses: ./.github/workflows/reusable-performance.yml
     permissions:
       contents: read
-    if: ${{ ( github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' ) && ! contains( github.event.before, '00000000' ) }}
+    if: ${{ ( github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' ) }}
     strategy:
       fail-fast: false
       matrix:
         memcached: [ true, false ]
+        multisite: [ true, false ]
     with:
       memcached: ${{ matrix.memcached }}
+      multisite: ${{ matrix.multisite }}
+    secrets:
+      CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }}
 
   slack-notifications:
     name: Slack Notifications
-    uses: WordPress/wordpress-develop/.github/workflows/slack-notifications.yml@trunk
+    uses: ./.github/workflows/slack-notifications.yml
     permissions:
       actions: read
       contents: read
@@ -89,6 +93,6 @@ jobs:
               workflow_id: 'failed-workflow.yml',
               ref: 'trunk',
               inputs: {
-                run_id: '${{ github.run_id }}'
+                run_id: `${context.runId}`,
               }
             });
