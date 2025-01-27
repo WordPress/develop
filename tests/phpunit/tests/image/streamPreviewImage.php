@@ -5,7 +5,7 @@
  * @group media
  * @group upload
  */
-class streamPreviewImage extends WP_UnitTestCase {
+class StreamPreviewImage extends WP_UnitTestCase {
 	protected static $attachment_id;
 
 	public static function wpSetUpBeforeClass( WP_UnitTest_Factory $factory ) {
