@@ -35,8 +35,8 @@ $post_id = isset( $post_id ) ? (int) $post_id : 0;
 // Require an ID for the edit screen.
 if ( isset( $action ) && 'edit' === $action && ! $ID ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 	wp_die(
-		'<h1>' . __( 'An error occurred during the upload process. Please try again or contact support.' ) . '</h1>' .
-		'<p>' . __( 'Invalid item ID.' ) . '</p>',
+		'<h1>' . __( 'An error occurred during the upload process.' ) . '</h1>' .
+		'<p>' . __( 'Invalid item ID. Please try again.' ) . '</p>',
 		403
 	);
 }
