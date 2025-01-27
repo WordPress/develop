@@ -173,13 +173,4 @@ class Tests_Ajax_WpAjaxImgeditPreview extends WP_Ajax_UnitTestCase {
 			'action'       => 'crop-image',
 		);
 	}
-//
-//	/**
-//	 * @param WP_Post $attachment
-//	 *
-//	 * @return string
-//	 */
-//	private function get_attachment_filename( WP_Post $attachment ) {
-//		return wp_basename( wp_get_attachment_url( $attachment->ID ) );
-//	}
 }
