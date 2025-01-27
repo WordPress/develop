@@ -147,16 +147,7 @@ class Tests_Ajax_WpAjaxImgeditPreview extends WP_Ajax_UnitTestCase {
 
 		return get_post( $attachment_id );
 	}
-//
-//	/**
-//	 * @param array $response Response to validate.
-//	 */
-//	private function validate_response( $response ) {
-//		$this->assertArrayHasKey( 'success', $response, 'Response array must contain "success" key.' );
-//		$this->assertArrayHasKey( 'data', $response, 'Response array must contain "data" key.' );
-//		$this->assertNotEmpty( $response['data']['id'], 'Response array must contain "ID" value of the post entity.' );
-//	}
-//
+
 	/**
 	 * Prepares $_POST for crop-image ajax action.
 	 *
