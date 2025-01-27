@@ -14,7 +14,7 @@ require_once ABSPATH . 'wp-admin/includes/translation-install.php';
 
 $action          = ! empty( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : '';
 $user_id         = ! empty( $_REQUEST['user_id'] ) ? absint( $_REQUEST['user_id'] ) : 0;
-$wp_http_referer = ! empty( $_REQUEST['wp_http_referer'] ) ? sanitize_text_field( $_REQUEST['wp_http_referer'] ) : '';
+$wp_http_referer = ! empty( $_REQUEST['wp_http_referer'] ) ? sanitize_url( $_REQUEST['wp_http_referer'] ) : '';
 
 $current_user = wp_get_current_user();
 
@@ -296,7 +296,7 @@ switch ( $action ) {
 				<h2><?php _e( 'Personal Options' ); ?></h2>
 
 				<table class="form-table" role="presentation">
-					<?php if ( ! ( IS_PROFILE_PAGE && ! $user_can_edit ) ) : ?>
+					<?php if ( ! ( IS_PROFILE_PAGE && ! $user_can_edit ) && 'false' === $profile_user->rich_editing ) : ?>
 						<tr class="user-rich-editing-wrap">
 							<th scope="row"><?php _e( 'Visual Editor' ); ?></th>
 							<td>
@@ -628,7 +628,8 @@ switch ( $action ) {
 										$description = sprintf(
 											/* translators: %s: Gravatar URL. */
 											__( '<a href="%s">You can change your profile picture on Gravatar</a>.' ),
-											__( 'https://en.gravatar.com/' )
+											/* translators: The localized Gravatar URL. */
+											__( 'https://gravatar.com/' )
 										);
 									} else {
 										$description = '';
@@ -858,7 +859,7 @@ switch ( $action ) {
 									<?php
 									printf(
 										/* translators: %s: Documentation URL. */
-										__( 'If this is a development website you can <a href="%s" target="_blank">set the environment type accordingly</a> to enable application passwords.' ),
+										__( 'If this is a development website, you can <a href="%s">set the environment type accordingly</a> to enable application passwords.' ),
 										__( 'https://developer.wordpress.org/apis/wp-config-php/#wp-environment-type' )
 									);
 									?>
@@ -983,6 +984,8 @@ switch ( $action ) {
 					?>
 				</label>
 				<input id="new-application-password-value" type="text" class="code" readonly="readonly" value="{{ data.password }}" />
+				<button type="button" class="button copy-button" data-clipboard-text="{{ data.password }}"><?php _e( 'Copy' ); ?></button>
+				<span class="success hidden" aria-hidden="true"><?php _e( 'Copied!' ); ?></span>
 			</p>
 			<p><?php _e( 'Be sure to save this in a safe location. You will not be able to retrieve it.' ); ?></p>
 			<button type="button" class="notice-dismiss">

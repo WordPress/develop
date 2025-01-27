@@ -196,6 +196,7 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 				'categories_exclude',
 				'context',
 				'exclude',
+				'format',
 				'include',
 				'modified_after',
 				'modified_before',
@@ -206,6 +207,7 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 				'per_page',
 				'search',
 				'search_columns',
+				'search_semantics',
 				'slug',
 				'status',
 				'sticky',
@@ -763,6 +765,64 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 		foreach ( $all_data as $post ) {
 			$this->assertNotEquals( $draft_id, $post['id'] );
 		}
+	}
+
+	/**
+	 * @ticket 56350
+	 *
+	 * @dataProvider data_get_items_exact_search
+	 *
+	 * @param string $search_term  The search term.
+	 * @param bool   $exact_search Whether the search is an exact or general search.
+	 * @param int    $expected     The expected number of matching posts.
+	 */
+	public function test_get_items_exact_search( $search_term, $exact_search, $expected ) {
+		self::factory()->post->create(
+			array(
+				'post_title'   => 'Rye',
+				'post_content' => 'This is a post about Rye Bread',
+			)
+		);
+
+		self::factory()->post->create(
+			array(
+				'post_title'   => 'Types of Bread',
+				'post_content' => 'Types of bread are White and Rye Bread',
+			)
+		);
+
+		$request           = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+		$request['search'] = $search_term;
+		if ( $exact_search ) {
+			$request['search_semantics'] = 'exact';
+		}
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertCount( $expected, $response->get_data() );
+	}
+
+	/**
+	 * Data provider for test_get_items_exact_search().
+	 *
+	 * @return array[]
+	 */
+	public function data_get_items_exact_search() {
+		return array(
+			'general search, one exact match and one partial match' => array(
+				'search_term'  => 'Rye',
+				'exact_search' => false,
+				'expected'     => 2,
+			),
+			'exact search, one exact match and one partial match' => array(
+				'search_term'  => 'Rye',
+				'exact_search' => true,
+				'expected'     => 1,
+			),
+			'exact search, no match and one partial match' => array(
+				'search_term'  => 'Rye Bread',
+				'exact_search' => true,
+				'expected'     => 0,
+			),
+		);
 	}
 
 	public function test_get_items_order_and_orderby() {
@@ -1652,10 +1712,20 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 		$request = new WP_REST_Request( 'GET', '/wp/v2/media' );
 		rest_get_server()->dispatch( $request );
 
-		$args = $filter->get_args();
-		$last = end( $args );
-		$this->assertIsArray( $last, 'The last value is not an array' );
-		$this->assertSameSets( $parent_ids, $last[1] );
+		$events = $filter->get_events();
+		$args   = wp_list_pluck( $events, 'args' );
+		$primed = false;
+		sort( $parent_ids );
+		foreach ( $args as $arg ) {
+			sort( $arg[1] );
+			if ( $parent_ids === $arg[1] ) {
+				$primed = $arg;
+				break;
+			}
+		}
+
+		$this->assertIsArray( $primed, 'The last value is not an array' );
+		$this->assertSameSets( $parent_ids, $primed[1] );
 	}
 
 	public function test_get_items_pagination_headers() {
@@ -2171,6 +2241,51 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 		$this->assertTrue( $data['content']['protected'] );
 		$this->assertSame( '', $data['excerpt']['rendered'] );
 		$this->assertTrue( $data['excerpt']['protected'] );
+	}
+
+	/**
+	 * @ticket 61837
+	 */
+	public function test_get_item_permissions_check_while_updating_password() {
+		$endpoint = new WP_REST_Posts_Controller( 'post' );
+
+		$request = new WP_REST_Request( 'POST', sprintf( '/wp/v2/posts/%d', self::$post_id ) );
+		$request->set_url_params( array( 'id' => self::$post_id ) );
+		$request->set_body_params(
+			$this->set_post_data(
+				array(
+					'id'       => self::$post_id,
+					'password' => '123',
+				)
+			)
+		);
+		$permission = $endpoint->get_item_permissions_check( $request );
+
+		// Password provided in POST data, should not be used as authentication.
+		$this->assertNotWPError( $permission, 'Password in post body should be ignored by permissions check.' );
+		$this->assertTrue( $permission );
+	}
+
+	/**
+	 * @ticket 61837
+	 */
+	public function test_get_item_permissions_check_while_updating_password_with_invalid_type() {
+		$endpoint = new WP_REST_Posts_Controller( 'post' );
+
+		$request = new WP_REST_Request( 'POST', sprintf( '/wp/v2/posts/%d', self::$post_id ) );
+		$request->set_url_params( array( 'id' => self::$post_id ) );
+		$request->set_body_params(
+			$this->set_post_data(
+				array(
+					'id'       => self::$post_id,
+					'password' => 123,
+				)
+			)
+		);
+		$permission = $endpoint->get_item_permissions_check( $request );
+
+		$this->assertNotWPError( $permission, 'Password in post body should be ignored by permissions check even when it is an invalid type.' );
+		$this->assertTrue( $permission );
 	}
 
 	/**
@@ -4180,12 +4295,12 @@ Shankle pork chop prosciutto ribeye ham hock pastrami. T-bone shank brisket baco
 						'rendered' => '<a href="#">link</a>',
 					),
 					'content' => array(
-						'raw'      => '<a href="#" target="_blank" rel="noopener">link</a>',
-						'rendered' => '<p><a href="#" target="_blank" rel="noopener">link</a></p>',
+						'raw'      => '<a href="#" target="_blank">link</a>',
+						'rendered' => '<p><a href="#" target="_blank">link</a></p>',
 					),
 					'excerpt' => array(
-						'raw'      => '<a href="#" target="_blank" rel="noopener">link</a>',
-						'rendered' => '<p><a href="#" target="_blank" rel="noopener">link</a></p>',
+						'raw'      => '<a href="#" target="_blank">link</a>',
+						'rendered' => '<p><a href="#" target="_blank">link</a></p>',
 					),
 				),
 			),
@@ -5390,6 +5505,214 @@ Shankle pork chop prosciutto ribeye ham hock pastrami. T-bone shank brisket baco
 			$post->post_name,
 			'The post slug was not set to "sample-slug-2"'
 		);
+	}
+
+	/**
+	 * Test the REST API ignores the post format parameter for post types that do not support them.
+	 *
+	 * @ticket 62646
+	 * @ticket 62014
+	 *
+	 * @covers WP_REST_Posts_Controller::get_items
+	 */
+	public function test_standard_post_format_ignored_for_post_types_that_do_not_support_them() {
+		$initial_theme_support = get_theme_support( 'post-formats' );
+		add_theme_support( 'post-formats', array( 'aside', 'gallery', 'link', 'image', 'quote', 'status', 'video', 'audio', 'chat' ) );
+
+		self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_status' => 'publish',
+			)
+		);
+
+		$request = new WP_REST_Request( 'GET', '/wp/v2/pages' );
+		$request->set_param( 'format', 'invalid_type' );
+
+		$response = rest_get_server()->dispatch( $request );
+
+		/*
+		 * Restore the initial post formats support.
+		 *
+		 * This needs to be done prior to the assertions to avoid unexpected
+		 * results for other tests should an assertion fail.
+		 */
+		if ( $initial_theme_support ) {
+			add_theme_support( 'post-formats', $initial_theme_support[0] );
+		} else {
+			remove_theme_support( 'post-formats' );
+		}
+
+		$this->assertCount( 1, $response->get_data(), 'The response should ignore the post format parameter' );
+	}
+
+	/**
+	 * Test the REST API support for the standard post format.
+	 *
+	 * @ticket 62014
+	 *
+	 * @covers WP_REST_Posts_Controller::get_items
+	 */
+	public function test_standard_post_format_support() {
+		$initial_theme_support = get_theme_support( 'post-formats' );
+		add_theme_support( 'post-formats', array( 'aside', 'gallery', 'link', 'image', 'quote', 'status', 'video', 'audio', 'chat' ) );
+
+		$post_id = self::factory()->post->create(
+			array(
+				'post_type'   => 'post',
+				'post_status' => 'publish',
+			)
+		);
+		set_post_format( $post_id, 'aside' );
+
+		$request = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+		$request->set_param( 'format', array( 'standard' ) );
+		$request->set_param( 'per_page', REST_TESTS_IMPOSSIBLY_HIGH_NUMBER );
+
+		$response = rest_get_server()->dispatch( $request );
+
+		/*
+		 * Restore the initial post formats support.
+		 *
+		 * This needs to be done prior to the assertions to avoid unexpected
+		 * results for other tests should an assertion fail.
+		 */
+		if ( $initial_theme_support ) {
+			add_theme_support( 'post-formats', $initial_theme_support[0] );
+		} else {
+			remove_theme_support( 'post-formats' );
+		}
+
+		$this->assertCount( 3, $response->get_data(), 'The response should only include standard post formats' );
+	}
+
+	/**
+	 * Test the REST API support for post formats.
+	 *
+	 * @ticket 62014
+	 *
+	 * @covers WP_REST_Posts_Controller::get_items
+	 */
+	public function test_post_format_support() {
+		$initial_theme_support = get_theme_support( 'post-formats' );
+		add_theme_support( 'post-formats', array( 'aside', 'gallery', 'link', 'image', 'quote', 'status', 'video', 'audio', 'chat' ) );
+
+		$post_id = self::factory()->post->create(
+			array(
+				'post_type'   => 'post',
+				'post_status' => 'publish',
+			)
+		);
+		set_post_format( $post_id, 'aside' );
+
+		$request = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+		$request->set_param( 'format', array( 'aside' ) );
+
+		$response_aside = rest_get_server()->dispatch( $request );
+
+		$request->set_param( 'format', array( 'invalid_format' ) );
+		$response_invalid = rest_get_server()->dispatch( $request );
+
+		/*
+		 * Restore the initial post formats support.
+		 *
+		 * This needs to be done prior to the assertions to avoid unexpected
+		 * results for other tests should an assertion fail.
+		 */
+		if ( $initial_theme_support ) {
+			add_theme_support( 'post-formats', $initial_theme_support[0] );
+		} else {
+			remove_theme_support( 'post-formats' );
+		}
+
+		$this->assertCount( 1, $response_aside->get_data(), 'Only one post is expected to be returned.' );
+		$this->assertErrorResponse( 'rest_invalid_param', $response_invalid, 400, 'An invalid post format should return an error' );
+	}
+
+	/**
+	 * Test the REST API support for multiple post formats.
+	 *
+	 * @ticket 62014
+	 *
+	 * @covers WP_REST_Posts_Controller::get_items
+	 */
+	public function test_multiple_post_format_support() {
+		$initial_theme_support = get_theme_support( 'post-formats' );
+		add_theme_support( 'post-formats', array( 'aside', 'gallery', 'link', 'image', 'quote', 'status', 'video', 'audio', 'chat' ) );
+
+		$post_id = self::factory()->post->create(
+			array(
+				'post_type'   => 'post',
+				'post_status' => 'publish',
+			)
+		);
+		set_post_format( $post_id, 'aside' );
+
+		$post_id_2 = self::factory()->post->create(
+			array(
+				'post_type'   => 'post',
+				'post_status' => 'publish',
+			)
+		);
+		set_post_format( $post_id_2, 'gallery' );
+
+		$request = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+		$request->set_param( 'format', array( 'aside', 'gallery' ) );
+
+		$response = rest_get_server()->dispatch( $request );
+
+		/*
+		 * Restore the initial post formats support.
+		 *
+		 * This needs to be done prior to the assertions to avoid unexpected
+		 * results for other tests should an assertion fail.
+		 */
+		if ( $initial_theme_support ) {
+			add_theme_support( 'post-formats', $initial_theme_support[0] );
+		} else {
+			remove_theme_support( 'post-formats' );
+		}
+
+		$this->assertCount( 2, $response->get_data(), 'Two posts are expected to be returned' );
+	}
+
+	/**
+	 * Tests for the pagination.
+	 *
+	 * @ticket 62292
+	 *
+	 * @covers WP_REST_Posts_Controller::get_items
+	 */
+	public function test_get_posts_with_pagination() {
+
+		// Test offset
+		$request = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+		$request->set_param( 'offset', 1 );
+		$request->set_param( 'per_page', 1 );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertCount( 1, $data );
+		$this->assertEquals( 30, $response->get_headers()['X-WP-Total'] );
+		$this->assertEquals( 30, $response->get_headers()['X-WP-TotalPages'] );
+
+		// Test paged
+		$request = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+		$request->set_param( 'page', 2 );
+		$request->set_param( 'per_page', 2 );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertCount( 2, $data );
+		$this->assertEquals( 30, $response->get_headers()['X-WP-Total'] );
+		$this->assertEquals( 15, $response->get_headers()['X-WP-TotalPages'] );
+
+		// Test out of bounds
+		$request = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+		$request->set_param( 'page', 4 );
+		$request->set_param( 'per_page', 10 );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_post_invalid_page_number', $response, 400 );
 	}
 
 	/**

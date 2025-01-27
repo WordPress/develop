@@ -84,19 +84,27 @@ if ( $wp_customize->changeset_post_id() ) {
 	}
 }
 
-$url       = ! empty( $_REQUEST['url'] ) ? sanitize_text_field( $_REQUEST['url'] ) : '';
-$return    = ! empty( $_REQUEST['return'] ) ? sanitize_text_field( $_REQUEST['return'] ) : '';
-$autofocus = ! empty( $_REQUEST['autofocus'] ) ? sanitize_text_field( $_REQUEST['autofocus'] ) : '';
+$url       = ! empty( $_REQUEST['url'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['url'] ) ) : '';
+$return    = ! empty( $_REQUEST['return'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['return'] ) ) : '';
+$autofocus = ! empty( $_REQUEST['autofocus'] ) && is_array( $_REQUEST['autofocus'] )
+	? array_map( 'sanitize_text_field', wp_unslash( $_REQUEST['autofocus'] ) )
+	: array();
 
 if ( ! empty( $url ) ) {
-	$wp_customize->set_preview_url( wp_unslash( $url ) );
+	$wp_customize->set_preview_url( $url );
 }
 if ( ! empty( $return ) ) {
-	$wp_customize->set_return_url( wp_unslash( $return ) );
+	$wp_customize->set_return_url( $return );
 }
-if ( ! empty( $autofocus ) && is_array( $autofocus ) ) {
-	$wp_customize->set_autofocus( wp_unslash( $autofocus ) );
+if ( ! empty( $autofocus ) ) {
+	$wp_customize->set_autofocus( $autofocus );
 }
+
+// Let's roll.
+header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
+
+wp_user_settings();
+_wp_admin_html_begin();
 
 $registered             = $wp_scripts->registered;
 $wp_scripts             = new WP_Scripts();
@@ -123,12 +131,6 @@ wp_enqueue_style( 'customize-controls' );
  * @since 3.4.0
  */
 do_action( 'customize_controls_enqueue_scripts' );
-
-// Let's roll.
-header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
-
-wp_user_settings();
-_wp_admin_html_begin();
 
 $body_class = 'wp-core-ui wp-customizer js';
 

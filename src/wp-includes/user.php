@@ -48,10 +48,10 @@ function wp_signon( $credentials = array(), $secure_cookie = '' ) {
 			'remember'      => false,
 		);
 
-		if ( ! empty( $_POST['log'] ) ) {
+		if ( ! empty( $_POST['log'] ) && is_string( $_POST['log'] ) ) {
 			$credentials['user_login'] = wp_unslash( $_POST['log'] );
 		}
-		if ( ! empty( $_POST['pwd'] ) ) {
+		if ( ! empty( $_POST['pwd'] ) && is_string( $_POST['pwd'] ) ) {
 			$credentials['user_password'] = $_POST['pwd'];
 		}
 		if ( ! empty( $_POST['rememberme'] ) ) {
@@ -776,6 +776,19 @@ function delete_user_option( $user_id, $option_name, $is_global = false ) {
 }
 
 /**
+ * Retrieves user info by user ID.
+ *
+ * @since 6.7.0
+ *
+ * @param int $user_id User ID.
+ *
+ * @return WP_User|false WP_User object on success, false on failure.
+ */
+function get_user( $user_id ) {
+	return get_user_by( 'id', $user_id );
+}
+
+/**
  * Retrieves list of users matching criteria.
  *
  * @since 3.1.0
@@ -1138,7 +1151,13 @@ function is_user_member_of_blog( $user_id = 0, $blog_id = 0 ) {
  *
  * @param int    $user_id    User ID.
  * @param string $meta_key   Metadata name.
- * @param mixed  $meta_value Metadata value. Must be serializable if non-scalar.
+ * @param mixed  $meta_value Metadata value. Arrays and objects are stored as serialized data and
+ *                           will be returned as the same type when retrieved. Other data types will
+ *                           be stored as strings in the database:
+ *                           - false is stored and retrieved as an empty string ('')
+ *                           - true is stored and retrieved as '1'
+ *                           - numbers (both integer and float) are stored and retrieved as strings
+ *                           Must be serializable if non-scalar.
  * @param bool   $unique     Optional. Whether the same key should not be added.
  *                           Default false.
  * @return int|false Meta ID on success, false on failure.
@@ -1185,7 +1204,13 @@ function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
  * @return mixed An array of values if `$single` is false.
  *               The value of meta data field if `$single` is true.
  *               False for an invalid `$user_id` (non-numeric, zero, or negative value).
- *               An empty string if a valid but non-existing user ID is passed.
+ *               An empty array if a valid but non-existing user ID is passed and `$single` is false.
+ *               An empty string if a valid but non-existing user ID is passed and `$single` is true.
+ *               Note: Non-serialized values are returned as strings:
+ *               - false values are returned as empty strings ('')
+ *               - true values are returned as '1'
+ *               - numbers (both integer and float) are returned as strings
+ *               Arrays and objects retain their original type.
  */
 function get_user_meta( $user_id, $key = '', $single = false ) {
 	return get_metadata( 'user', $user_id, $key, $single );
@@ -1549,12 +1574,10 @@ function setup_userdata( $for_user_id = 0 ) {
 /**
  * Creates dropdown HTML content of users.
  *
- * The content can either be displayed, which it is by default or retrieved by
- * setting the 'echo' argument. The 'include' and 'exclude' arguments do not
- * need to be used; all users will be displayed in that case. Only one can be
- * used, either 'include' or 'exclude', but not both.
- *
- * The available arguments are as follows:
+ * The content can either be displayed, which it is by default, or retrieved by
+ * setting the 'echo' argument to false. The 'include' and 'exclude' arguments
+ * are optional; if they are not specified, all users will be displayed. Only one
+ * can be used in a single call, either 'include' or 'exclude', but not both.
  *
  * @since 2.3.0
  * @since 4.5.0 Added the 'display_name_with_login' value for 'show'.
@@ -2354,7 +2377,7 @@ function wp_insert_user( $userdata ) {
 	$admin_color         = empty( $userdata['admin_color'] ) ? 'fresh' : $userdata['admin_color'];
 	$meta['admin_color'] = preg_replace( '|[^a-z0-9 _.\-@]|i', '', $admin_color );
 
-	$meta['use_ssl'] = empty( $userdata['use_ssl'] ) ? 0 : (bool) $userdata['use_ssl'];
+	$meta['use_ssl'] = empty( $userdata['use_ssl'] ) ? '0' : '1';
 
 	$meta['show_admin_bar_front'] = empty( $userdata['show_admin_bar_front'] ) ? 'true' : $userdata['show_admin_bar_front'];
 
@@ -2768,8 +2791,6 @@ All at ###SITENAME###
 	$current_user = wp_get_current_user();
 	if ( $current_user->ID === $user_id ) {
 		if ( isset( $plaintext_pass ) ) {
-			wp_clear_auth_cookie();
-
 			/*
 			 * Here we calculate the expiration length of the current auth cookie and compare it to the default expiration.
 			 * If it's greater than this, then we know the user checked 'Remember Me' when they logged in.
@@ -2778,13 +2799,20 @@ All at ###SITENAME###
 			/** This filter is documented in wp-includes/pluggable.php */
 			$default_cookie_life = apply_filters( 'auth_cookie_expiration', ( 2 * DAY_IN_SECONDS ), $user_id, false );
 
-			$remember = false;
+			wp_clear_auth_cookie();
 
-			if ( false !== $logged_in_cookie && ( $logged_in_cookie['expiration'] - time() ) > $default_cookie_life ) {
+			$remember = false;
+			$token    = '';
+
+			if ( false !== $logged_in_cookie ) {
+				$token = $logged_in_cookie['token'];
+			}
+
+			if ( false !== $logged_in_cookie && ( (int) $logged_in_cookie['expiration'] - time() ) > $default_cookie_life ) {
 				$remember = true;
 			}
 
-			wp_set_auth_cookie( $user_id, $remember );
+			wp_set_auth_cookie( $user_id, $remember, '', $token );
 		}
 	}
 
@@ -3094,7 +3122,7 @@ function check_password_reset_key( $key, $login ) {
  *                           Defaults to `$_POST['user_login']` if not set.
  * @return true|WP_Error True when finished, WP_Error object on error.
  */
-function retrieve_password( $user_login = null ) {
+function retrieve_password( $user_login = '' ) {
 	$errors    = new WP_Error();
 	$user_data = false;
 

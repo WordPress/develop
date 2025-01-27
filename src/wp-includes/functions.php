@@ -5,6 +5,11 @@
  * @package WordPress
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 require ABSPATH . WPINC . '/option.php';
 
 /**
@@ -73,7 +78,7 @@ function mysql2date( $format, $date, $translate = true ) {
 function current_time( $type, $gmt = 0 ) {
 	// Don't use non-GMT timestamp, unless you know the difference and really need to.
 	if ( 'timestamp' === $type || 'U' === $type ) {
-		return $gmt ? time() : time() + (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
+		return $gmt ? time() : time() + (int) ( (float) get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
 	}
 
 	if ( 'mysql' === $type ) {
@@ -594,10 +599,10 @@ function get_weekstartend( $mysqlstring, $start_of_week = '' ) {
 	$day = mktime( 0, 0, 0, $md, $mm, $my );
 
 	// The day of the week from the timestamp.
-	$weekday = gmdate( 'w', $day );
+	$weekday = (int) gmdate( 'w', $day );
 
 	if ( ! is_numeric( $start_of_week ) ) {
-		$start_of_week = get_option( 'start_of_week' );
+		$start_of_week = (int) get_option( 'start_of_week' );
 	}
 
 	if ( $weekday < $start_of_week ) {
@@ -609,6 +614,7 @@ function get_weekstartend( $mysqlstring, $start_of_week = '' ) {
 
 	// $start + 1 week - 1 second.
 	$end = $start + WEEK_IN_SECONDS - 1;
+
 	return compact( 'start', 'end' );
 }
 
@@ -2706,8 +2712,7 @@ function wp_unique_filename( $dir, $filename, $unique_filename_callback = null )
 		 * when regenerated. If yes, ensure the new file name will be unique and will produce unique sub-sizes.
 		 */
 		if ( $is_image ) {
-			/** This filter is documented in wp-includes/class-wp-image-editor.php */
-			$output_formats = apply_filters( 'image_editor_output_format', array(), $_dir . $filename, $mime_type );
+			$output_formats = wp_get_image_editor_output_format( $_dir . $filename, $mime_type );
 			$alt_types      = array();
 
 			if ( ! empty( $output_formats[ $mime_type ] ) ) {
@@ -3102,7 +3107,13 @@ function wp_check_filetype_and_ext( $file, $filename, $mimes = null ) {
 		// Attempt to figure out what type of image it actually is.
 		$real_mime = wp_get_image_mime( $file );
 
-		if ( $real_mime && $real_mime !== $type ) {
+		$heic_images_extensions = array(
+			'heif',
+			'heics',
+			'heifs',
+		);
+
+		if ( $real_mime && ( $real_mime !== $type || in_array( $ext, $heic_images_extensions, true ) ) ) {
 			/**
 			 * Filters the list mapping image mime types to their respective extensions.
 			 *
@@ -3120,12 +3131,24 @@ function wp_check_filetype_and_ext( $file, $filename, $mimes = null ) {
 					'image/tiff' => 'tif',
 					'image/webp' => 'webp',
 					'image/avif' => 'avif',
+
+					/*
+					 * In theory there are/should be file extensions that correspond to the
+					 * mime types: .heif, .heics and .heifs. However it seems that HEIC images
+					 * with any of the mime types commonly have a .heic file extension.
+					 * Seems keeping the status quo here is best for compatibility.
+					 */
+					'image/heic' => 'heic',
+					'image/heif' => 'heic',
+					'image/heic-sequence' => 'heic',
+					'image/heif-sequence' => 'heic',
 				)
 			);
 
 			// Replace whatever is after the last period in the filename with the correct extension.
 			if ( ! empty( $mime_to_ext[ $real_mime ] ) ) {
 				$filename_parts = explode( '.', $filename );
+
 				array_pop( $filename_parts );
 				$filename_parts[] = $mime_to_ext[ $real_mime ];
 				$new_filename     = implode( '.', $filename_parts );
@@ -3299,6 +3322,7 @@ function wp_check_filetype_and_ext( $file, $filename, $mimes = null ) {
  * @since 4.7.1
  * @since 5.8.0 Added support for WebP images.
  * @since 6.5.0 Added support for AVIF images.
+ * @since 6.7.0 Added support for HEIC images.
  *
  * @param string $file Full path to the file.
  * @return string|false The actual mime type or false if the type cannot be determined.
@@ -3315,9 +3339,7 @@ function wp_get_image_mime( $file ) {
 			$mime      = ( $imagetype ) ? image_type_to_mime_type( $imagetype ) : false;
 		} elseif ( function_exists( 'getimagesize' ) ) {
 			// Don't silence errors when in debug mode, unless running unit tests.
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG
-				&& ! defined( 'WP_RUN_CORE_TESTS' )
-			) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! defined( 'WP_RUN_CORE_TESTS' ) ) {
 				// Not using wp_getimagesize() here to avoid an infinite loop.
 				$imagesize = getimagesize( $file );
 			} else {
@@ -3364,13 +3386,28 @@ function wp_get_image_mime( $file ) {
 		// Divide the header string into 4 byte groups.
 		$magic = str_split( $magic, 8 );
 
-		if (
-			isset( $magic[1] ) &&
-			isset( $magic[2] ) &&
-			'ftyp' === hex2bin( $magic[1] ) &&
-			( 'avif' === hex2bin( $magic[2] ) || 'avis' === hex2bin( $magic[2] ) )
-		) {
-			$mime = 'image/avif';
+		if ( isset( $magic[1] ) && isset( $magic[2] ) && 'ftyp' === hex2bin( $magic[1] ) ) {
+			if ( 'avif' === hex2bin( $magic[2] ) || 'avis' === hex2bin( $magic[2] ) ) {
+				$mime = 'image/avif';
+			} elseif ( 'heic' === hex2bin( $magic[2] ) ) {
+				$mime = 'image/heic';
+			} elseif ( 'heif' === hex2bin( $magic[2] ) ) {
+				$mime = 'image/heif';
+			} else {
+				/*
+				 * HEIC/HEIF images and image sequences/animations may have other strings here
+				 * like mif1, msf1, etc. For now fall back to using finfo_file() to detect these.
+				 */
+				if ( extension_loaded( 'fileinfo' ) ) {
+					$fileinfo  = finfo_open( FILEINFO_MIME_TYPE );
+					$mime_type = finfo_file( $fileinfo, $file );
+					finfo_close( $fileinfo );
+
+					if ( wp_is_heic_image_mime_type( $mime_type ) ) {
+						$mime = $mime_type;
+					}
+				}
+			}
 		}
 	} catch ( Exception $e ) {
 		$mime = false;
@@ -3386,6 +3423,7 @@ function wp_get_image_mime( $file ) {
  * @since 4.2.0 Support was added for GIMP (.xcf) files.
  * @since 4.9.2 Support was added for Flac (.flac) files.
  * @since 4.9.6 Support was added for AAC (.aac) files.
+ * @since 6.8.0 Support was added for `audio/x-wav`.
  *
  * @return string[] Array of mime types keyed by the file extension regex corresponding to those types.
  */
@@ -3413,7 +3451,13 @@ function wp_get_mime_types() {
 			'webp'                         => 'image/webp',
 			'avif'                         => 'image/avif',
 			'ico'                          => 'image/x-icon',
+
+			// TODO: Needs improvement. All images with the following mime types seem to have .heic file extension.
 			'heic'                         => 'image/heic',
+			'heif'                         => 'image/heif',
+			'heics'                        => 'image/heic-sequence',
+			'heifs'                        => 'image/heif-sequence',
+
 			// Video formats.
 			'asf|asx'                      => 'video/x-ms-asf',
 			'wmv'                          => 'video/x-ms-wmv',
@@ -3444,7 +3488,7 @@ function wp_get_mime_types() {
 			'mp3|m4a|m4b'                  => 'audio/mpeg',
 			'aac'                          => 'audio/aac',
 			'ra|ram'                       => 'audio/x-realaudio',
-			'wav'                          => 'audio/wav',
+			'wav|x-wav'                    => 'audio/wav',
 			'ogg|oga'                      => 'audio/ogg',
 			'flac'                         => 'audio/flac',
 			'mid|midi'                     => 'audio/midi',
@@ -3533,7 +3577,7 @@ function wp_get_ext_types() {
 	return apply_filters(
 		'ext2type',
 		array(
-			'image'       => array( 'jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'tif', 'tiff', 'ico', 'heic', 'webp', 'avif' ),
+			'image'       => array( 'jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'tif', 'tiff', 'ico', 'heic', 'heif', 'webp', 'avif' ),
 			'audio'       => array( 'aac', 'ac3', 'aif', 'aiff', 'flac', 'm3a', 'm4a', 'm4b', 'mka', 'mp1', 'mp2', 'mp3', 'ogg', 'oga', 'ram', 'wav', 'wma' ),
 			'video'       => array( '3g2', '3gp', '3gpp', 'asf', 'avi', 'divx', 'dv', 'flv', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'mpv', 'ogm', 'ogv', 'qt', 'rm', 'vob', 'wmv' ),
 			'document'    => array( 'doc', 'docx', 'docm', 'dotm', 'odt', 'pages', 'pdf', 'xps', 'oxps', 'rtf', 'wp', 'wpd', 'psd', 'xcf' ),
@@ -3858,7 +3902,7 @@ function _default_wp_die_handler( $message, $title = '', $args = array() ) {
 <html <?php echo $dir_attr; ?>>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $parsed_args['charset']; ?>" />
-	<meta name="viewport" content="width=device-width">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<?php
 		if ( function_exists( 'wp_robots' ) && function_exists( 'wp_robots_no_robots' ) && function_exists( 'add_filter' ) ) {
 			add_filter( 'wp_robots', 'wp_robots_no_robots' );
@@ -4695,7 +4739,7 @@ function _config_wp_siteurl( $url = '' ) {
  * @access private
  */
 function _delete_option_fresh_site() {
-	update_option( 'fresh_site', '0' );
+	update_option( 'fresh_site', '0', false );
 }
 
 /**
@@ -5467,18 +5511,6 @@ function dead_db() {
 }
 
 /**
- * Converts a value to non-negative integer.
- *
- * @since 2.5.0
- *
- * @param mixed $maybeint Data you wish to have converted to a non-negative integer.
- * @return int A non-negative integer.
- */
-function absint( $maybeint ) {
-	return abs( (int) $maybeint );
-}
-
-/**
  * Marks a function as deprecated and inform when it has been used.
  *
  * There is a {@see 'deprecated_function_run'} hook that will be called that can be used
@@ -6081,6 +6113,10 @@ function wp_trigger_error( $function_name, $message, $error_level = E_USER_NOTIC
 		),
 		array( 'http', 'https' )
 	);
+
+	if ( E_USER_ERROR === $error_level ) {
+		throw new WP_Exception( $message );
+	}
 
 	trigger_error( $message, $error_level );
 }
@@ -7496,26 +7532,17 @@ function get_tag_regex( $tag ) {
  *     $is_utf8 = is_utf8_charset();
  *
  * @since 6.6.0
+ * @since 6.6.1 A wrapper for _is_utf8_charset
  *
- * @param ?string $blog_charset Slug representing a text character encoding, or "charset".
- *                              E.g. "UTF-8", "Windows-1252", "ISO-8859-1", "SJIS".
+ * @see _is_utf8_charset
+ *
+ * @param string|null $blog_charset Optional. Slug representing a text character encoding, or "charset".
+ *                                  E.g. "UTF-8", "Windows-1252", "ISO-8859-1", "SJIS".
+ *                                  Default value is to infer from "blog_charset" option.
  * @return bool Whether the slug represents the UTF-8 encoding.
  */
 function is_utf8_charset( $blog_charset = null ) {
-	$charset_to_examine = $blog_charset ?? get_option( 'blog_charset' );
-
-	/*
-	 * Only valid string values count: the absence of a charset
-	 * does not imply any charset, let alone UTF-8.
-	 */
-	if ( ! is_string( $charset_to_examine ) ) {
-		return false;
-	}
-
-	return (
-		0 === strcasecmp( 'UTF-8', $charset_to_examine ) ||
-		0 === strcasecmp( 'UTF8', $charset_to_examine )
-	);
+	return _is_utf8_charset( $blog_charset ?? get_option( 'blog_charset' ) );
 }
 
 /**
@@ -7644,8 +7671,10 @@ function wp_validate_boolean( $value ) {
  * Deletes a file.
  *
  * @since 4.2.0
+ * @since 6.7.0 A return value was added.
  *
  * @param string $file The path to the file to delete.
+ * @return bool True on success, false on failure.
  */
 function wp_delete_file( $file ) {
 	/**
@@ -7656,9 +7685,12 @@ function wp_delete_file( $file ) {
 	 * @param string $file Path to the file to delete.
 	 */
 	$delete = apply_filters( 'wp_delete_file', $file );
+
 	if ( ! empty( $delete ) ) {
-		@unlink( $delete );
+		return @unlink( $delete );
 	}
+
+	return false;
 }
 
 /**
@@ -7691,9 +7723,7 @@ function wp_delete_file_from_directory( $file, $directory ) {
 		return false;
 	}
 
-	wp_delete_file( $file );
-
-	return true;
+	return wp_delete_file( $file );
 }
 
 /**
@@ -8509,7 +8539,7 @@ function wp_direct_php_update_button() {
 
 	echo '<p class="button-container">';
 	printf(
-		'<a class="button button-primary" href="%1$s" target="_blank" rel="noopener">%2$s<span class="screen-reader-text"> %3$s</span><span aria-hidden="true" class="dashicons dashicons-external"></span></a>',
+		'<a class="button button-primary" href="%1$s" target="_blank">%2$s<span class="screen-reader-text"> %3$s</span><span aria-hidden="true" class="dashicons dashicons-external"></span></a>',
 		esc_url( $direct_update_url ),
 		__( 'Update PHP' ),
 		/* translators: Hidden accessibility text. */
@@ -8814,17 +8844,46 @@ function clean_dirsize_cache( $path ) {
 }
 
 /**
+ * Returns the current WordPress version.
+ *
+ * Returns an unmodified value of `$wp_version`. Some plugins modify the global
+ * in an attempt to improve security through obscurity. This practice can cause
+ * errors in WordPress, so the ability to get an unmodified version is needed.
+ *
+ * @since 6.7.0
+ *
+ * @return string The current WordPress version.
+ */
+function wp_get_wp_version() {
+	static $wp_version;
+
+	if ( ! isset( $wp_version ) ) {
+		require ABSPATH . WPINC . '/version.php';
+	}
+
+	return $wp_version;
+}
+
+/**
  * Checks compatibility with the current WordPress version.
  *
  * @since 5.2.0
  *
- * @global string $wp_version The WordPress version string.
+ * @global string $_wp_tests_wp_version The WordPress version string. Used only in Core tests.
  *
  * @param string $required Minimum required WordPress version.
  * @return bool True if required version is compatible or empty, false if not.
  */
 function is_wp_version_compatible( $required ) {
-	global $wp_version;
+	if (
+		defined( 'WP_RUN_CORE_TESTS' )
+		&& WP_RUN_CORE_TESTS
+		&& isset( $GLOBALS['_wp_tests_wp_version'] )
+	) {
+		$wp_version = $GLOBALS['_wp_tests_wp_version'];
+	} else {
+		$wp_version = wp_get_wp_version();
+	}
 
 	// Strip off any -alpha, -RC, -beta, -src suffixes.
 	list( $version ) = explode( '-', $wp_version );
@@ -9014,136 +9073,20 @@ function wp_admin_notice( $message, $args = array() ) {
 }
 
 /**
- * Outputs the tooltip for a specific field.
+ * Checks if a mime type is for a HEIC/HEIF image.
  *
  * @since 6.7.0
  *
- * @param string $field_id             The unique identifier for the tooltip container.
- * @param string $tooltip_text         The text content to be displayed in the tooltip.
- * @param string $tooltip_button_label Optional. The label for the tooltip button. Default is 'Help'.
- * @param string $position             Optional. The default position of the tooltip. Default is 'right'.
- * 									   Accepted values: 'right', 'left', 'up' and 'down'.
+ * @param string $mime_type The mime type to check.
+ * @return bool Whether the mime type is for a HEIC/HEIF image.
  */
-function add_tooltip( $field_id, $tooltip_text, $tooltip_button_label = 'Help', $position = 'right' ) {
+function wp_is_heic_image_mime_type( $mime_type ) {
+	$heic_mime_types = array(
+		'image/heic',
+		'image/heif',
+		'image/heic-sequence',
+		'image/heif-sequence',
+	);
 
-	if ( ! is_string( $field_id ) || '' === $field_id ) {
-		$error_arg = '$field_id';
-	} elseif ( ! is_string( $tooltip_text ) || '' === $tooltip_text ) {
-		$error_arg = '$tooltip_text';
-	} elseif ( ! is_string( $tooltip_button_label ) ) {
-		$error_arg = '$tooltip_button_label';
-	}
-
-	if ( isset( $error_arg ) ) {
-		_doing_it_wrong(
-			__FUNCTION__,
-			sprintf(
-				/* translators: %s: The invalid argument passed to add_tooltip(). */
-				__( 'The "%s" argument must be a non-empty string.' ),
-				$error_arg
-			),
-			'6.7.0'
-		);
-
-		return;
-	}
-
-	$valid_positions = array( 'top', 'right', 'bottom', 'left' );
-
-	// Validate position input.
-	if ( ! is_string( $position ) || ! in_array( $position, $valid_positions, true ) ) {
-
-		_doing_it_wrong(
-			__FUNCTION__,
-			sprintf(
-				/* translators: %s: Invalid $position argument passed to add_tooltip(). */
-				__( 'The passed "%s" argument is invalid. Default "right" position was used instead.' ),
-				'$position'
-			),
-			'6.7.0'
-		);
-
-		$position = 'right';
-	}
-
-	/**
-	 * Enqueues the Styles and Scripts for the Tooltip.
-	 *
-	 * @since 6.7.0
-	 *
-	 */
-	wp_enqueue_style( 'wp-tooltip' );
-	wp_enqueue_script( 'wp-tooltip' );
-
-	$icon_url = 'dashicons-editor-help';
-
-	/**
-	 * Filters $icon_url before the tooltip is rendered in the HTML.
-	 *
-	 * @since 6.7.0
-	 *
-	 * @param string $icon_url The URL to the icon to be used for this tooltip.
-	 *                         * Pass a base64-encoded SVG using a data URI, which will be colored to match
-	 *                         the color scheme. This should begin with 'data:image/svg+xml;base64,'.
-	 *                         * Pass the name of a Dashicons helper class to use a font icon,
-	 *                         e.g. 'dashicons-editor-help'.
-	 *                         * Pass 'none' to leave span.wp-tooltip-button-span empty so an icon can be added via CSS.
-	 * @param string $field_id The unique identifier for the tooltip container.
-	 */
-	$icon_url = apply_filters( 'wp_tooltip_icon', $icon_url, $field_id );
-	$icon_url = set_url_scheme( $icon_url );
-
-	if ( str_starts_with( $icon_url, 'dashicons-' ) ) {
-		$icon = 'class="dashicons ' . sanitize_html_class( $icon_url ) . '"';
-		$icon_html = '<span ' . $icon . '></span>';
-	} elseif ( str_starts_with( $icon_url, 'data:image/svg+xml;base64,' ) ) {
-		$icon = ' style="background-image:url(\'' . esc_attr( $icon_url ) . '\')"';
-		$icon_html = '<svg height = "20" width = "20"' . $icon . '</svg>';
-	} elseif ( str_starts_with( $icon_url, 'http' ) ) {
-		$icon_html = '<img height = "20" width = "20"  src="' . esc_url( $icon_url ) . '" alt="" />';
-	} elseif ( 'none' === $icon_url ) {
-		$icon_html = '';
-	} else {
-		_doing_it_wrong(
-			__FUNCTION__,
-			sprintf(
-				/* translators: %s: Invalid $icon_html passed in 'pre_wp_tooltip_rendered' hook. */
-				__( 'The passed "%1$s" argument in the "%2$s" filter is invalid.' ),
-				'$icon_html',
-				'pre_wp_tooltip_rendered'
-			),
-			'6.7.0'
-		);
-
-		$icon_html = '<span class="dashicons dashicons-editor-help"></span>';
-	}
-
-	/**
-	 * Fires before the tooltip is rendered.
-	 *
-	 * @since 6.7.0
-	 *
-	 * @param string $field_id             The unique identifier for the tooltip container.
-	 * @param string $tooltip_text         The text content to be displayed in the tooltip.
-	 * @param string $tooltip_button_label The label for the tooltip button.
-	 * @param string $position             The default position of the tooltip.
-	 * @param string $icon_url             The URL to the icon to be used for this tooltip.
-	 *                                     Pass a base64-encoded SVG using a data URI, which will be colored to match
-	 *                                     the color scheme. This should begin with 'data:image/svg+xml;base64,'.
-	 *                                     Pass the name of a Dashicons helper class to use a font icon,
-	 *                                     e.g. 'dashicons-editor-help'.
-	 *                                     Pass 'none' to leave span.wp-tooltip-button-span empty so an icon can be added via CSS.
-	 */
-	add_action( 'pre_wp_tooltip_rendered', $field_id, $tooltip_text, $tooltip_button_label, $position, $icon_url );
-
-	?>
-	<div class="wp-tooltip-container <?php echo esc_attr( $field_id ); ?> <?php echo esc_attr( 'position-' . $position ); ?>">
-		<button type="button" class="wp-tooltip-button" aria-describedby="<?php echo esc_attr( $field_id ); ?>-tooltip" aria-label="<?php echo esc_attr( $tooltip_button_label ); ?>">
-			<span class="wp-tooltip-button-span"><?php echo $icon_html; ?></span>
-		</button>
-		<div id="<?php echo esc_attr( $field_id ); ?>-tooltip" class="wp-tooltip-content">
-			<p><?php echo esc_html( $tooltip_text ); ?></p>
-		</div>
-	</div>
-	<?php
+	return in_array( $mime_type, $heic_mime_types, true );
 }
