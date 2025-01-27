@@ -132,4 +132,34 @@ class Tests_Post_wpGetPostAutosave extends WP_UnitTestCase {
 		$this->assertInstanceOf( 'WP_Post', $autosave );
 		$this->assertSame( 'Autosaved content updated', $autosave->post_content, 'Post content does not match.' );
 	}
+
+	/**
+	 * Test when an autosave is deleted
+	 *
+	 * @ticket 62658
+	 */
+	public function test_autosave_exists_and_deleted() {
+		$autosave_id = $this->factory()->post->create(
+			array(
+				'post_type'    => 'revision',
+				'post_status'  => 'inherit',
+				'post_parent'  => self::$post_id,
+				'post_author'  => self::$admin_id,
+				'post_content' => 'Autosaved content',
+				'post_name'    => self::$post_id . '-autosave-v1',
+			)
+		);
+
+		$autosave = wp_get_post_autosave( self::$post_id );
+
+		$this->assertInstanceOf( 'WP_Post', $autosave );
+		$this->assertSame( $autosave_id, $autosave->ID, 'Autosave ID does not match.' );
+		$this->assertSame( self::$post_id, (int) $autosave->post_parent, 'Post parent ID does not match.' );
+		$this->assertSame( 'Autosaved content', $autosave->post_content, 'Post content does not match.' );
+
+		wp_delete_post( $autosave->ID, true );
+
+		$autosave = wp_get_post_autosave( self::$post_id );
+		$this->assertFalse( $autosave, 'Autosave should not exist' );
+	}
 }
