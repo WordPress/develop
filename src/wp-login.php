@@ -900,7 +900,7 @@ switch ( $action ) {
 		 *
 		 * @param string $lostpasswordform_user_login_label The label for the username or email address field.
 		 */
-		$lostpasswordform_user_login_label = apply_filters( 'lostpasswordform_user_login_label', __( 'Username or Email Address' ) );
+		$lostpasswordform_user_login_label = apply_filters( 'lostpasswordform_user_login_label', __( 'Username or Email Address ' ) );
 		?>
 
 		<form name="lostpasswordform" id="lostpasswordform" action="<?php echo esc_url( network_site_url( 'wp-login.php?action=lostpassword', 'login_post' ) ); ?>" method="post">
