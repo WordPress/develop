@@ -482,6 +482,10 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars_1' => array( 'author' => '1,2' ),
 				'query_vars_2' => array( 'author' => '2,1' ),
 			),
+			'author queries numeric vs string'       => array(
+				'query_vars_1' => array( 'author' => 1 ),
+				'query_vars_2' => array( 'author' => '1' ),
+			),
 			'author__in queries order (array)'       => array(
 				'query_vars_1' => array( 'author__in' => array( 1, 2 ) ),
 				'query_vars_2' => array( 'author__in' => array( 2, 1 ) ),
