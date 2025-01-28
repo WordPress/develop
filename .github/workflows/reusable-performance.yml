@@ -123,7 +123,7 @@ jobs:
   # - Publish performance results.
   # - Ensure version-controlled files are not modified or deleted.
   performance:
-    name: ${{ inputs.subject == 'base' && inputs.BASE_TAG || inputs.subject }}
+    name: Test ${{ inputs.subject == 'base' && inputs.BASE_TAG || inputs.subject }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
