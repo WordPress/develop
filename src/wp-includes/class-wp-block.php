@@ -104,10 +104,18 @@ class WP_Block {
 	 * Represents the attributes of a block.
 	 *
 	 * @since 5.5.0 Introduced as a dynamic class property.
-	 * @since 6.6.0 The $attributes property is explicitly declared.
+	 * @since 6.8.0 The $attributes property is explicitly declared.
 	 * @var array|null
 	 */
 	protected $attributes;
+
+	/**
+	 * Cache for storing the names of all public properties of the class.
+	 *
+	 * @since 6.8.0
+	 * @var array|null
+	 */
+	protected static $public_property_cache;
 
 	/**
 	 * Constructor.
@@ -230,7 +238,7 @@ class WP_Block {
 	 * value is returned.
 	 *
 	 * @since 5.5.0
-	 * @since 6.6.0 Getting dynamic class properties is deprecated.
+	 * @since 6.8.0 Getting dynamic class properties is deprecated.
 	 *
 	 * @param string $name Property name.
 	 * @return array|null Prepared attributes, or null.
@@ -256,7 +264,7 @@ class WP_Block {
 	 * This method returns true for the "attributes" property if it is set, and false otherwise.
 	 * It returns false to reflect that dynamic class properties are not really defined.
 	 *
-	 * @since 6.6.0
+	 * @since 6.8.0
 	 *
 	 * @param string $key Property to check.
 	 * @return bool True if the property exists, false otherwise.
@@ -274,7 +282,7 @@ class WP_Block {
 	 * Triggers an error when attempting to set a dynamic class property since dynamic class
 	 * properties are deprecated.
 	 *
-	 * @since 6.6.0
+	 * @since 6.8.0
 	 *
 	 * @param string $name  The name of the property to set.
 	 * @param mixed  $value The value to set.
@@ -298,7 +306,7 @@ class WP_Block {
 	 * Triggers an error when attempting to unset a dynamic class property since dynamic class
 	 * properties are deprecated.
 	 *
-	 * @since 6.6.0
+	 * @since 6.8.0
 	 *
 	 * @param string $name The name of the property to unset.
 	 */
@@ -744,9 +752,10 @@ class WP_Block {
 
 	/**
 	 * Populates the block attributes.
-	 * It must always be called before accessing the attributes property.
+	 * This method must always be called before accessing the $this->attributes property, but not earlier,
+	 * to ensure backward compatibility.
 	 *
-	 * @since 6.6.0
+	 * @since 6.8.0
 	 */
 	protected function populate_attributes() {
 		// Initially, attributes could only be populated if the $attributes dynamic property was uninitialized.
@@ -767,24 +776,20 @@ class WP_Block {
 	/**
 	 * Checks whether a property is declared as public.
 	 *
-	 * @since 6.6.0
+	 * @since 6.8.0
 	 *
 	 * @param string $class_property_name Name of the class property to check.
 	 * @return bool True if the property is public, false otherwise.
 	 */
 	protected static function check_if_public_class_property( $class_property_name ) {
-		// The Reflection API is not used here for performance reasons.
-		// As the list is hardcoded, all newly declared public properties should be added to this list manually.
-		$public_class_properties = array(
-			'parsed_block',
-			'name',
-			'block_type',
-			'context',
-			'inner_blocks',
-			'inner_html',
-			'inner_content',
-		);
+		if ( null === static::$public_property_cache ) {
+			$reflection                    = new ReflectionClass( static::class );
+			static::$public_property_cache = array();
+			foreach ( $reflection->getProperties( ReflectionProperty::IS_PUBLIC ) as $public_property ) {
+				static::$public_property_cache[] = $public_property->getName();
+			}
+		}
 
-		return in_array( $class_property_name, $public_class_properties, true );
+		return in_array( $class_property_name, static::$public_property_cache, true );
 	}
 }
