@@ -1111,7 +1111,7 @@ class WP_Query {
 
 		if ( ! empty( $qv['post_type'] ) ) {
 			if ( is_array( $qv['post_type'] ) ) {
-				$qv['post_type'] = array_map( 'sanitize_key', $qv['post_type'] );
+				$qv['post_type'] = array_map( 'sanitize_key', array_unique( $qv['post_type'] ) );
 				sort( $qv['post_type'] );
 			} else {
 				$qv['post_type'] = sanitize_key( $qv['post_type'] );

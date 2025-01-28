@@ -396,6 +396,10 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars1' => array( 'post_type' => array( 'post', 'page' ) ),
 				'query_vars2' => array( 'post_type' => array( 'page', 'post' ) ),
 			),
+			'non-unique post type'                         => array(
+				'query_vars1' => array( 'post_type' => array( 'post', 'page' ) ),
+				'query_vars2' => array( 'post_type' => array( 'page', 'post', 'page' ) ),
+			),
 			'post status array'                            => array(
 				'query_vars1' => array( 'post_status' => 'publish' ),
 				'query_vars2' => array( 'post_status' => array( 'publish' ) ),
