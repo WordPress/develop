@@ -124,7 +124,7 @@ jobs:
   # - Ensure version-controlled files are not modified or deleted.
   performance:
     name: Test ${{ inputs.subject == 'base' && inputs.BASE_TAG || inputs.subject }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
 

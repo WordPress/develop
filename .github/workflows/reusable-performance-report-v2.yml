@@ -44,7 +44,7 @@ jobs:
   # - ...
   compare:
     name: ${{ inputs.multisite && 'Multisite' || 'Single Site' }} ${{ inputs.memcached && 'Memcached' || 'Default' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
 
