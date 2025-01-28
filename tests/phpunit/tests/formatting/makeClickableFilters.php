@@ -17,10 +17,10 @@ class Tests_Formatting_MakeClickableFilters extends WP_UnitTestCase {
 		add_filter( 'make_clickable', 'make_email_clickable', 6 );
 	}
 
-    public function tear_down() {
-        parent::tear_down();
-        remove_all_filters( 'make_clickable' );
-    }
+	public function tear_down() {
+		parent::tear_down();
+		remove_all_filters( 'make_clickable' );
+	}
 
 	/**
 	 * @ticket 32787
