@@ -5181,8 +5181,8 @@ if ( PHP_VERSION_ID < 80100 ) {
  */
 function __checked_selected_helper( $helper, $current, $display, $type ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
 	if ( (string) $helper === (string) $current ) {
-		if( $type === 'checked' ) {
-			$result= " $type";
+		if ( 'checked' === $type ) {
+			$result = " $type";
 		} else {
 			$result = " $type='$type'";
 		}
