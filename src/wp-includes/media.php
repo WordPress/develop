@@ -3757,7 +3757,7 @@ function wp_video_shortcode( $attr, $content = '' ) {
 	$attr_strings = array();
 	foreach ( $html_atts as $attribute_name => $attribute_value ) {
 		if ( in_array( $attribute_name, array( 'loop', 'autoplay', 'muted' ), true ) && true === $attribute_value ) {
-			// Add boolean attributes without value for true
+			// Add boolean attributes without value for true.
 			$attr_strings[] = esc_attr( $attribute_name ); // Just include the attribute name
 		} elseif ( 'preload' === $attribute_name && ! empty( $attribute_value ) ) {
 			// Handle the preload attribute with specific allowed values
@@ -3765,9 +3765,8 @@ function wp_video_shortcode( $attr, $content = '' ) {
 			if ( in_array( $attribute_value, $allowed_preload_values, true ) ) {
 				$attr_strings[] = sprintf( '%s="%s"', esc_attr( $attribute_name ), esc_attr( $attribute_value ) );
 			}
-			// If the value is not allowed, you can log a warning or handle it as needed
 		} elseif ( ! empty( $attribute_value ) ) {
-			// For non-boolean attributes, add with value
+			// For non-boolean attributes, add with value.
 			$attr_strings[] = sprintf( '%s="%s"', esc_attr( $attribute_name ), esc_attr( $attribute_value ) );
 		}
 	}
