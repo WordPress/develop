@@ -33,11 +33,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
+        os: [ ubuntu-24.04, windows-2022 ]
         directory: [ 'src', 'build' ]
         include:
           # Only prepare artifacts for Playground once.
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             directory: 'build'
             save-build: true
             prepare-playground: ${{ github.event_name == 'pull_request' && true || '' }}
@@ -65,7 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-latest ]
+        os: [ macos-14 ]
         directory: [ 'src', 'build' ]
     with:
       os: ${{ matrix.os }}
@@ -81,7 +81,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
+        os: [ ubuntu-24.04, windows-2022 ]
         directory: [ 'src', 'build' ]
     with:
       os: ${{ matrix.os }}
@@ -104,7 +104,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-latest ]
+        os: [ macos-14 ]
         directory: [ 'src', 'build' ]
     with:
       os: ${{ matrix.os }}
@@ -128,7 +128,7 @@ jobs:
 
   failed-workflow:
     name: Failed workflow tasks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       actions: write
     needs: [ slack-notifications ]
