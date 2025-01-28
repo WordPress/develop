@@ -408,6 +408,10 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars1' => array( 'post_status' => array( 'draft', 'publish' ) ),
 				'query_vars2' => array( 'post_status' => array( 'publish', 'draft' ) ),
 			),
+			'non-unique post status'                            => array(
+				'query_vars1' => array( 'post_status' => array( 'draft', 'publish' ) ),
+				'query_vars2' => array( 'post_status' => array( 'draft', 'publish', 'draft' ) ),
+			),
 			'post id int vs string'                        => array(
 				'query_vars1' => array( 'p' => '1' ),
 				'query_vars2' => array( 'p' => 1 ),

@@ -1120,7 +1120,7 @@ class WP_Query {
 
 		if ( ! empty( $qv['post_status'] ) ) {
 			if ( is_array( $qv['post_status'] ) ) {
-				$qv['post_status'] = array_map( 'sanitize_key', $qv['post_status'] );
+				$qv['post_status'] = array_map( 'sanitize_key', array_unique( $qv['post_status'] ) );
 				sort( $qv['post_status'] );
 			} else {
 				$qv['post_status'] = preg_replace( '|[^a-z0-9_,-]|', '', $qv['post_status'] );
