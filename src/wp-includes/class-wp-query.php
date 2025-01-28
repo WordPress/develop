@@ -2395,6 +2395,7 @@ class WP_Query {
 			$where         .= " AND {$wpdb->posts}.post_author NOT IN ($author__not_in) ";
 		} elseif ( ! empty( $q['author__in'] ) ) {
 			if ( is_array( $q['author__in'] ) ) {
+				$q['author__in'] = array_unique( array_map( 'absint', $q['author__in'] ) );
 				sort( $q['author__in'] );
 			}
 			$author__in = implode( ',', array_map( 'absint', array_unique( (array) $q['author__in'] ) ) );
