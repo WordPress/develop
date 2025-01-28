@@ -186,8 +186,8 @@ foreach ( array( 'term_description', 'get_the_post_type_description' ) as $filte
 }
 
 // Clickable content filters
-add_filter( 'make_clickable', 'make_url_clickable',  2 );
-add_filter( 'make_clickable', 'make_ftp_clickable',  4 );
+add_filter( 'make_clickable', 'make_url_clickable', 2 );
+add_filter( 'make_clickable', 'make_ftp_clickable', 4 );
 add_filter( 'make_clickable', 'make_email_clickable', 6 );
 
 // Format for RSS.
