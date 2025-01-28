@@ -5,6 +5,11 @@
  * @package WordPress
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 require ABSPATH . WPINC . '/option.php';
 
 /**
@@ -594,10 +599,10 @@ function get_weekstartend( $mysqlstring, $start_of_week = '' ) {
 	$day = mktime( 0, 0, 0, $md, $mm, $my );
 
 	// The day of the week from the timestamp.
-	$weekday = gmdate( 'w', $day );
+	$weekday = (int) gmdate( 'w', $day );
 
 	if ( ! is_numeric( $start_of_week ) ) {
-		$start_of_week = get_option( 'start_of_week' );
+		$start_of_week = (int) get_option( 'start_of_week' );
 	}
 
 	if ( $weekday < $start_of_week ) {
@@ -609,6 +614,7 @@ function get_weekstartend( $mysqlstring, $start_of_week = '' ) {
 
 	// $start + 1 week - 1 second.
 	$end = $start + WEEK_IN_SECONDS - 1;
+
 	return compact( 'start', 'end' );
 }
 
@@ -3101,13 +3107,13 @@ function wp_check_filetype_and_ext( $file, $filename, $mimes = null ) {
 		// Attempt to figure out what type of image it actually is.
 		$real_mime = wp_get_image_mime( $file );
 
-		$heic_images_etx = array(
+		$heic_images_extensions = array(
 			'heif',
 			'heics',
 			'heifs',
 		);
 
-		if ( $real_mime && ( $real_mime !== $type || in_array( $ext, $heic_images_etx, true ) ) ) {
+		if ( $real_mime && ( $real_mime !== $type || in_array( $ext, $heic_images_extensions, true ) ) ) {
 			/**
 			 * Filters the list mapping image mime types to their respective extensions.
 			 *
@@ -3417,6 +3423,7 @@ function wp_get_image_mime( $file ) {
  * @since 4.2.0 Support was added for GIMP (.xcf) files.
  * @since 4.9.2 Support was added for Flac (.flac) files.
  * @since 4.9.6 Support was added for AAC (.aac) files.
+ * @since 6.8.0 Support was added for `audio/x-wav`.
  *
  * @return string[] Array of mime types keyed by the file extension regex corresponding to those types.
  */
@@ -3481,7 +3488,7 @@ function wp_get_mime_types() {
 			'mp3|m4a|m4b'                  => 'audio/mpeg',
 			'aac'                          => 'audio/aac',
 			'ra|ram'                       => 'audio/x-realaudio',
-			'wav'                          => 'audio/wav',
+			'wav|x-wav'                    => 'audio/wav',
 			'ogg|oga'                      => 'audio/ogg',
 			'flac'                         => 'audio/flac',
 			'mid|midi'                     => 'audio/midi',
@@ -7135,6 +7142,30 @@ function wp_find_hierarchy_loop_tortoise_hare( $callback, $start, $override = ar
  */
 function send_frame_options_header() {
 	header( 'X-Frame-Options: SAMEORIGIN' );
+}
+
+/**
+ * Sends a referrer policy header so referrers are not sent externally from administration screens.
+ *
+ * @since 4.9.0
+ * @since 6.8.0 This function was moved from `wp-admin/includes/misc.php` to `wp-includes/functions.php`.
+ */
+function wp_admin_headers() {
+	$policy = 'strict-origin-when-cross-origin';
+
+	/**
+	 * Filters the admin referrer policy header value.
+	 *
+	 * @since 4.9.0
+	 * @since 4.9.5 The default value was changed to 'strict-origin-when-cross-origin'.
+	 *
+	 * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
+	 *
+	 * @param string $policy The admin referrer policy header value. Default 'strict-origin-when-cross-origin'.
+	 */
+	$policy = apply_filters( 'admin_referrer_policy', $policy );
+
+	header( sprintf( 'Referrer-Policy: %s', $policy ) );
 }
 
 /**
