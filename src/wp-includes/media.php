@@ -3486,18 +3486,17 @@ function wp_audio_shortcode( $attr, $content = '' ) {
 
 	foreach ( $html_atts as $attribute_name => $attribute_value ) {
 		if ( in_array( $attribute_name, array( 'loop', 'autoplay', 'muted' ), true ) && true === $attribute_value ) {
-			// Add boolean attributes without a value
+			// Add boolean attributes without a value.
 			$attr_strings[] = esc_attr( $attribute_name );
 		} elseif ( 'preload' === $attribute_name && ! empty( $attribute_value ) ) {
-			// Handle the preload attribute with specific allowed values
+			// Handle the preload attribute with specific allowed values.
 			$allowed_preload_values = array( 'none', 'metadata', 'auto' );
 			if ( in_array( $attribute_value, $allowed_preload_values, true ) ) {
 				$attr_strings[] = sprintf( '%s="%s"', esc_attr( $attribute_name ), esc_attr( $attribute_value ) );
 			}
-			// If the value is not allowed, you can log a warning or handle it as needed
 		} else {
-			// For other attributes, include the value
-			$attr_strings[] = $attribute_name . '="' . esc_attr( $attribute_value ) . '"';
+			// For other attributes, include the value.
+			$attr_strings[] = sprintf( '%s="%s"', esc_attr( $attribute_name ), esc_attr( $attribute_value ) );
 		}
 	}
 
