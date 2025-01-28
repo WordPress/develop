@@ -408,7 +408,7 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars1' => array( 'post_status' => array( 'draft', 'publish' ) ),
 				'query_vars2' => array( 'post_status' => array( 'publish', 'draft' ) ),
 			),
-			'non-unique post status'                            => array(
+			'non-unique post status'                       => array(
 				'query_vars1' => array( 'post_status' => array( 'draft', 'publish' ) ),
 				'query_vars2' => array( 'post_status' => array( 'draft', 'publish', 'draft' ) ),
 			),
@@ -462,13 +462,25 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars1' => array( 'post__in' => array( 1, 2, 3, 4, 5 ) ),
 				'query_vars2' => array( 'post__in' => array( 5, 4, 3, 2, 1 ) ),
 			),
+			'post__in non-unique'                          => array(
+				'query_vars1' => array( 'post__in' => array( 1, 2, 3, 4, 5 ) ),
+				'query_vars2' => array( 'post__in' => array( 1, 2, 3, 4, 5, 1, 2, 3 ) ),
+			),
 			'post_parent__in different order'              => array(
 				'query_vars1' => array( 'post_parent__in' => array( 1, 2, 3, 4, 5 ) ),
 				'query_vars2' => array( 'post_parent__in' => array( 5, 4, 3, 2, 1 ) ),
 			),
+			'post_parent__in non-unique'                   => array(
+				'query_vars1' => array( 'post_parent__in' => array( 1, 2, 3, 4, 5 ) ),
+				'query_vars2' => array( 'post_parent__in' => array( 1, 2, 3, 4, 5, 1, 2, 3 ) ),
+			),
 			'post_name__in different order'                => array(
 				'query_vars1' => array( 'post_name__in' => array( 'elphaba', 'glinda', 'the-wizard-of-oz', 'doctor-dillamond' ) ),
 				'query_vars2' => array( 'post_name__in' => array( 'doctor-dillamond', 'elphaba', 'the-wizard-of-oz', 'glinda' ) ),
+			),
+			'post_name__in non-unique'                     => array(
+				'query_vars1' => array( 'post_name__in' => array( 'elphaba', 'glinda', 'the-wizard-of-oz', 'doctor-dillamond' ) ),
+				'query_vars2' => array( 'post_name__in' => array( 'elphaba', 'glinda', 'elphaba', 'glinda', 'the-wizard-of-oz', 'doctor-dillamond' ) ),
 			),
 			'cat different order (array)'                  => array(
 				'query_vars_1' => array( 'cat' => array( '1', '2' ) ),
