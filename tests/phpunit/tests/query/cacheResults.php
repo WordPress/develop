@@ -404,6 +404,48 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars1' => array( 'post_status' => array( 'draft', 'publish' ) ),
 				'query_vars2' => array( 'post_status' => array( 'publish', 'draft' ) ),
 			),
+			'post id numeric vs string'              => array(
+				'query_vars1' => array( 'p' => '1' ),
+				'query_vars2' => array( 'p' => 1 ),
+			),
+			'page id numeric vs string'              => array(
+				'query_vars1' => array( 'page_id' => '2' ),
+				'query_vars2' => array( 'page_id' => 2 ),
+			),
+			'attachment id numeric vs string'        => array(
+				'query_vars1' => array( 'attachment_id' => '3' ),
+				'query_vars2' => array( 'attachment_id' => 3 ),
+			),
+			'date and time values numeric vs string' => array(
+				'query_vars1' => array(
+					'year'     => '2013',
+					'monthnum' => '12',
+					'day'      => '12',
+					'hour'     => '12',
+					'minute'   => '12',
+					'second'   => '12',
+				),
+				'query_vars2' => array(
+					'year'     => 2013,
+					'monthnum' => 12,
+					'day'      => 12,
+					'hour'     => 12,
+					'minute'   => 12,
+					'second'   => 12,
+				),
+			),
+			'offset value numeric vs string'         => array(
+				'query_vars1' => array( 'offset' => '5' ),
+				'query_vars2' => array( 'offset' => 5 ),
+			),
+			'posts per page value numeric vs string' => array(
+				'query_vars1' => array( 'posts_per_page' => '5' ),
+				'query_vars2' => array( 'posts_per_page' => 5 ),
+			),
+			'paged value numeric vs string'          => array(
+				'query_vars1' => array( 'paged' => '2' ),
+				'query_vars2' => array( 'paged' => 2 ),
+			),
 			'post in order'                          => array(
 				'query_vars1' => array( 'post__in' => array( 1, 2, 3, 4, 5 ) ),
 				'query_vars2' => array( 'post__in' => array( 5, 4, 3, 2, 1 ) ),
