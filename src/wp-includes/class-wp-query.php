@@ -2214,7 +2214,7 @@ class WP_Query {
 		} elseif ( is_array( $q['post_name__in'] ) && ! empty( $q['post_name__in'] ) ) {
 			$q['post_name__in'] = array_map( 'sanitize_title_for_query', $q['post_name__in'] );
 			// Duplicate array before sorting to allow for the orderby clause.
-			$post_name__in_for_where = $q['post_name__in'];
+			$post_name__in_for_where = array_unique( $q['post_name__in'] );
 			sort( $post_name__in_for_where );
 			$post_name__in = "'" . implode( "','", $post_name__in_for_where ) . "'";
 			$where        .= " AND {$wpdb->posts}.post_name IN ($post_name__in)";
@@ -2229,8 +2229,9 @@ class WP_Query {
 		if ( $q['p'] ) {
 			$where .= " AND {$wpdb->posts}.ID = " . $q['p'];
 		} elseif ( $q['post__in'] ) {
-			$post__in_for_where = $q['post__in'];
 			// Duplicate array before sorting to allow for the orderby clause.
+			$post__in_for_where = $q['post__in'];
+			$post__in_for_where = array_unique( array_map( 'absint', $post__in_for_where ) );
 			sort( $post__in_for_where );
 			$post__in = implode( ',', array_map( 'absint', $post__in_for_where ) );
 			$where   .= " AND {$wpdb->posts}.ID IN ($post__in)";
@@ -2245,6 +2246,7 @@ class WP_Query {
 		} elseif ( $q['post_parent__in'] ) {
 			// Duplicate array before sorting to allow for the orderby clause.
 			$post_parent__in_for_where = $q['post_parent__in'];
+			$post_parent__in_for_where = array_unique( array_map( 'absint', $post_parent__in_for_where ) );
 			sort( $post_parent__in_for_where );
 			$post_parent__in = implode( ',', array_map( 'absint', $post_parent__in_for_where ) );
 			$where          .= " AND {$wpdb->posts}.post_parent IN ($post_parent__in)";
@@ -4960,15 +4962,21 @@ class WP_Query {
 		 * Their use in the orderby clause will generate a different SQL query so
 		 * they can be sorted for the cache key generation.
 		 */
-		$sortable_arrays = array(
+		$sortable_arrays_with_int_values = array(
 			'post__in',
-			'post_name__in',
 			'post_parent__in',
 		);
-		foreach ( $sortable_arrays as $key ) {
+		foreach ( $sortable_arrays_with_int_values as $key ) {
 			if ( isset( $args[ $key ] ) && is_array( $args[ $key ] ) ) {
+				$args[ $key ] = array_unique( array_map( 'absint', $args[ $key ] ) );
 				sort( $args[ $key ] );
 			}
+		}
+
+		// Sort and unique the 'post_name__in' for cache key generation.
+		if ( isset( $args['post_name__in'] ) && is_array( $args['post_name__in'] ) ) {
+			$args['post_name__in'] = array_unique( $args['post_name__in'] );
+			sort( $args['post_name__in'] );
 		}
 
 		if ( isset( $args['post_status'] ) ) {
