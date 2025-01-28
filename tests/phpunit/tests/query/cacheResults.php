@@ -466,6 +466,10 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars_1' => array( 'cat' => '2,1' ),
 				'query_vars_2' => array( 'cat' => '1,2' ),
 			),
+			'cat queries numeric vs string'          => array(
+				'query_vars_1' => array( 'cat' => '2' ),
+				'query_vars_2' => array( 'cat' => 2 ),
+			),
 			'category__in queries order (array)'     => array(
 				'query_vars_1' => array( 'category__in' => array( '1', '2' ) ),
 				'query_vars_2' => array( 'category__in' => array( '2', '1' ) ),
@@ -505,6 +509,10 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 			'tag__in queries order (array)'          => array(
 				'query_vars_1' => array( 'tag__in' => array( 1, 2 ) ),
 				'query_vars_2' => array( 'tag__in' => array( 2, 1 ) ),
+			),
+			'tag__in queries numeric vs string'      => array(
+				'query_vars_1' => array( 'tag__in' => array( 2, 1 ) ),
+				'query_vars_2' => array( 'tag__in' => array( '2', '1' ) ),
 			),
 			'tag__and queries order (array)'         => array(
 				'query_vars_1' => array( 'tag__and' => array( 1, 2 ) ),
