@@ -3766,7 +3766,7 @@ function wp_video_shortcode( $attr, $content = '' ) {
 				$attr_strings[] = sprintf( '%s="%s"', esc_attr( $attribute_name ), esc_attr( $attribute_value ) );
 			}
 		} elseif ( ! empty( $attribute_value ) ) {
-			// For non-boolean attributes, add with value
+			// For non-boolean attributes, add with value.
 			$attr_strings[] = sprintf( '%s="%s"', esc_attr( $attribute_name ), esc_attr( $attribute_value ) );
 		}
 	}
