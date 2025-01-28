@@ -1172,7 +1172,7 @@ function image_align_input_fields( $post, $checked = '' ) {
 	foreach ( $alignments as $name => $label ) {
 		$name     = esc_attr( $name );
 		$output[] = "<input type='radio' name='attachments[{$post->ID}][align]' id='image-align-{$name}-{$post->ID}' value='$name'" .
-			( $checked == $name ? " checked" : '' ) .
+			( $checked == $name ? ' checked' : '' ) .
 			" /><label for='image-align-{$name}-{$post->ID}' class='align image-align-{$name}-label'>$label</label>";
 	}
 
@@ -1224,7 +1224,7 @@ function image_size_input_fields( $post, $check = '' ) {
 		// If this size is the default but that's not available, don't select it.
 		if ( $size == $check ) {
 			if ( $enabled ) {
-				$checked = " checked";
+				$checked = ' checked';
 			} else {
 				$check = '';
 			}
@@ -1234,7 +1234,7 @@ function image_size_input_fields( $post, $check = '' ) {
 			 * that's bigger than a thumbnail.
 			 */
 			$check   = $size;
-			$checked = " checked";
+			$checked = ' checked';
 		}
 
 		$html = "<div class='image-size-item'><input type='radio' " . disabled( $enabled, false, false ) . "name='attachments[$post->ID][image-size]' id='{$css_id}' value='{$size}'$checked />";
