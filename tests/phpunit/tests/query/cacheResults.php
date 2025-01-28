@@ -526,9 +526,9 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars_1' => array( 'tag_slug__in' => array( 'foo', 'bar' ) ),
 				'query_vars_2' => array( 'tag_slug__in' => array( 'bar', 'foo' ) ),
 			),
-			'tag_slug__in non-unique vs unique '         => array(
+			'tag_slug__in non-unique vs unique'          => array(
 				'query_vars_1' => array( 'tag_slug__in' => array( 'foo', 'bar', 'bar' ) ),
-				'query_vars_2' => array( 'tag_slug__in' => array( 'foo', 'bar', 'foo' ) ),
+				'query_vars_2' => array( 'tag_slug__in' => array( 'foo', 'bar' ) ),
 			),
 			'tag_slug__and order'                        => array(
 				'query_vars_1' => array( 'tag_slug__and' => array( 'foo', 'bar' ) ),
