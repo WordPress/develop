@@ -6,6 +6,10 @@ name: Run performance Tests
 on:
   workflow_call:
     inputs:
+      subject:
+        description: Subject of the test. One of `current`, `before`, or `base`.
+        required: true
+        type: string
       LOCAL_DIR:
         description: 'Where to run WordPress from.'
         required: false
@@ -31,6 +35,10 @@ on:
         required: false
         type: 'boolean'
         default: false
+    outputs:
+      BASE_TAG:
+        description: 'The version being used for baseline measurements.'
+        value: ${{ inputs.BASE_TAG }}
     secrets:
       CODEVITALS_PROJECT_TOKEN:
         description: 'The authorization token for https://www.codevitals.run/project/wordpress.'
@@ -49,7 +57,8 @@ env:
   LOCAL_SAVEQUERIES: false
   LOCAL_WP_DEVELOPMENT_MODE: "''"
 
-  # This workflow takes two sets of measurements — one for the current commit,
+  # This workflow takes three sets of measurements — one for the current commit,
+  # one for the previous commit,
   # and another against a consistent version that is used as a baseline measurement.
   # This is done to isolate variance in measurements caused by the GitHub runners
   # from differences caused by code changes between commits. The BASE_TAG value here
@@ -114,11 +123,10 @@ jobs:
   # - Publish performance results.
   # - Ensure version-controlled files are not modified or deleted.
   performance:
-    name: ${{ inputs.multisite && 'Multisite' || 'Single site' }} / ${{ inputs.memcached && 'Memcached' || 'Default' }}
+    name: Test ${{ inputs.subject == 'base' && inputs.BASE_TAG || inputs.subject }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    if: ${{ ! contains( github.event.before, '00000000' ) }}
 
     steps:
       - name: Configure environment variables
@@ -158,11 +166,49 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Start Docker environment
+        run: npm run env:start
+
       - name: Build WordPress
         run: npm run build
 
-      - name: Start Docker environment
-        run: npm run env:start
+      - name: Download previous build artifact (target branch or previous commit)
+        if: ${{ inputs.subject == 'before' }}
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        id: get-previous-build
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'wordpress-build-' + process.env.TARGET_SHA,
+            });
+            const matchArtifact = artifacts.data.artifacts[0];
+            if ( ! matchArtifact ) {
+              core.setFailed( 'No artifact found!' );
+              return false;
+            }
+            const download = await github.rest.actions.downloadArtifact( {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: matchArtifact.id,
+              archive_format: 'zip',
+            } );
+            const fs = require( 'fs' );
+            fs.writeFileSync( process.env.GITHUB_WORKSPACE + '/before.zip', Buffer.from( download.data ) )
+            return true;
+
+      - name: Unzip the previous build
+        if: ${{ inputs.subject == 'before' }}
+        run: |
+          unzip "${GITHUB_WORKSPACE}/before.zip"
+          unzip -o "${GITHUB_WORKSPACE}/wordpress.zip"
+
+      - name: Set the environment to the baseline version
+        if: ${{ inputs.subject == 'base' }}
+        run: |
+          VERSION="${BASE_TAG%.0}"
+          npm run env:cli -- core download --version="$VERSION" --force --path="/var/www/${LOCAL_DIR}"
 
       - name: Install object cache drop-in
         if: ${{ inputs.memcached }}
@@ -182,6 +228,9 @@ jobs:
 
       - name: Install WordPress
         run: npm run env:install
+
+      - name: Check version number
+        run: npm run env:cli -- core version --path="/var/www/${LOCAL_DIR}"
 
       - name: Enable themes on Multisite
         if: ${{ inputs.multisite }}
@@ -228,133 +277,19 @@ jobs:
           mkdir "./${LOCAL_DIR}/wp-content/mu-plugins"
           cp ./tests/performance/wp-content/mu-plugins/server-timing.php "./${LOCAL_DIR}/wp-content/mu-plugins/server-timing.php"
 
-      - name: Run performance tests (current commit)
+      - name: Run performance tests
         run: npm run test:performance
-
-      - name: Download previous build artifact (target branch or previous commit)
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-        id: get-previous-build
-        with:
-          script: |
-            const artifacts = await github.rest.actions.listArtifactsForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'wordpress-build-' + process.env.TARGET_SHA,
-            });
-
-            const matchArtifact = artifacts.data.artifacts[0];
-
-            if ( ! matchArtifact ) {
-              core.setFailed( 'No artifact found!' );
-              return false;
-            }
-
-            const download = await github.rest.actions.downloadArtifact( {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              artifact_id: matchArtifact.id,
-              archive_format: 'zip',
-            } );
-
-            const fs = require( 'fs' );
-            fs.writeFileSync( process.env.GITHUB_WORKSPACE + '/before.zip', Buffer.from( download.data ) )
-
-            return true;
-
-      - name: Unzip the build
-        if: ${{ steps.get-previous-build.outputs.result }}
-        run: |
-          unzip "${GITHUB_WORKSPACE}/before.zip"
-          unzip -o "${GITHUB_WORKSPACE}/wordpress.zip"
-
-      - name: Run any database upgrades
-        if: ${{ steps.get-previous-build.outputs.result }}
-        run: npm run env:cli -- core update-db --path="/var/www/${LOCAL_DIR}"
-
-      - name: Flush cache
-        if: ${{ steps.get-previous-build.outputs.result }}
-        run: npm run env:cli -- cache flush --path="/var/www/${LOCAL_DIR}"
-
-      - name: Delete expired transients
-        if: ${{ steps.get-previous-build.outputs.result }}
-        run: npm run env:cli -- transient delete --expired --path="/var/www/${LOCAL_DIR}"
-
-      - name: Run target performance tests (previous/target commit)
-        if: ${{ steps.get-previous-build.outputs.result }}
         env:
-          TEST_RESULTS_PREFIX: before
-        run: npm run test:performance
-
-      - name: Set the environment to the baseline version
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' }}
-        run: |
-          VERSION="${BASE_TAG}"
-          VERSION="${VERSION%.0}"
-          npm run env:cli -- core update --version="$VERSION" --force --path="/var/www/${LOCAL_DIR}"
-          npm run env:cli -- core version --path="/var/www/${LOCAL_DIR}"
-
-      - name: Run any database upgrades
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' }}
-        run: npm run env:cli -- core update-db --path="/var/www/${LOCAL_DIR}"
-
-      - name: Flush cache
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' }}
-        run: npm run env:cli -- cache flush --path="/var/www/${LOCAL_DIR}"
-
-      - name: Delete expired transients
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' }}
-        run: npm run env:cli -- transient delete --expired --path="/var/www/${LOCAL_DIR}"
-
-      - name: Run baseline performance tests
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' }}
-        env:
-          TEST_RESULTS_PREFIX: base
-        run: npm run test:performance
+          TEST_RESULTS_PREFIX: ${{ inputs.subject != 'current' && inputs.subject || '' }}
 
       - name: Archive artifacts
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         if: always()
         with:
-          name: performance-artifacts${{ inputs.multisite && '-multisite' || '' }}${{ inputs.memcached && '-memcached' || '' }}-${{ github.run_id }}
+          name: performance-${{ inputs.multisite && 'multisite' || 'single' }}-${{ inputs.memcached && 'memcached' || 'default' }}-${{ inputs.subject }}
           path: artifacts
           if-no-files-found: ignore
           include-hidden-files: true
-
-      - name: Compare results
-        run: node ./tests/performance/compare-results.js "${RUNNER_TEMP}/summary.md"
-
-      - name: Add workflow summary
-        run: cat "${RUNNER_TEMP}/summary.md" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Set the base sha
-        # Only needed when publishing results.
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached && ! inputs.multisite }}
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-        id: base-sha
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const baseRef = await github.rest.git.getRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'tags/' + process.env.BASE_TAG,
-            });
-            return baseRef.data.object.sha;
-
-      - name: Publish performance results
-        # Only publish results on pushes to trunk.
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached && ! inputs.multisite }}
-        env:
-          BASE_SHA: ${{ steps.base-sha.outputs.result }}
-          CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }}
-          HOST_NAME: "www.codevitals.run"
-        run: |
-          if [ -z "$CODEVITALS_PROJECT_TOKEN" ]; then
-            echo "Performance results could not be published. 'CODEVITALS_PROJECT_TOKEN' is not set"
-            exit 1
-          fi
-          COMMITTED_AT="$(git show -s "$GITHUB_SHA" --format='%cI')"
-          node ./tests/performance/log-results.js "$CODEVITALS_PROJECT_TOKEN" trunk "$GITHUB_SHA" "$BASE_SHA" "$COMMITTED_AT" "$HOST_NAME"
 
       - name: Ensure version-controlled files are not modified or deleted
         run: git diff --exit-code
