@@ -446,6 +446,10 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 				'query_vars1' => array( 'paged' => '2' ),
 				'query_vars2' => array( 'paged' => 2 ),
 			),
+			'menu_order value numeric vs string'     => array(
+				'query_vars1' => array( 'menu_order' => '2' ),
+				'query_vars2' => array( 'menu_order' => 2 ),
+			),
 			'post in order'                          => array(
 				'query_vars1' => array( 'post__in' => array( 1, 2, 3, 4, 5 ) ),
 				'query_vars2' => array( 'post__in' => array( 5, 4, 3, 2, 1 ) ),
