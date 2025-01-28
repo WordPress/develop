@@ -1596,9 +1596,7 @@ function set_transient( $transient, $value, $expiration = 0 ) {
 		/**
 		 * Fires after the value for a transient has been set.
 		 *
-		 * @since 3.0.0
-		 * @since 3.6.0 The `$value` and `$expiration` parameters were added.
-		 * @since 6.8.0 Renamed from 'setted_transient' to 'set_transient' for correct grammar.
+		 * @since 6.8.0
 		 *
 		 * @param string $transient  The name of the transient.
 		 * @param mixed  $value      Transient value.
@@ -1610,7 +1608,7 @@ function set_transient( $transient, $value, $expiration = 0 ) {
 		 * Fires after the transient is set.
 		 *
 		 * @since 3.0.0
-		 * @since 3.6.0 The 'value' and 'expiration' parameters were added.
+		 * @since 3.6.0 The `$value` and `$expiration` parameters were added.
 		 * @deprecated 6.8.0 Use {@see 'set_transient'} instead.
 		 *
 		 * @param string $transient  The name of the transient.
