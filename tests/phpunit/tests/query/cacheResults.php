@@ -358,19 +358,19 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 	 */
 	public function data_query_cache_duplicate() {
 		return array(
-			'post type empty'                        => array(
+			'post type empty'                            => array(
 				'query_vars1' => array( 'post_type' => '' ),
 				'query_vars2' => array( 'post_type' => 'post' ),
 			),
-			'post type array'                        => array(
+			'post type array'                            => array(
 				'query_vars1' => array( 'post_type' => array( 'page' ) ),
 				'query_vars2' => array( 'post_type' => 'page' ),
 			),
-			'orderby empty'                          => array(
+			'orderby empty'                              => array(
 				'query_vars1' => array( 'orderby' => null ),
 				'query_vars2' => array( 'orderby' => 'date' ),
 			),
-			'different order parameter'              => array(
+			'different order parameter'                  => array(
 				'query_vars1' => array(
 					'post_type'      => 'post',
 					'posts_per_page' => 15,
@@ -380,43 +380,43 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 					'post_type'      => 'post',
 				),
 			),
-			'same args'                              => array(
+			'same args'                                  => array(
 				'query_vars1' => array( 'post_type' => 'post' ),
 				'query_vars2' => array( 'post_type' => 'post' ),
 			),
-			'same args any'                          => array(
+			'same args any'                              => array(
 				'query_vars1' => array( 'post_type' => 'any' ),
 				'query_vars2' => array( 'post_type' => 'any' ),
 			),
-			'any and post types'                     => array(
+			'any and post types'                         => array(
 				'query_vars1' => array( 'post_type' => 'any' ),
 				'query_vars2' => array( 'post_type' => array( 'post', 'page', 'attachment' ) ),
 			),
-			'different order post type'              => array(
+			'different order post type'                  => array(
 				'query_vars1' => array( 'post_type' => array( 'post', 'page' ) ),
 				'query_vars2' => array( 'post_type' => array( 'page', 'post' ) ),
 			),
-			'post status array'                      => array(
+			'post status array'                          => array(
 				'query_vars1' => array( 'post_status' => 'publish' ),
 				'query_vars2' => array( 'post_status' => array( 'publish' ) ),
 			),
-			'post status order'                      => array(
+			'post status order'                          => array(
 				'query_vars1' => array( 'post_status' => array( 'draft', 'publish' ) ),
 				'query_vars2' => array( 'post_status' => array( 'publish', 'draft' ) ),
 			),
-			'post id numeric vs string'              => array(
+			'post id numeric vs string'                  => array(
 				'query_vars1' => array( 'p' => '1' ),
 				'query_vars2' => array( 'p' => 1 ),
 			),
-			'page id numeric vs string'              => array(
+			'page id numeric vs string'                  => array(
 				'query_vars1' => array( 'page_id' => '2' ),
 				'query_vars2' => array( 'page_id' => 2 ),
 			),
-			'attachment id numeric vs string'        => array(
+			'attachment id numeric vs string'            => array(
 				'query_vars1' => array( 'attachment_id' => '3' ),
 				'query_vars2' => array( 'attachment_id' => 3 ),
 			),
-			'date and time values numeric vs string' => array(
+			'date and time values numeric vs string'     => array(
 				'query_vars1' => array(
 					'year'     => '2013',
 					'monthnum' => '12',
@@ -434,99 +434,119 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 					'second'   => 12,
 				),
 			),
-			'offset value numeric vs string'         => array(
+			'offset value numeric vs string'             => array(
 				'query_vars1' => array( 'offset' => '5' ),
 				'query_vars2' => array( 'offset' => 5 ),
 			),
-			'posts per page value numeric vs string' => array(
+			'posts per page value numeric vs string'     => array(
 				'query_vars1' => array( 'posts_per_page' => '5' ),
 				'query_vars2' => array( 'posts_per_page' => 5 ),
 			),
-			'paged value numeric vs string'          => array(
+			'paged value numeric vs string'              => array(
 				'query_vars1' => array( 'paged' => '2' ),
 				'query_vars2' => array( 'paged' => 2 ),
 			),
-			'menu_order value numeric vs string'     => array(
+			'menu_order value numeric vs string'         => array(
 				'query_vars1' => array( 'menu_order' => '2' ),
 				'query_vars2' => array( 'menu_order' => 2 ),
 			),
-			'post in order'                          => array(
+			'post in order'                              => array(
 				'query_vars1' => array( 'post__in' => array( 1, 2, 3, 4, 5 ) ),
 				'query_vars2' => array( 'post__in' => array( 5, 4, 3, 2, 1 ) ),
 			),
-			'post parent in order'                   => array(
+			'post parent in order'                       => array(
 				'query_vars1' => array( 'post_parent__in' => array( 1, 2, 3, 4, 5 ) ),
 				'query_vars2' => array( 'post_parent__in' => array( 5, 4, 3, 2, 1 ) ),
 			),
-			'post name in order'                     => array(
+			'post name in order'                         => array(
 				'query_vars1' => array( 'post_name__in' => array( 'elphaba', 'glinda', 'the-wizard-of-oz', 'doctor-dillamond' ) ),
 				'query_vars2' => array( 'post_name__in' => array( 'doctor-dillamond', 'elphaba', 'the-wizard-of-oz', 'glinda' ) ),
 			),
-			'cat queries order (array)'              => array(
+			'cat queries order (array)'                  => array(
 				'query_vars_1' => array( 'cat' => array( '1', '2' ) ),
 				'query_vars_2' => array( 'cat' => array( '2', '1' ) ),
 			),
-			'cat queries order (string)'             => array(
+			'cat queries order (string)'                 => array(
 				'query_vars_1' => array( 'cat' => '2,1' ),
 				'query_vars_2' => array( 'cat' => '1,2' ),
 			),
-			'cat queries numeric vs string'          => array(
+			'cat queries numeric vs string'              => array(
 				'query_vars_1' => array( 'cat' => '2' ),
 				'query_vars_2' => array( 'cat' => 2 ),
 			),
-			'category__in queries order (array)'     => array(
+			'category__in queries order (array)'         => array(
 				'query_vars_1' => array( 'category__in' => array( '1', '2' ) ),
 				'query_vars_2' => array( 'category__in' => array( '2', '1' ) ),
 			),
-			'category__not_in queries order (array)' => array(
+			'category__in queries (non-)unique (array)'  => array(
+				'query_vars_1' => array( 'category__in' => array( '1', '1' ) ),
+				'query_vars_2' => array( 'category__in' => array( '1' ) ),
+			),
+			'category__not_in queries order (array)'     => array(
 				'query_vars_1' => array( 'category__not_in' => array( '1', '2' ) ),
 				'query_vars_2' => array( 'category__not_in' => array( '2', '1' ) ),
 			),
-			'category__and queries order (array)'    => array(
+			'category__not_in queries (non-)unique (array)' => array(
+				'query_vars_1' => array( 'category__not_in' => array( '1', '1' ) ),
+				'query_vars_2' => array( 'category__not_in' => array( '1' ) ),
+			),
+			'category__and queries order (array)'        => array(
 				'query_vars_1' => array( 'category__and' => array( '1', '2' ) ),
 				'query_vars_2' => array( 'category__and' => array( '2', '1' ) ),
 			),
-			'author queries order (string)'          => array(
+			'category__and queries (non-)unique (array)' => array(
+				'query_vars_1' => array( 'category__and' => array( '1', '1', '2' ) ),
+				'query_vars_2' => array( 'category__and' => array( '1', '2' ) ),
+			),
+			'author queries order (string)'              => array(
 				'query_vars_1' => array( 'author' => '1,2' ),
 				'query_vars_2' => array( 'author' => '2,1' ),
 			),
-			'author queries numeric vs string'       => array(
+			'author queries (non-)unique (string)'       => array(
+				'query_vars_1' => array( 'author' => '1,1' ),
+				'query_vars_2' => array( 'author' => '1' ),
+			),
+			'author queries numeric vs string'           => array(
 				'query_vars_1' => array( 'author' => 1 ),
 				'query_vars_2' => array( 'author' => '1' ),
 			),
-			'author__in queries order (array)'       => array(
+			'author__in queries order (array)'           => array(
 				'query_vars_1' => array( 'author__in' => array( 1, 2 ) ),
 				'query_vars_2' => array( 'author__in' => array( 2, 1 ) ),
 			),
-			'author__not_in queries order (array)'   => array(
+			'author__in queries (non-)unique (array)'    => array(
+				'query_vars_1' => array( 'author__in' => array( 1, 1, 2 ) ),
+				'query_vars_2' => array( 'author__in' => array( 1, 2 ) ),
+			),
+			'author__not_in queries order (array)'       => array(
 				'query_vars_1' => array( 'author__not_in' => array( 1, 2 ) ),
 				'query_vars_2' => array( 'author__not_in' => array( 1, 2 ) ),
 			),
-			'tag_slug__in'                           => array(
+			'tag_slug__in'                               => array(
 				'query_vars_1' => array( 'tag_slug__in' => array( 'foo', 'bar' ) ),
 				'query_vars_2' => array( 'tag_slug__in' => array( 'bar', 'foo' ) ),
 			),
-			'tag_slug__and'                          => array(
+			'tag_slug__and'                              => array(
 				'query_vars_1' => array( 'tag_slug__and' => array( 'foo', 'bar' ) ),
 				'query_vars_2' => array( 'tag_slug__and' => array( 'bar', 'foo' ) ),
 			),
-			'tag__in queries order (array)'          => array(
+			'tag__in queries order (array)'              => array(
 				'query_vars_1' => array( 'tag__in' => array( 1, 2 ) ),
 				'query_vars_2' => array( 'tag__in' => array( 2, 1 ) ),
 			),
-			'tag__in queries numeric vs string'      => array(
+			'tag__in queries numeric vs string'          => array(
 				'query_vars_1' => array( 'tag__in' => array( 2, 1 ) ),
 				'query_vars_2' => array( 'tag__in' => array( '2', '1' ) ),
 			),
-			'tag__and queries order (array)'         => array(
+			'tag__and queries order (array)'             => array(
 				'query_vars_1' => array( 'tag__and' => array( 1, 2 ) ),
 				'query_vars_2' => array( 'tag__and' => array( 2, 1 ) ),
 			),
-			'tag__not_in queries order (array)'      => array(
+			'tag__not_in queries order (array)'          => array(
 				'query_vars_1' => array( 'tag__not_in' => array( 1, 2 ) ),
 				'query_vars_2' => array( 'tag__not_in' => array( 2, 1 ) ),
 			),
-			'cache parameters'                       => array(
+			'cache parameters'                           => array(
 				'query_vars1' => array(
 					'update_post_meta_cache' => true,
 					'update_post_term_cache' => true,
