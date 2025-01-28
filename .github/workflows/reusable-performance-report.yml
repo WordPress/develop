@@ -43,7 +43,7 @@ jobs:
   # Performs the following steps:
   # - ...
   compare:
-    name: ${{ inputs.multisite && 'Multisite' || 'Single Site' }} / ${{ inputs.memcached && 'Memcached' || 'Default' }}
+    name: ${{ inputs.multisite && 'Multisite' || 'Single Site' }} ${{ inputs.memcached && 'Memcached' || 'Default' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read

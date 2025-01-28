@@ -50,7 +50,7 @@ jobs:
       subject: ${{ matrix.subject }}
 
   compare:
-    name: Compare
+    name: ${{ matrix.label }}
     uses: ./.github/workflows/reusable-performance-report.yml
     needs: [ performance ]
     permissions:
@@ -60,6 +60,7 @@ jobs:
       matrix:
         memcached: [ true, false ]
         multisite: [ true, false ]
+        label: [ Compare ]
     with:
       memcached: ${{ matrix.memcached }}
       multisite: ${{ matrix.multisite }}
