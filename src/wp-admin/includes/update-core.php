@@ -2,6 +2,10 @@
 /**
  * WordPress core upgrade functionality.
  *
+ * Note: Newly introduced functions and methods cannot be used here.
+ * All functions must be present in the previous version being upgraded from
+ * as this file is used there too.
+ *
  * @package WordPress
  * @subpackage Administration
  * @since 2.7.0
@@ -774,6 +778,56 @@ $_old_files = array(
 	'wp-includes/blocks/block/editor.min.css',
 	'wp-includes/blocks/block/editor-rtl.css',
 	'wp-includes/blocks/block/editor-rtl.min.css',
+	/*
+	 * 6.7
+	 *
+	 * WordPress 6.7 included a SimplePie upgrade that included a major
+	 * refactoring of the file structure and library. The old files are
+	 * split in to two sections to account for this: files and directories.
+	 *
+	 * See https://core.trac.wordpress.org/changeset/59141
+	 */
+	// 6.7 - files
+	'wp-includes/js/dist/interactivity-router.asset.php',
+	'wp-includes/js/dist/interactivity-router.js',
+	'wp-includes/js/dist/interactivity-router.min.js',
+	'wp-includes/js/dist/interactivity-router.min.asset.php',
+	'wp-includes/js/dist/interactivity.js',
+	'wp-includes/js/dist/interactivity.min.js',
+	'wp-includes/js/dist/vendor/react-dom.min.js.LICENSE.txt',
+	'wp-includes/js/dist/vendor/react.min.js.LICENSE.txt',
+	'wp-includes/js/dist/vendor/wp-polyfill-importmap.js',
+	'wp-includes/js/dist/vendor/wp-polyfill-importmap.min.js',
+	'wp-includes/sodium_compat/src/Core/Base64/Common.php',
+	'wp-includes/SimplePie/Author.php',
+	'wp-includes/SimplePie/Cache.php',
+	'wp-includes/SimplePie/Caption.php',
+	'wp-includes/SimplePie/Category.php',
+	'wp-includes/SimplePie/Copyright.php',
+	'wp-includes/SimplePie/Core.php',
+	'wp-includes/SimplePie/Credit.php',
+	'wp-includes/SimplePie/Enclosure.php',
+	'wp-includes/SimplePie/Exception.php',
+	'wp-includes/SimplePie/File.php',
+	'wp-includes/SimplePie/gzdecode.php',
+	'wp-includes/SimplePie/IRI.php',
+	'wp-includes/SimplePie/Item.php',
+	'wp-includes/SimplePie/Locator.php',
+	'wp-includes/SimplePie/Misc.php',
+	'wp-includes/SimplePie/Parser.php',
+	'wp-includes/SimplePie/Rating.php',
+	'wp-includes/SimplePie/Registry.php',
+	'wp-includes/SimplePie/Restriction.php',
+	'wp-includes/SimplePie/Sanitize.php',
+	'wp-includes/SimplePie/Source.php',
+	// 6.7 - directories
+	'wp-includes/SimplePie/Cache/',
+	'wp-includes/SimplePie/Content/',
+	'wp-includes/SimplePie/Decode/',
+	'wp-includes/SimplePie/HTTP/',
+	'wp-includes/SimplePie/Net/',
+	'wp-includes/SimplePie/Parse/',
+	'wp-includes/SimplePie/XML/',
 );
 
 /**
@@ -966,8 +1020,11 @@ $_new_bundled_files = array(
 function update_core( $from, $to ) {
 	global $wp_filesystem, $_old_files, $_old_requests_files, $_new_bundled_files, $wpdb;
 
+	/*
+	 * Give core update script an additional 300 seconds (5 minutes)
+	 * to finish updating large files when running on slower servers.
+	 */
 	if ( function_exists( 'set_time_limit' ) ) {
-		// Gives core update script time an additional 300 seconds(5 minutes) to finish updating large files or run on slower servers.
 		set_time_limit( 300 );
 	}
 
@@ -1539,12 +1596,12 @@ function update_core( $from, $to ) {
  *
  * @global array              $_old_requests_files Requests files to be preloaded.
  * @global WP_Filesystem_Base $wp_filesystem       WordPress filesystem subclass.
+ * @global string             $wp_version          The WordPress version string.
  *
  * @param string $to Path to old WordPress installation.
  */
 function _preload_old_requests_classes_and_interfaces( $to ) {
-	global $_old_requests_files, $wp_filesystem;
-	$wp_version = wp_get_wp_version();
+	global $_old_requests_files, $wp_filesystem, $wp_version;
 
 	/*
 	 * Requests was introduced in WordPress 4.6.
@@ -1587,14 +1644,14 @@ function _preload_old_requests_classes_and_interfaces( $to ) {
  *
  * @since 3.3.0
  *
- * @global string $pagenow The filename of the current screen.
+ * @global string $wp_version The WordPress version string.
+ * @global string $pagenow    The filename of the current screen.
  * @global string $action
  *
  * @param string $new_version
  */
 function _redirect_to_about_wordpress( $new_version ) {
-	global $pagenow, $action;
-	$wp_version = wp_get_wp_version();
+	global $wp_version, $pagenow, $action;
 
 	if ( version_compare( $wp_version, '3.4-RC1', '>=' ) ) {
 		return;
