@@ -353,7 +353,10 @@ function wp_stream_image( $image, $mime_type, $attachment_id ) {
 		 * @param int             $attachment_id The attachment post ID.
 		 */
 		$image = apply_filters( 'image_editor_save_pre', $image, $attachment_id );
-
+		// Get the mine if we can aftert eh filter in case the image got changed.
+		if ( method_exists( $image, 'get_mime_type' ) ) {
+			$mime_type = $image->get_mime_type();
+		}
 		if ( is_wp_error( $image->stream( $mime_type ) ) ) {
 			return false;
 		}
@@ -788,9 +791,6 @@ function stream_preview_image( $post_id ) {
 	}
 
 	$mime_type = $post->post_mime_type;
-	if ( method_exists( $img, 'get_mime_type' ) ) {
-		$mime_type = $img->get_mime_type();
-	}
 
 	return wp_stream_image( $img, $mime_type, $post_id );
 }
