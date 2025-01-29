@@ -54,7 +54,7 @@ class Tests_WP_SendHeaders extends WP_UnitTestCase {
 		$post_id = self::factory()->post->create(
 			array(
 				'post_password' => $password,
-			),
+			)
 		);
 		$this->go_to( get_permalink( $post_id ) );
 
@@ -65,7 +65,7 @@ class Tests_WP_SendHeaders extends WP_UnitTestCase {
 
 		$hash = ( new PasswordHash( 8, true ) )->HashPassword( $password );
 
-		$_COOKIE['wp-postpass_' . COOKIEHASH] = $hash;
+		$_COOKIE[ 'wp-postpass_' . COOKIEHASH ] = $hash;
 
 		$this->go_to( get_permalink( $post_id ) );
 
