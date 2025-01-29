@@ -80,6 +80,19 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller {
 	 * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
 	 */
 	protected function check_has_read_only_access( $request ) {
+		/**
+		 * Filters whether the current user has read access to menu items via the REST API.
+		 *
+		 * @since 6.8.0
+		 * @param $read_only_access bool Whether the current user has read access to menu items via the REST API.
+		 * @param $request WP_REST_Request Full details about the request.
+		 * @param $this WP_REST_Controller The current instance of the controller.
+		 */
+		$read_only_access = apply_filters( 'rest_menu_read_access', false, $request, $this );
+		if ( $read_only_access ) {
+			return true;
+		}
+
 		if ( current_user_can( 'edit_theme_options' ) ) {
 			return true;
 		}
@@ -102,7 +115,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller {
 	}
 
 	/**
-	 * Creates a single post.
+	 * Creates a single nav menu item.
 	 *
 	 * @since 5.9.0
 	 *
@@ -267,7 +280,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller {
 	}
 
 	/**
-	 * Deletes a single menu item.
+	 * Deletes a single nav menu item.
 	 *
 	 * @since 5.9.0
 	 *
@@ -317,7 +330,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller {
 	}
 
 	/**
-	 * Prepares a single post for create or update.
+	 * Prepares a single nav menu item for create or update.
 	 *
 	 * @since 5.9.0
 	 *
@@ -482,7 +495,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller {
 	}
 
 	/**
-	 * Prepares a single post output for response.
+	 * Prepares a single nav menu item output for response.
 	 *
 	 * @since 5.9.0
 	 *
@@ -510,6 +523,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller {
 
 		if ( rest_is_field_included( 'title.rendered', $fields ) ) {
 			add_filter( 'protected_title_format', array( $this, 'protected_title_format' ) );
+			add_filter( 'private_title_format', array( $this, 'protected_title_format' ) );
 
 			/** This filter is documented in wp-includes/post-template.php */
 			$title = apply_filters( 'the_title', $menu_item->title, $menu_item->ID );
@@ -517,6 +531,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller {
 			$data['title']['rendered'] = $title;
 
 			remove_filter( 'protected_title_format', array( $this, 'protected_title_format' ) );
+			remove_filter( 'private_title_format', array( $this, 'protected_title_format' ) );
 		}
 
 		if ( rest_is_field_included( 'status', $fields ) ) {
@@ -676,7 +691,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller {
 	}
 
 	/**
-	 * Retrieves Link Description Objects that should be added to the Schema for the posts collection.
+	 * Retrieves Link Description Objects that should be added to the Schema for the nav menu items collection.
 	 *
 	 * @since 5.9.0
 	 *
@@ -703,7 +718,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller {
 	}
 
 	/**
-	 * Retrieves the term's schema, conforming to JSON Schema.
+	 * Retrieves the nav menu item's schema, conforming to JSON Schema.
 	 *
 	 * @since 5.9.0
 	 *
@@ -924,7 +939,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller {
 	}
 
 	/**
-	 * Retrieves the query params for the posts collection.
+	 * Retrieves the query params for the nav menu items collection.
 	 *
 	 * @since 5.9.0
 	 *

@@ -163,7 +163,7 @@ if ( empty( $importers ) ) {
 						esc_attr( $data[0] ),
 						/* translators: %s: Importer name. */
 						esc_attr( sprintf( _x( 'Install %s now', 'plugin' ), $data[0] ) ),
-						__( 'Install Now' )
+						_x( 'Install Now', 'plugin' )
 					);
 				} else {
 					$action = sprintf(
@@ -235,6 +235,13 @@ if ( current_user_can( 'install_plugins' ) ) {
 		esc_url( network_admin_url( 'plugin-install.php?tab=search&type=tag&s=importer' ) )
 	) . '</p>';
 }
+
+/**
+ * Fires at the end of the Import screen.
+ *
+ * @since 6.8.0
+ */
+do_action( 'import_filters' );
 ?>
 
 </div>
