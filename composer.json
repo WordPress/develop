@@ -11,7 +11,8 @@
 	},
 	"require": {
 		"ext-json": "*",
-		"php": ">=7.2.24"
+		"php": ">=7.2.24",
+		"composer/ca-bundle": "^1.5"
 	},
 	"suggest": {
 		"ext-dom": "*"

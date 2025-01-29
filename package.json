@@ -51,7 +51,6 @@
 		"grunt-contrib-qunit": "~10.1.1",
 		"grunt-contrib-uglify": "~5.2.2",
 		"grunt-contrib-watch": "~1.1.0",
-		"grunt-downloadfile": "~2.1.1",
 		"grunt-file-append": "0.0.7",
 		"grunt-jsdoc": "2.4.1",
 		"grunt-legacy-util": "^2.0.1",

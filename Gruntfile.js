@@ -211,8 +211,7 @@ module.exports = function(grunt) {
 						src: buildFiles.concat( [
 							'!wp-includes/assets/**', // Assets is extracted into separate copy tasks.
 							'!js/**', // JavaScript is extracted into separate copy tasks.
-							'!wp-includes/certificates/cacert.pem*', // Exclude raw root certificate files that are combined into ca-bundle.crt.
-							'!wp-includes/certificates/legacy-1024bit.pem',
+							'!wp-includes/certificates/legacy-1024bit.pem', // Exclude raw root certificate files that is combined into ca-bundle.crt.
 							'!.{svn,git}', // Exclude version control folders.
 							'!wp-includes/version.php', // Exclude version.php.
 							'!**/*.map', // The build doesn't need .map files.
@@ -834,16 +833,6 @@ module.exports = function(grunt) {
 			dev: webpackConfig( { environment: 'development', buildTarget: WORKING_DIR } ),
 			watch: webpackConfig( { environment: 'development', watch: true } )
 		},
-		downloadfile: {
-			options: {
-				dest: SOURCE_DIR + 'wp-includes/certificates',
-				overwriteEverytime: true
-			},
-			files: {
-				'cacert.pem': 'https://curl.se/ca/cacert.pem',
-				'cacert.pem.sha256': 'https://curl.se/ca/cacert.pem.sha256'
-			}
-		},
 		concat: {
 			tinymce: {
 				options: {
@@ -877,8 +866,8 @@ module.exports = function(grunt) {
 					separator: '\n\n'
 				},
 				src: [
-					SOURCE_DIR + 'wp-includes/certificates/cacert.pem',
-					SOURCE_DIR + 'wp-includes/certificates/legacy-1024bit.pem'
+					SOURCE_DIR + 'wp-includes/certificates/legacy-1024bit.pem',
+					'vendor/composer/ca-bundle/res/cacert.pem'
 				],
 				dest: SOURCE_DIR + 'wp-includes/certificates/ca-bundle.crt'
 			}
@@ -1281,8 +1270,6 @@ module.exports = function(grunt) {
 
 	// Register tasks.
 
-	grunt.loadNpmTasks( 'grunt-downloadfile' );
-
 	// Webpack task.
 	grunt.loadNpmTasks( 'grunt-webpack' );
 
@@ -1552,12 +1539,30 @@ module.exports = function(grunt) {
 		'usebanner'
 	] );
 
+	grunt.registerTask( 'update-upstream-certificates', 'Updates the Composer package responsible for root certificate updates.', function() {
+		var done = this.async();
+		var flags = this.flags;
+		var args = [ 'update' ];
+
+		grunt.util.spawn( {
+			cmd: 'composer',
+			args: args,
+			opts: { stdio: 'inherit' }
+		}, function( error ) {
+			if ( flags.error && error ) {
+				done( false );
+			} else {
+				done( true );
+			}
+		} );
+	} );
+
 	grunt.registerTask( 'build:certificates', [
 		'concat:certificates'
 	] );
 
 	grunt.registerTask( 'update-certificates', [
-		'downloadfile',
+		'update-upstream-certificates',
 		'build:certificates'
 	] );
 
