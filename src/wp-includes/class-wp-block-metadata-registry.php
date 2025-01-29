@@ -195,7 +195,7 @@ class WP_Block_Metadata_Registry {
 		$collection = &self::$collections[ $path ];
 
 		if ( null === $collection['metadata'] ) {
-			// Load the manifest file if not already loaded
+			// Load the manifest file if not already loaded.
 			$collection['metadata'] = require $collection['manifest'];
 		}
 
