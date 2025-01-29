@@ -40,7 +40,7 @@ class WP_Block_Metadata_Registry {
 	/**
 	 * Stores the default allowed collection root paths.
 	 *
-	 * @since 6.8.0
+	 * @since 6.7.2
 	 * @var string[]|null
 	 */
 	private static $default_collection_roots = null;
@@ -103,7 +103,7 @@ class WP_Block_Metadata_Registry {
 		 * contain symlinked plugins, so that these root directories cannot be used themselves for a block metadata
 		 * collection either.
 		 *
-		 * @since 6.8.0
+		 * @since 6.7.2
 		 *
 		 * @param string[] $collection_roots List of allowed metadata collection root paths.
 		 */
@@ -127,7 +127,7 @@ class WP_Block_Metadata_Registry {
 					__( 'Block metadata collections cannot be registered as one of the following directories or their parent directories: %s' ),
 					esc_html( implode( wp_get_list_item_separator(), $collection_roots ) )
 				),
-				'6.8.0'
+				'6.7.2'
 			);
 			return false;
 		}
@@ -259,7 +259,7 @@ class WP_Block_Metadata_Registry {
 	/**
 	 * Checks whether the given block metadata collection path is valid against the list of collection roots.
 	 *
-	 * @since 6.8.0
+	 * @since 6.7.2
 	 *
 	 * @param string   $path             Block metadata collection path, without trailing slash.
 	 * @param string[] $collection_roots List of collection root paths, without trailing slashes.
@@ -284,7 +284,7 @@ class WP_Block_Metadata_Registry {
 	/**
 	 * Gets the default collection root directory paths.
 	 *
-	 * @since 6.8.0
+	 * @since 6.7.2
 	 *
 	 * @return string[] List of directory paths within which metadata collections are allowed.
 	 */
