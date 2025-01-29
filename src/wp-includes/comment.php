@@ -432,7 +432,13 @@ function get_comment_count( $post_id = 0 ) {
  *
  * @param int    $comment_id Comment ID.
  * @param string $meta_key   Metadata name.
- * @param mixed  $meta_value Metadata value. Must be serializable if non-scalar.
+ * @param mixed  $meta_value Metadata value. Arrays and objects are stored as serialized data and
+ *                           will be returned as the same type when retrieved. Other data types will
+ *                           be stored as strings in the database:
+ *                           - false is stored and retrieved as an empty string ('')
+ *                           - true is stored and retrieved as '1'
+ *                           - numbers (both integer and float) are stored and retrieved as strings
+ *                           Must be serializable if non-scalar.
  * @param bool   $unique     Optional. Whether the same key should not be added.
  *                           Default false.
  * @return int|false Meta ID on success, false on failure.
@@ -481,6 +487,11 @@ function delete_comment_meta( $comment_id, $meta_key, $meta_value = '' ) {
  *               False for an invalid `$comment_id` (non-numeric, zero, or negative value).
  *               An empty array if a valid but non-existing comment ID is passed and `$single` is false.
  *               An empty string if a valid but non-existing comment ID is passed and `$single` is true.
+ *               Note: Non-serialized values are returned as strings:
+ *               - false values are returned as empty strings ('')
+ *               - true values are returned as '1'
+ *               - numbers are returned as strings
+ *               Arrays and objects retain their original type.
  */
 function get_comment_meta( $comment_id, $key = '', $single = false ) {
 	return get_metadata( 'comment', $comment_id, $key, $single );
@@ -3658,7 +3669,7 @@ function wp_handle_comment_submission( $comment_data ) {
 	$comment_type = 'comment';
 
 	if ( get_option( 'require_name_email' ) && ! $user->exists() ) {
-		if ( '' == $comment_author_email || '' == $comment_author ) {
+		if ( '' === $comment_author_email || '' === $comment_author ) {
 			return new WP_Error( 'require_name_email', __( '<strong>Error:</strong> Please fill the required fields.' ), 200 );
 		} elseif ( ! is_email( $comment_author_email ) ) {
 			return new WP_Error( 'require_valid_email', __( '<strong>Error:</strong> Please enter a valid email address.' ), 200 );

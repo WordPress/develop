@@ -110,6 +110,7 @@ class WP_oEmbed {
 			'#https?://pca\.st/.+#i'                       => array( 'https://pca.st/oembed.json', true ),
 			'#https?://((play|www)\.)?anghami\.com/.*#i'   => array( 'https://api.anghami.com/rest/v1/oembed.view', true ),
 			'#https?://bsky.app/profile/.*/post/.*#i'      => array( 'https://embed.bsky.app/oembed', true ),
+			'#https?://(www\.)?canva\.com/design/.*/view.*#i' => array( 'https://canva.com/_oembed', true ),
 			'#https?://(.+\.)?.gravatar.com/.*#i'          => array( 'https://api.gravatar.com/v3/oembed', true ),
 		);
 
@@ -191,6 +192,7 @@ class WP_oEmbed {
 		 * | Crowdsignal  | crowdsignal.net                           | 6.2.0   |
 		 * | Anghami      | anghami.com                               | 6.3.0   |
 		 * | Bluesky      | bsky.app                                  | 6.6.0   |
+		 * | Canva        | canva.com                                 | 6.8.0   |
 		 * | Gravatar     | gravatar.com                              | 6.8.0   |
 		 *
 		 * No longer supported providers:

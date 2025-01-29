@@ -106,8 +106,8 @@ function wp_default_packages_vendor( $scripts ) {
 	);
 
 	$vendor_scripts_versions = array(
-		'react'                       => '18.3.1',
-		'react-dom'                   => '18.3.1',
+		'react'                       => '18.3.1.1', // Final .1 due to switch to UMD build, can be removed in the next update.
+		'react-dom'                   => '18.3.1.1', // Final .1 due to switch to UMD build, can be removed in the next update.
 		'react-jsx-runtime'           => '18.3.1',
 		'regenerator-runtime'         => '0.14.1',
 		'moment'                      => '2.30.1',
@@ -983,7 +983,7 @@ function wp_default_scripts( $scripts ) {
 		/* translators: %s: File name. */
 		'file_exceeds_size_limit'   => __( '%s exceeds the maximum upload size for this site.' ),
 		'zero_byte_file'            => __( 'This file is empty. Please try another.' ),
-		'invalid_filetype'          => __( 'Sorry, you are not allowed to upload this file type.' ),
+		'invalid_filetype'          => __( 'This file cannot be processed by the web server.' ),
 		'not_an_image'              => __( 'This file is not an image. Please try another.' ),
 		'image_memory_exceeded'     => __( 'Memory exceeded. Please try another smaller file.' ),
 		'image_dimensions_exceeded' => __( 'This is larger than the maximum size. Please try another.' ),
@@ -1007,7 +1007,7 @@ function wp_default_scripts( $scripts ) {
 		/* translators: %s: File name. */
 		'error_uploading'           => __( '&#8220;%s&#8221; has failed to upload.' ),
 		'unsupported_image'         => __( 'This image cannot be displayed in a web browser. For best results convert it to JPEG before uploading.' ),
-		'noneditable_image'         => __( 'This image cannot be processed by the web server. Convert it to JPEG or PNG before uploading.' ),
+		'noneditable_image'         => __( 'The web server cannot generate responsive image sizes for this image. Convert it to JPEG or PNG before uploading.' ),
 		'file_url_copied'           => __( 'The file URL has been copied to your clipboard' ),
 	);
 
@@ -1627,6 +1627,7 @@ function wp_default_styles( $styles ) {
 	$styles->add( 'wp-pointer', "/wp-includes/css/wp-pointer$suffix.css", array( 'dashicons' ) );
 	$styles->add( 'customize-preview', "/wp-includes/css/customize-preview$suffix.css", array( 'dashicons' ) );
 	$styles->add( 'wp-embed-template-ie', "/wp-includes/css/wp-embed-template-ie$suffix.css" );
+	$styles->add( 'wp-empty-template-alert', "/wp-includes/css/wp-empty-template-alert$suffix.css" );
 	$styles->add_data( 'wp-embed-template-ie', 'conditional', 'lte IE 8' );
 
 	// External libraries and friends.
@@ -1809,6 +1810,7 @@ function wp_default_styles( $styles ) {
 		'customize-preview',
 		'login',
 		'site-health',
+		'wp-empty-template-alert',
 		// Includes CSS.
 		'buttons',
 		'admin-bar',
@@ -2515,9 +2517,9 @@ function wp_enqueue_global_styles() {
 
 	if ( $is_block_theme ) {
 		/*
-		* Dequeue the Customizer's custom CSS
-		* and add it before the global styles custom CSS.
-		*/
+		 * Dequeue the Customizer's custom CSS
+		 * and add it before the global styles custom CSS.
+		 */
 		remove_action( 'wp_head', 'wp_custom_css_cb', 101 );
 		// Get the custom CSS from the Customizer and add it to the global stylesheet.
 		$custom_css  = wp_get_custom_css();
