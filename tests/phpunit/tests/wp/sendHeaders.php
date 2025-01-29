@@ -58,7 +58,7 @@ class Tests_WP_SendHeaders extends WP_UnitTestCase {
 		);
 		$this->go_to( get_permalink( $post_id ) );
 
-		$headers_without_password = $this->headers_sent;
+		$headers_without_password         = $this->headers_sent;
 		$password_status_without_password = post_password_required( $post_id );
 
 		require_once ABSPATH . WPINC . '/class-phpass.php';
