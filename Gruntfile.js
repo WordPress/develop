@@ -211,7 +211,8 @@ module.exports = function(grunt) {
 						src: buildFiles.concat( [
 							'!wp-includes/assets/**', // Assets is extracted into separate copy tasks.
 							'!js/**', // JavaScript is extracted into separate copy tasks.
-							'!wp-includes/certificates/legacy-1024bit.pem', // Exclude raw root certificate files that is combined into ca-bundle.crt.
+							'!wp-includes/certificates/cacert.pem*', // Exclude raw root certificate files that are combined into ca-bundle.crt.
+							'!wp-includes/certificates/legacy-1024bit.pem',
 							'!.{svn,git}', // Exclude version control folders.
 							'!wp-includes/version.php', // Exclude version.php.
 							'!**/*.map', // The build doesn't need .map files.
@@ -479,6 +480,10 @@ module.exports = function(grunt) {
 				},
 				src: '.github/workflows/*.yml',
 				dest: './'
+			},
+			certificates: {
+				src: 'vendor/composer/ca-bundle/res/cacert.pem',
+				dest: SOURCE_DIR + 'wp-includes/certificates/cacert.pem'
 			}
 		},
 		sass: {
@@ -867,7 +872,7 @@ module.exports = function(grunt) {
 				},
 				src: [
 					SOURCE_DIR + 'wp-includes/certificates/legacy-1024bit.pem',
-					'vendor/composer/ca-bundle/res/cacert.pem'
+					SOURCE_DIR + 'wp-includes/certificates/cacert.pem'
 				],
 				dest: SOURCE_DIR + 'wp-includes/certificates/ca-bundle.crt'
 			}
@@ -1563,6 +1568,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask( 'update-certificates', [
 		'update-upstream-certificates',
+		'copy:certificates',
 		'build:certificates'
 	] );
 
