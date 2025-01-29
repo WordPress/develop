@@ -447,6 +447,7 @@ class Tests_Block_Template extends WP_UnitTestCase {
 
 		$templates = get_block_templates();
 
+		# ensure our contributed plugin template is in the list
 		$templates_by_title = array_column( $templates, null, 'title' );
 		$this->assertArrayHasKey( $template_name, $templates_by_title );
 
