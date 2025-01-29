@@ -540,7 +540,7 @@ class WP_oEmbed {
 				continue;
 			}
 			// Use youtube-nocookie.com for YouTube embeds.
-			if ( strpos( $provider, 'https://www.youtube.com/oembed' ) === 0 && ! empty( $result->html ) ) {
+			if ( str_contains( $provider, 'https://www.youtube.com/oembed' ) && ! empty( $result->html ) ) {
 				$from = 'src="https://www.youtube.com/embed/';
 				$to   = 'src="https://www.youtube-nocookie.com/embed/';
 				$result->html = str_replace( $from, $to, $result->html );
