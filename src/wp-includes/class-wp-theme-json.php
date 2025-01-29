@@ -4584,4 +4584,14 @@ class WP_Theme_JSON {
 
 		return $valid_variations;
 	}
+
+	/**
+	 * Clears the cache of sanitize input data.
+	 * used when json is added/upated later in the flow control
+	 *
+	 * @return void
+	 */
+	public static function reset_sanitize_input_cache() {
+		self::$sanitize_input_cache = array();
+	}
 }
