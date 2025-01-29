@@ -98,7 +98,7 @@ jobs:
         run: git diff --exit-code
 
       - name: Create ZIP of built files
-        if: ${{ inputs.directory == 'build' && 'ubuntu-24.04' == inputs.os }}
+        if: ${{ inputs.directory == 'build' && contains( inputs.os, 'ubuntu-' ) }}
         run: zip -r wordpress.zip build/.
 
       - name: Clean after building to run from ${{ inputs.directory }}
