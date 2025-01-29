@@ -3488,6 +3488,10 @@ class WP_HTML_Tag_Processor {
 		}
 
 		$this->text_node_classification = self::TEXT_IS_GENERIC;
+		$subdivide_chars = 'S........SS.SS..................S.....S.........................................................................................................................................................................................................................';
+		if ( 'S' !== $subdivide_chars[ ord( $this->html[ $this->text_starts_at ] ) ] ) {
+			return false;
+		}
 
 		/*
 		 * NULL bytes are treated categorically different than numeric character
