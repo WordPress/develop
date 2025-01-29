@@ -1071,7 +1071,6 @@ class WP_HTML_Tag_Processor {
 		$tag_name_length      = $this->tag_name_length;
 		$tag_ends_at          = $this->token_starts_at + $this->token_length;
 		$attributes           = $this->attributes;
-		$duplicate_attributes = $this->duplicate_attributes;
 
 		// Find the closing tag if necessary.
 		switch ( $tag_name ) {
@@ -1128,7 +1127,6 @@ class WP_HTML_Tag_Processor {
 		$this->tag_name_starts_at   = $tag_name_starts_at;
 		$this->tag_name_length      = $tag_name_length;
 		$this->attributes           = $attributes;
-		$this->duplicate_attributes = $duplicate_attributes;
 
 		return true;
 	}
@@ -2585,18 +2583,11 @@ class WP_HTML_Tag_Processor {
 		$name_length = strlen( $case_insensitive_name );
 
 		foreach ( $this->attributes as $token ) {
-			if ( strlen( $case_insensitive_name ) !== $token->name_length ) {
+			if (
+				strlen( $case_insensitive_name ) !== $token->name_length ||
+				0 !== substr_compare( $this->html, $case_insensitive_name, $token->start, $name_length, true )
+			) {
 				continue;
-			}
-
-			$at = $token->start;
-			for ( $i = 0; $i < $name_length; $i++ ) {
-				$c = $case_insensitive_name[ $i ];
-				$h = $this->html[ $at++ ];
-
-				if ( $c !== $h && strtolower( $c ) !== strtolower( $h ) ) {
-					continue 2;
-				}
 			}
 
 			return $token;
@@ -2777,20 +2768,16 @@ class WP_HTML_Tag_Processor {
 			return null;
 		}
 
-		$comparable    = strtolower( $prefix );
 		$prefix_length = strlen( $prefix );
 		$seen          = array();
 
 		$matches = array();
 		foreach ( $this->attributes as $token ) {
-			$at = $token->start;
-			for ( $i = 0; $i < $prefix_length; $i++ ) {
-				$c = $comparable[ $i ];
-				$h = $this->html[ $at++ ];
-
-				if ( $c !== $h && strtolower( $h ) !== $c ) {
-					continue 2;
-				}
+			if (
+				$prefix_length > $token->name_length ||
+				0 !== substr_compare( $this->html, $prefix, $token->start, $prefix_length, true )
+			) {
+				continue;
 			}
 
 			$name = strtolower( substr( $this->html, $token->start, $token->name_length ) );
