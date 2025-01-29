@@ -1064,9 +1064,9 @@ function get_comment_text( $comment_id = 0, $args = array() ) {
 }
 
 /**
- *  Retrieve comment published time as a `DateTimeImmutable` object instance.
+ * Retrieves the comment published time as a `DateTimeImmutable` object instance.
  *
- * The object will be set to the timezone from WordPress settings.
+ * The object will be set to the timezone defined in WordPress settings.
  *
  * For legacy reasons, this function allows to choose to instantiate from local or UTC time in database.
  * Normally this should make no difference to the result. However, the values might get out of sync in database,
@@ -1077,7 +1077,7 @@ function get_comment_text( $comment_id = 0, $args = array() ) {
  *
  * @param int|WP_Comment $comment Optional. WP_Comment object or ID. Default is global `$comment` object.
  * @param string         $source  Optional. Local or UTC time to use from database. Accepts 'local' or 'gmt'.
- *                            Default 'local'.
+ *                                Default 'local'.
  * @return DateTimeImmutable|false Time object on success, false on failure.
  */
 function get_comment_datetime( $comment = null, $source = 'local' ) {
@@ -1085,31 +1085,26 @@ function get_comment_datetime( $comment = null, $source = 'local' ) {
 	$comment = get_comment( $comment );
 
 	if ( ! $comment ) {
-
 		return false;
 	}
 
 	$wp_timezone = wp_timezone();
 
 	if ( 'gmt' === $source ) {
-
 		$time     = $comment->comment_date_gmt;
 		$timezone = new DateTimeZone( 'UTC' );
 	} else {
-
 		$time     = $comment->comment_date;
 		$timezone = $wp_timezone;
 	}
 
 	if ( empty( $time ) || '0000-00-00 00:00:00' === $time ) {
-
 		return false;
 	}
 
 	$datetime = date_create_immutable_from_format( 'Y-m-d H:i:s', $time, $timezone );
 
 	if ( false === $datetime ) {
-
 		return false;
 	}
 
@@ -1117,16 +1112,15 @@ function get_comment_datetime( $comment = null, $source = 'local' ) {
 }
 
 /**
- * Retrieve comment published or modified time as a Unix timestamp.
+ * Retrieves the comment published or modified time as a Unix timestamp.
  *
  * Note that this function returns a true Unix timestamp, not summed with timezone offset
  * like older WP functions.
  *
- * @since 5.4.0
+ * @since 6.8.0
  *
  * @param int|WP_Comment $comment Optional. WP_Comment object or ID. Default is global `$comment` object.
  * @param string         $source  Optional. Local or UTC time to use from database. Accepts 'local' or 'gmt'.
- *
  * @return int|false Unix timestamp on success, false on failure.
  */
 function get_comment_timestamp( $comment = null, $source = 'local' ) {
@@ -1134,7 +1128,6 @@ function get_comment_timestamp( $comment = null, $source = 'local' ) {
 	$datetime = get_comment_datetime( $comment, $source );
 
 	if ( false === $datetime ) {
-
 		return false;
 	}
 
