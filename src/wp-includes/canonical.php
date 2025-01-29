@@ -950,6 +950,17 @@ function redirect_guess_404_permalink() {
 	}
 
 	if ( get_query_var( 'name' ) ) {
+		$exact_match = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT ID FROM $wpdb->posts WHERE post_name = %s LIMIT 1",
+				get_query_var( 'name' )
+			)
+		);
+
+		if ( $exact_match ) {
+			return false;
+		}
+
 		$publicly_viewable_statuses   = array_filter( get_post_stati(), 'is_post_status_viewable' );
 		$publicly_viewable_post_types = array_filter( get_post_types( array( 'exclude_from_search' => false ) ), 'is_post_type_viewable' );
 
