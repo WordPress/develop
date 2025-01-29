@@ -141,6 +141,7 @@
  * @see https://html.spec.whatwg.org/
  */
 class WP_HTML_Processor extends WP_HTML_Tag_Processor {
+	public $seen = null;
 	/**
 	 * The maximum number of bookmarks allowed to exist at any given time.
 	 *
@@ -2165,41 +2166,125 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 	 * @return bool Whether an element was found.
 	 */
 	private function step_in_body(): bool {
+		if ( ! $this->is_virtual() && WP_HTML_Tag_Processor::STATE_TEXT_NODE === $this->parser_state ) {
+			/*
+			 * > A character token that is U+0000 NULL
+			 *
+			 * Any successive sequence of NULL bytes is ignored and won't
+			 * trigger active format reconstruction. Therefore, if the text
+			 * only comprises NULL bytes then the token should be ignored
+			 * here, but if there are any other characters in the stream
+			 * the active formats should be reconstructed.
+			 */
+			if ( parent::TEXT_IS_NULL_SEQUENCE === $this->text_node_classification ) {
+				// Parse error: ignore the token.
+				return $this->step();
+			}
+
+			$this->reconstruct_active_formatting_elements();
+
+			/*
+			 * Whitespace-only text does not affect the frameset-ok flag.
+			 * It is probably inter-element whitespace, but it may also
+			 * contain character references which decode only to whitespace.
+			 */
+			if ( parent::TEXT_IS_GENERIC === $this->text_node_classification ) {
+				$this->state->frameset_ok = false;
+			}
+
+			$this->insert_html_element( $this->state->current_token );
+			return true;
+		}
+
 		$token_name = $this->get_token_name();
+
+		if ( ! $this->is_tag_closer() ) {
+			switch ( $token_name ) {
+				/*
+				 * > A start tag whose tag name is "a"
+				 */
+				case 'A':
+					foreach ( $this->state->active_formatting_elements->walk_up() as $item ) {
+						switch ( $item->node_name ) {
+							case 'marker':
+								break 2;
+
+							case 'A':
+								$this->run_adoption_agency_algorithm();
+								$this->state->active_formatting_elements->remove_node( $item );
+								$this->state->stack_of_open_elements->remove_node( $item );
+								break 2;
+						}
+					}
+
+					$this->reconstruct_active_formatting_elements();
+					$this->insert_html_element( $this->state->current_token );
+					$this->state->active_formatting_elements->push( $this->state->current_token );
+					return true;
+
+				case 'DIV':
+				case 'P':
+					if ( $this->state->stack_of_open_elements->has_p_in_button_scope() ) {
+						$this->close_a_p_element();
+					}
+
+					$this->insert_html_element( $this->state->current_token );
+					return true;
+
+				case 'SPAN':
+					goto in_body_any_other_start_tag;
+			}
+		} else {
+			switch ( $token_name ) {
+				case 'A':
+					$this->run_adoption_agency_algorithm();
+					return true;
+
+				case 'DIV':
+					if ( ! $this->state->stack_of_open_elements->has_element_in_scope( $token_name ) ) {
+						// @todo Report parse error.
+						// Ignore the token.
+						return $this->step();
+					}
+
+					$this->generate_implied_end_tags();
+					if ( ! $this->state->stack_of_open_elements->current_node_is( $token_name ) ) {
+						// @todo Record parse error: this error doesn't impact parsing.
+					}
+					$this->state->stack_of_open_elements->pop_until( $token_name );
+					return true;
+
+				/*
+				 * > An end tag whose tag name is "p"
+				 */
+				case 'P':
+					if ( ! $this->state->stack_of_open_elements->has_p_in_button_scope() ) {
+						$this->insert_html_element( $this->state->current_token );
+					}
+
+					$this->close_a_p_element();
+					return true;
+
+
+				case 'SPAN':
+					goto in_body_any_other_end_tag;
+			}
+		}
+
 		$token_type = $this->get_token_type();
 		$op_sigil   = '#tag' === $token_type ? ( parent::is_tag_closer() ? '-' : '+' ) : '';
 		$op         = "{$op_sigil}{$token_name}";
 
+//		if ( ! isset( $this->seen ) ) {
+//			$this->seen = [];
+//		}
+//		if ( ! isset( $this->seen[ $op ] ) ) {
+//			$this->seen[ $op ] = 0;
+//		}
+//		$this->seen[ $op ]++;
+
+
 		switch ( $op ) {
-			case '#text':
-				/*
-				 * > A character token that is U+0000 NULL
-				 *
-				 * Any successive sequence of NULL bytes is ignored and won't
-				 * trigger active format reconstruction. Therefore, if the text
-				 * only comprises NULL bytes then the token should be ignored
-				 * here, but if there are any other characters in the stream
-				 * the active formats should be reconstructed.
-				 */
-				if ( parent::TEXT_IS_NULL_SEQUENCE === $this->text_node_classification ) {
-					// Parse error: ignore the token.
-					return $this->step();
-				}
-
-				$this->reconstruct_active_formatting_elements();
-
-				/*
-				 * Whitespace-only text does not affect the frameset-ok flag.
-				 * It is probably inter-element whitespace, but it may also
-				 * contain character references which decode only to whitespace.
-				 */
-				if ( parent::TEXT_IS_GENERIC === $this->text_node_classification ) {
-					$this->state->frameset_ok = false;
-				}
-
-				$this->insert_html_element( $this->state->current_token );
-				return true;
-
 			case '#comment':
 			case '#funky-comment':
 			case '#presumptuous-tag':
@@ -2361,7 +2446,6 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 			case '+DETAILS':
 			case '+DIALOG':
 			case '+DIR':
-			case '+DIV':
 			case '+DL':
 			case '+FIELDSET':
 			case '+FIGCAPTION':
@@ -2373,7 +2457,6 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 			case '+MENU':
 			case '+NAV':
 			case '+OL':
-			case '+P':
 			case '+SEARCH':
 			case '+SECTION':
 			case '+SUMMARY':
@@ -2557,7 +2640,6 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 			case '-DETAILS':
 			case '-DIALOG':
 			case '-DIR':
-			case '-DIV':
 			case '-DL':
 			case '-FIELDSET':
 			case '-FIGCAPTION':
@@ -2643,17 +2725,6 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 				break;
 
 			/*
-			 * > An end tag whose tag name is "p"
-			 */
-			case '-P':
-				if ( ! $this->state->stack_of_open_elements->has_p_in_button_scope() ) {
-					$this->insert_html_element( $this->state->current_token );
-				}
-
-				$this->close_a_p_element();
-				return true;
-
-			/*
 			 * > An end tag whose tag name is "li"
 			 * > An end tag whose tag name is one of: "dd", "dt"
 			 */
@@ -2725,27 +2796,6 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 				$this->state->stack_of_open_elements->pop_until( '(internal: H1 through H6 - do not use)' );
 				return true;
 
-			/*
-			 * > A start tag whose tag name is "a"
-			 */
-			case '+A':
-				foreach ( $this->state->active_formatting_elements->walk_up() as $item ) {
-					switch ( $item->node_name ) {
-						case 'marker':
-							break 2;
-
-						case 'A':
-							$this->run_adoption_agency_algorithm();
-							$this->state->active_formatting_elements->remove_node( $item );
-							$this->state->stack_of_open_elements->remove_node( $item );
-							break 2;
-					}
-				}
-
-				$this->reconstruct_active_formatting_elements();
-				$this->insert_html_element( $this->state->current_token );
-				$this->state->active_formatting_elements->push( $this->state->current_token );
-				return true;
 
 			/*
 			 * > A start tag whose tag name is one of: "b", "big", "code", "em", "font", "i",
@@ -2788,7 +2838,6 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 			 * > An end tag whose tag name is one of: "a", "b", "big", "code", "em", "font", "i",
 			 * > "nobr", "s", "small", "strike", "strong", "tt", "u"
 			 */
-			case '-A':
 			case '-B':
 			case '-BIG':
 			case '-CODE':
@@ -3128,6 +3177,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 		}
 
 		if ( ! parent::is_tag_closer() ) {
+			in_body_any_other_start_tag:
 			/*
 			 * > Any other start tag
 			 */
@@ -3138,6 +3188,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 			/*
 			 * > Any other end tag
 			 */
+			in_body_any_other_end_tag:
 
 			/*
 			 * Find the corresponding tag opener in the stack of open elements, if
