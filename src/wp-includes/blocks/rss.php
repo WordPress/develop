@@ -8,6 +8,8 @@
 /**
  * Renders the `core/rss` block on server.
  *
+ * @since 5.2.0
+ *
  * @param array $attributes The block attributes.
  *
  * @return string Returns the block content with received rss items.
@@ -60,7 +62,7 @@ function render_block_core_rss( $attributes ) {
 			if ( is_object( $author ) ) {
 				$author = $author->get_name();
 				$author = '<span class="wp-block-rss__item-author">' . sprintf(
-					/* translators: %s: the author. */
+					/* translators: byline. %s: author. */
 					__( 'by %s' ),
 					esc_html( strip_tags( $author ) )
 				) . '</span>';
@@ -107,6 +109,8 @@ function render_block_core_rss( $attributes ) {
 
 /**
  * Registers the `core/rss` block on server.
+ *
+ * @since 5.2.0
  */
 function register_block_core_rss() {
 	register_block_type_from_metadata(

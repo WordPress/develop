@@ -120,7 +120,7 @@ final class WP_Privacy_Policy_Content {
 
 		// Cache the result for use before `admin_init` (see above).
 		if ( $cached !== $state ) {
-			update_option( '_wp_suggested_policy_text_has_changed', $state );
+			update_option( '_wp_suggested_policy_text_has_changed', $state, false );
 		}
 
 		return 'changed' === $state;
@@ -333,7 +333,7 @@ final class WP_Privacy_Policy_Content {
 			return;
 		}
 
-		$message = __( 'Need help putting together your new Privacy Policy page? Check out our guide for recommendations on what content to include, along with policies suggested by your plugins and theme.' );
+		$message = __( 'Need help putting together your new Privacy Policy page? Check out the guide for recommendations on what content to include, along with policies suggested by your plugins and theme.' );
 		$url     = esc_url( admin_url( 'options-privacy.php?tab=policyguide' ) );
 		$label   = __( 'View Privacy Policy Guide.' );
 

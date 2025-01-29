@@ -272,12 +272,12 @@ class WP_REST_Global_Styles_Revisions_Controller_Test extends WP_Test_REST_Contr
 
 		// Global styles.
 		$config = ( new WP_Theme_JSON( json_decode( $revision_expected_item->post_content, true ), 'custom' ) )->get_raw_data();
-		$this->assertEquals(
+		$this->assertSame(
 			$config['settings'],
 			$response_revision_item['settings'],
 			'Check that the revision settings exist in the response.'
 		);
-		$this->assertEquals(
+		$this->assertSame(
 			$config['styles'],
 			$response_revision_item['styles'],
 			'Check that the revision styles match the updated styles.'
@@ -371,7 +371,7 @@ class WP_REST_Global_Styles_Revisions_Controller_Test extends WP_Test_REST_Contr
 		$data     = $response->get_data();
 
 		$this->assertCount( $this->total_revisions + 1, $data, 'Check that extra revision exist' );
-		$this->assertEquals( self::$second_admin_id, $data[0]['author'], 'Check that second author id returns expected value.' );
+		$this->assertSame( self::$second_admin_id, $data[0]['author'], 'Check that second author id returns expected value.' );
 	}
 
 	/**
@@ -420,6 +420,7 @@ class WP_REST_Global_Styles_Revisions_Controller_Test extends WP_Test_REST_Contr
 
 	/**
 	 * @ticket 58524
+	 * @ticket 60131
 	 *
 	 * @covers WP_REST_Global_Styles_Controller::get_item_permissions_check
 	 */
@@ -428,7 +429,7 @@ class WP_REST_Global_Styles_Revisions_Controller_Test extends WP_Test_REST_Contr
 		$request  = new WP_REST_Request( 'GET', '/wp/v2/global-styles/' . self::$global_styles_id . '/revisions' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertErrorResponse( 'rest_cannot_view', $response, 403 );
+		$this->assertErrorResponse( 'rest_cannot_read', $response, 403 );
 	}
 
 	/**
@@ -825,11 +826,52 @@ class WP_REST_Global_Styles_Revisions_Controller_Test extends WP_Test_REST_Contr
 		$this->assertCount( $expected_count, $response->get_data() );
 	}
 
+
+	/**
+	 * Tests for the pagination.
+	 *
+	 * @ticket 62292
+	 *
+	 * @covers WP_REST_Global_Styles_Controller::get_items
+	 */
+	public function test_get_global_styles_revisions_pagination() {
+		wp_set_current_user( self::$admin_id );
+
+		// Test offset
+		$request = new WP_REST_Request( 'GET', '/wp/v2/global-styles/' . self::$global_styles_id . '/revisions' );
+		$request->set_param( 'offset', 1 );
+		$request->set_param( 'per_page', 1 );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertCount( 1, $data );
+		$this->assertEquals( 3, $response->get_headers()['X-WP-Total'] );
+		$this->assertEquals( 3, $response->get_headers()['X-WP-TotalPages'] );
+
+		// Test paged
+		$request = new WP_REST_Request( 'GET', '/wp/v2/global-styles/' . self::$global_styles_id . '/revisions' );
+		$request->set_param( 'page', 2 );
+		$request->set_param( 'per_page', 2 );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertCount( 1, $data );
+		$this->assertEquals( 3, $response->get_headers()['X-WP-Total'] );
+		$this->assertEquals( 2, $response->get_headers()['X-WP-TotalPages'] );
+
+		// Test out of bounds
+		$request = new WP_REST_Request( 'GET', '/wp/v2/global-styles/' . self::$global_styles_id . '/revisions' );
+		$request->set_param( 'page', 4 );
+		$request->set_param( 'per_page', 6 );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_revision_invalid_page_number', $response, 400 );
+	}
+
 	/**
 	 * @doesNotPerformAssertions
 	 */
 	public function test_context_param() {
-		// Controller does not implement test_context_param().
+		// Controller does not implement get_context_param().
 	}
 
 	/**
