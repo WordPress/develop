@@ -38,6 +38,16 @@ class WP_Theme_JSON {
 	 */
 	protected static $blocks_metadata = array();
 
+
+	/**
+	 * Holds sanitize input cache so we don't
+	 * process it more than once.
+	 *
+	 * @since 6.8.0
+	 * @var array
+	 */
+	protected static $sanitize_input_cache = array();
+
 	/**
 	 * The CSS selector for the top-level preset settings.
 	 *
@@ -929,17 +939,26 @@ class WP_Theme_JSON {
 	 * @since 5.9.0 Added the `$valid_block_names` and `$valid_element_name` parameters.
 	 * @since 6.3.0 Added the `$valid_variations` parameter.
 	 * @since 6.6.0 Updated schema to allow extended block style variations.
+	 * @since 6.8.0 Added caching to improve performance.
 	 *
 	 * @param array $input               Structure to sanitize.
 	 * @param array $valid_block_names   List of valid block names.
 	 * @param array $valid_element_names List of valid element names.
 	 * @param array $valid_variations    List of valid variations per block.
+	 *
 	 * @return array The sanitized output.
 	 */
 	protected static function sanitize( $input, $valid_block_names, $valid_element_names, $valid_variations ) {
+
+		$input_cache_key = md5( wp_json_encode( $input ) );
+		if ( isset( self::$sanitize_input_cache[ $input_cache_key ] ) ) {
+
+			return self::$sanitize_input_cache[ $input_cache_key ];
+		}
 		$output = array();
 
 		if ( ! is_array( $input ) ) {
+
 			return $output;
 		}
 
@@ -1055,6 +1074,7 @@ class WP_Theme_JSON {
 				$output[ $subtree ] = static::resolve_custom_css_format( $result );
 			}
 		}
+		self::$sanitize_input_cache[ $input_cache_key ] = $output;
 
 		return $output;
 	}
