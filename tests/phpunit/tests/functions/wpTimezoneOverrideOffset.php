@@ -15,8 +15,8 @@ class Tests_Functions_wpTimezoneOverrideOffset extends WP_UnitTestCase {
 	}
 
 	/**
- * @ticket 59980
- */
+	 * @ticket 59980
+	 */
 	public function test_wp_timezone_override_offset() {
 		$this->assertFalse( wp_timezone_override_offset() );
 	}
@@ -29,7 +29,6 @@ class Tests_Functions_wpTimezoneOverrideOffset extends WP_UnitTestCase {
 		$this->assertFalse( wp_timezone_override_offset() );
 	}
 
-
 	/**
 	 * @ticket 59980
 	 */
@@ -39,6 +38,7 @@ class Tests_Functions_wpTimezoneOverrideOffset extends WP_UnitTestCase {
 		$this->assertIsFloat( $offset );
 		$this->assertEquals( -5, $offset );
 	}
+
 	/**
 	 * @ticket 59980
 	 */
