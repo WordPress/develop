@@ -69,7 +69,7 @@ class Tests_WP_SendHeaders extends WP_UnitTestCase {
 
 		$this->go_to( get_permalink( $post_id ) );
 
-		$headers_with_password = $this->headers_sent;
+		$headers_with_password         = $this->headers_sent;
 		$password_status_with_password = post_password_required( $post_id );
 
 		$this->assertTrue( $password_status_without_password );
