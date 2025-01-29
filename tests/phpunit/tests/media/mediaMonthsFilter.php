@@ -7,12 +7,16 @@
 class Tests_Media_MonthsFilter extends WP_UnitTestCase {
 
 	/**
-	 * Test that the show_media_library_months_select filter works
+	 * Array to store created attachments.
 	 *
-	 * @ticket 41675
+	 * @var array
 	 */
-	public function test_show_media_library_months_select_filter() {
-		$attachment1 = self::factory()->attachment->create_object(
+	protected $attachments = array();
+
+	public function set_up() {
+		parent::set_up();
+
+		$this->attachments[] = self::factory()->attachment->create_object(
 			array(
 				'file'           => 'test1.jpg',
 				'post_parent'    => 0,
@@ -22,7 +26,7 @@ class Tests_Media_MonthsFilter extends WP_UnitTestCase {
 			)
 		);
 
-		$attachment2 = self::factory()->attachment->create_object(
+		$this->attachments[] = self::factory()->attachment->create_object(
 			array(
 				'file'           => 'test2.jpg',
 				'post_parent'    => 0,
@@ -31,13 +35,38 @@ class Tests_Media_MonthsFilter extends WP_UnitTestCase {
 				'post_mime_type' => 'image/jpeg',
 			)
 		);
+	}
+
+	public function tear_down() {
+		foreach ( $this->attachments as $attachment ) {
+			wp_delete_attachment( $attachment, true );
+		}
+
+		parent::tear_down();
+	}
+
+	/**
+	 * Test that the show_media_library_months_select filter works
+	 * and prevents the expensive query when disabled.
+	 *
+	 * @ticket 41675
+	 */
+	public function test_show_media_library_months_select_filter() {
+		global $wpdb;
+
+		$queries_before = $wpdb->num_queries;
 
 		$this->assertTrue( apply_filters( 'show_media_library_months_select', true ) );
+		wp_enqueue_media();
+		$this->assertGreaterThan( $queries_before, $wpdb->num_queries, 'No queries were run with filter enabled' );
+
+		$queries_before = $wpdb->num_queries;
 
 		add_filter( 'show_media_library_months_select', '__return_false' );
 		$this->assertFalse( apply_filters( 'show_media_library_months_select', true ) );
 
-		wp_delete_attachment( $attachment1, true );
-		wp_delete_attachment( $attachment2, true );
+		wp_enqueue_media();
+
+		$this->assertEquals( $queries_before, $wpdb->num_queries, 'Queries were run with filter disabled' );
 	}
 }
