@@ -25,7 +25,7 @@ class Tests_Block_Templates_Registry extends WP_UnitTestCase {
 	 */
 	public function data_template_name_validation() {
 		return array(
-			'valid_simple_name' => array(
+			'valid_simple_name'      => array(
 				'my-plugin//my-template',
 				true,
 				'Valid template name with simple characters should be accepted',
@@ -35,7 +35,7 @@ class Tests_Block_Templates_Registry extends WP_UnitTestCase {
 				true,
 				'Template name with underscores should be accepted',
 			),
-			'valid_cpt_archive' => array(
+			'valid_cpt_archive'      => array(
 				'my-plugin//archive-my_post_type',
 				true,
 				'Template name for CPT archive with underscore should be accepted',
@@ -56,7 +56,7 @@ class Tests_Block_Templates_Registry extends WP_UnitTestCase {
 	 */
 	public function test_template_name_validation( $template_name, $expected, $message ) {
 		$result = $this->registry->register( $template_name, array() );
-		
+
 		if ( $expected ) {
 			$this->assertTrue( ! is_wp_error( $result ), $message );
 		} else {
