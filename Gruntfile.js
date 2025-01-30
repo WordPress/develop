@@ -86,7 +86,7 @@ module.exports = function(grunt) {
 	// Load legacy utils.
 	grunt.util = require('grunt-legacy-util');
 
-	gruntDependencies = {
+	var gruntDependencies = {
 		'contrib': [
 			'clean',
 			'concat',
