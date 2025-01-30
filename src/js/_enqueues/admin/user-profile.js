@@ -116,7 +116,7 @@
 				$pass1.attr( 'type', 'password' );
 				resetToggle( true );
 			}
-		});
+		} );
 	}
 
 	/**
