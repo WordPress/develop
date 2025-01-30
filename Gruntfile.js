@@ -774,7 +774,14 @@ module.exports = function(grunt) {
 		},
 		uglify: {
 			options: {
+				parse: {
+					module: false
+				},
+				compress: {
+					module: false
+				},
 				output: {
+					module: false,
 					ascii_only: true
 				}
 			},
