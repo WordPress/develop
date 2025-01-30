@@ -23,8 +23,9 @@ if ( ! current_user_can( 'edit_theme_options' ) ) {
  * Maps old site editor urls to the new updated ones.
  *
  * @since 6.8.0
+ * @access private
  *
- * @private
+ * @global string $pagenow The filename of the current screen.
  *
  * @return string|false The new URL to redirect to, or false if no redirection is needed.
  */
