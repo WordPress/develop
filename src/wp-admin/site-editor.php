@@ -113,7 +113,7 @@ function _get_site_editor_redirection_url() {
 // Redirect to the site editor to the new URLs if needed.
 $redirection = _get_site_editor_redirection_url();
 if ( false !== $redirection ) {
-	wp_redirect( $redirection, 301 );
+	wp_safe_redirect( $redirection, 301 );
 	exit;
 }
 
