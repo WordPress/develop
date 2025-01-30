@@ -1544,7 +1544,7 @@ module.exports = function(grunt) {
 		'usebanner'
 	] );
 
-	grunt.registerTask( 'update-upstream-certificates', 'Updates the Composer package responsible for root certificate updates.', function() {
+	grunt.registerTask( 'certificates:update', 'Updates the Composer package responsible for root certificate updates.', function() {
 		var done = this.async();
 		var flags = this.flags;
 		var args = [ 'update' ];
@@ -1566,8 +1566,8 @@ module.exports = function(grunt) {
 		'concat:certificates'
 	] );
 
-	grunt.registerTask( 'update-certificates', [
-		'update-upstream-certificates',
+	grunt.registerTask( 'certificates:upgrade', [
+		'certificates:update',
 		'copy:certificates',
 		'build:certificates'
 	] );
