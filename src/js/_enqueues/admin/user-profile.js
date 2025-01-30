@@ -110,6 +110,13 @@
 				resetToggle( true );
 			}
 		});
+
+		$pass1Row.closest( 'form' ).on( 'submit', function() {
+			if ( $pass1.attr( 'type' ) === 'text' ) {
+				$pass1.attr( 'type', 'password' );
+				resetToggle( true );
+			}
+		});
 	}
 
 	/**
