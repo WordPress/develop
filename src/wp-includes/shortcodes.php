@@ -394,7 +394,7 @@ function do_shortcode_tag( $m ) {
 
 	// Allow [[foo]] syntax for escaping a tag.
 	if ( '[' === $m[1] && ']' === $m[6] ) {
-		return '&#91;'.substr( $m[0], 2, -1 );
+		return '&#91;' . substr( $m[0], 2, -1 );
 	}
 
 	$tag  = $m[2];
@@ -757,7 +757,7 @@ function strip_shortcodes( $content ) {
 function strip_shortcode_tag( $m ) {
 	// Allow [[foo]] syntax for escaping a tag.
 	if ( '[' === $m[1] && ']' === $m[6] ) {
-		return '&#91;'.substr( $m[0], 2, -1 );
+		return '&#91;' . substr( $m[0], 2, -1 );
 	}
 
 	return $m[1] . $m[6];
