@@ -309,6 +309,7 @@ class Tests_Block_Templates_wpBlockTemplatesRegistry extends WP_UnitTestCase {
 
 		if ( $expected ) {
 			$this->assertTrue( ! is_wp_error( $result ), $message );
+			self::$registry->unregister( $template_name );
 		} else {
 			$this->assertWPError( $result, $message );
 		}
