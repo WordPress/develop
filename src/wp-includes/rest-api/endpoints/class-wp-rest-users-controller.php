@@ -369,6 +369,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 			unset( $prepared_args['number'], $prepared_args['offset'] );
 
 			$prepared_args['number'] = 1;
+			$prepared_args['fields'] = 'ID';
 			$count_query             = new WP_User_Query( $prepared_args );
 			$total_users             = $count_query->get_total();
 		}
