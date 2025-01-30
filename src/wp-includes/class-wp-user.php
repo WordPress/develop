@@ -767,7 +767,8 @@ class WP_User {
 	 */
 	public function remove_all_caps() {
 		global $wpdb;
-		$this->caps = array();
+		$this->caps        = array();
+		$this->loaded_caps = false;
 		delete_user_meta( $this->ID, $this->cap_key );
 		delete_user_meta( $this->ID, $wpdb->get_blog_prefix() . 'user_level' );
 		$this->get_role_caps();
