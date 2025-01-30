@@ -105,6 +105,12 @@ class WP_User {
 	private $site_id = 0;
 
 
+	/**
+	 * Flag for if capability is loaded.
+	 *
+	 * @since 6.8.0
+	 * @var bool
+	 */
 	private $loaded_caps = false;
 
 	/**
@@ -897,7 +903,8 @@ class WP_User {
 			$this->site_id = get_current_blog_id();
 		}
 
-		$this->cap_key = $wpdb->get_blog_prefix( $this->site_id ) . 'capabilities';
+		$this->cap_key     = $wpdb->get_blog_prefix( $this->site_id ) . 'capabilities';
+		$this->loaded_caps = false;
 
 		wp_lazyload_user_meta( array( $this->ID ) );
 	}
@@ -934,13 +941,14 @@ class WP_User {
 	/**
 	 * Load capability data.
 	 *
-	 * @since 6.4.0
+	 * @since 6.8.0
 	 */
 	private function load_capablity_data() {
-		if ( ! $this->loaded_caps ) {
-			$this->caps = $this->get_caps_data();
-			$this->get_role_caps();
-			$this->loaded_caps = true;
+		if ( $this->loaded_caps ) {
+			return;
 		}
+		$this->caps = $this->get_caps_data();
+		$this->get_role_caps();
+		$this->loaded_caps = true;
 	}
 }
