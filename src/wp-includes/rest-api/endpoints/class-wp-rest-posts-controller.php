@@ -340,7 +340,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 
 		/*
 		 * Honor the original REST API `post__in` behavior. Don't prepend sticky posts
-		 * if an argument has already been provided.
+		 * when `post__in` has been specified.
 		 */
 		if ( ! empty( $args['post__in'] ) ) {
 			unset( $args['ignore_sticky_posts'] );
