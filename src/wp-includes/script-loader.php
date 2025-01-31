@@ -2626,6 +2626,10 @@ function wp_should_load_block_assets_on_demand() {
 		return false;
 	}
 
+	/*
+	 * For backward compatibility, the default return value for this function is based on the return value of
+	 * `wp_should_load_separate_core_block_assets()`. Initially, this function used to control both of these concerns.
+	 */
 	$load_assets_on_demand = wp_should_load_separate_core_block_assets();
 
 	/**
