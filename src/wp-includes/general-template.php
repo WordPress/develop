@@ -4585,6 +4585,7 @@ function paginate_links( $args = '' ) {
 			$link = add_query_arg( $add_args, $link );
 		}
 		$link .= $args['add_fragment'];
+		$link  = get_option( 'permalink_structure' ) ? user_trailingslashit( $link ) : $link;
 
 		$page_links[] = sprintf(
 			'<a class="prev page-numbers" href="%s">%s</a>',
@@ -4595,7 +4596,7 @@ function paginate_links( $args = '' ) {
 			 *
 			 * @param string $link The paginated link URL.
 			 */
-			esc_url( apply_filters( 'paginate_links', user_trailingslashit( $link ) ) ),
+			esc_url( apply_filters( 'paginate_links', $link ) ),
 			$args['prev_text']
 		);
 	endif;
@@ -4617,11 +4618,12 @@ function paginate_links( $args = '' ) {
 					$link = add_query_arg( $add_args, $link );
 				}
 				$link .= $args['add_fragment'];
+				$link  = get_option( 'permalink_structure' ) ? user_trailingslashit( $link ) : $link;
 
 				$page_links[] = sprintf(
 					'<a class="page-numbers" href="%s">%s</a>',
 					/** This filter is documented in wp-includes/general-template.php */
-					esc_url( apply_filters( 'paginate_links', user_trailingslashit( $link ) ) ),
+					esc_url( apply_filters( 'paginate_links', $link ) ),
 					$args['before_page_number'] . number_format_i18n( $n ) . $args['after_page_number']
 				);
 
@@ -4641,11 +4643,12 @@ function paginate_links( $args = '' ) {
 			$link = add_query_arg( $add_args, $link );
 		}
 		$link .= $args['add_fragment'];
+		$link  = get_option( 'permalink_structure' ) ? user_trailingslashit( $link ) : $link;
 
 		$page_links[] = sprintf(
 			'<a class="next page-numbers" href="%s">%s</a>',
 			/** This filter is documented in wp-includes/general-template.php */
-			esc_url( apply_filters( 'paginate_links', user_trailingslashit( $link ) ) ),
+			esc_url( apply_filters( 'paginate_links', $link ) ),
 			$args['next_text']
 		);
 	endif;
