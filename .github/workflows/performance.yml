@@ -86,7 +86,7 @@ jobs:
             ];
             if ( context.eventName === 'push' && context.ref === 'refs/heads/trunk' ) {
               subjects.push( 'base' );
-            } elseif ( process.env.HAS_PREVIOUS_BUILD === 'true' ) {
+            } else if ( process.env.HAS_PREVIOUS_BUILD === 'true' ) {
               subjects.push( 'before' );
             }
             return subjects;
