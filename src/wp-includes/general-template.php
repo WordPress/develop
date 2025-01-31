@@ -4595,7 +4595,7 @@ function paginate_links( $args = '' ) {
 			 *
 			 * @param string $link The paginated link URL.
 			 */
-			esc_url( apply_filters( 'paginate_links', $link ) ),
+			esc_url( apply_filters( 'paginate_links', user_trailingslashit( $link ) ) ),
 			$args['prev_text']
 		);
 	endif;
@@ -4621,7 +4621,7 @@ function paginate_links( $args = '' ) {
 				$page_links[] = sprintf(
 					'<a class="page-numbers" href="%s">%s</a>',
 					/** This filter is documented in wp-includes/general-template.php */
-					esc_url( apply_filters( 'paginate_links', $link ) ),
+					esc_url( apply_filters( 'paginate_links', user_trailingslashit( $link ) ) ),
 					$args['before_page_number'] . number_format_i18n( $n ) . $args['after_page_number']
 				);
 
@@ -4645,7 +4645,7 @@ function paginate_links( $args = '' ) {
 		$page_links[] = sprintf(
 			'<a class="next page-numbers" href="%s">%s</a>',
 			/** This filter is documented in wp-includes/general-template.php */
-			esc_url( apply_filters( 'paginate_links', $link ) ),
+			esc_url( apply_filters( 'paginate_links', user_trailingslashit( $link ) ) ),
 			$args['next_text']
 		);
 	endif;
