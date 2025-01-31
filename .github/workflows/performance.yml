@@ -83,6 +83,8 @@ jobs:
       memcached: ${{ matrix.memcached }}
       multisite: ${{ matrix.multisite }}
       BASE_TAG: ${{ needs.performance.outputs.BASE_TAG }}
+      # publish: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! matrix.memcached && ! matrix.multisite }}
+      publish: ${{ ! matrix.memcached && ! matrix.multisite }}
     secrets:
       CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }}
 

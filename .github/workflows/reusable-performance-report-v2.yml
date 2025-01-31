@@ -9,16 +9,21 @@ on:
       BASE_TAG:
         description: 'The version being used for baseline measurements.'
         required: true
-        type: 'string'
+        type: string
       memcached:
         description: 'Whether to enable memcached.'
         required: false
-        type: 'boolean'
+        type: boolean
         default: false
       multisite:
         description: 'Whether to use Multisite.'
         required: false
-        type: 'boolean'
+        type: boolean
+        default: false
+      publish:
+        description: 'Whether to publish the results to Code Vitals.'
+        required: false
+        type: boolean
         default: false
     secrets:
       CODEVITALS_PROJECT_TOKEN:
@@ -74,8 +79,7 @@ jobs:
 
       - name: Set the base sha
         # Only needed when publishing results.
-        # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached && ! inputs.multisite }}
-        if: ${{ ! inputs.memcached && ! inputs.multisite }}
+        if: ${{ inputs.publish }}
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         id: base-sha
         with:
@@ -91,8 +95,7 @@ jobs:
 
       - name: Publish performance results
         # Only publish results on pushes to trunk.
-        # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! inputs.memcached && ! inputs.multisite }}
-        if: ${{ ! inputs.memcached && ! inputs.multisite }}
+        if: ${{ inputs.publish }}
         env:
           BASE_SHA: ${{ steps.base-sha.outputs.result }}
           CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }}
