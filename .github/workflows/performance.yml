@@ -110,7 +110,7 @@ jobs:
   compare:
     name: ${{ matrix.label }}
     uses: ./.github/workflows/reusable-performance-report-v2.yml
-    needs: [ performance ]
+    needs: [ determine-matrix, performance ]
     permissions:
       contents: read
     strategy:
@@ -123,8 +123,7 @@ jobs:
       memcached: ${{ matrix.memcached }}
       multisite: ${{ matrix.multisite }}
       BASE_TAG: ${{ needs.performance.outputs.BASE_TAG }}
-      # publish: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && ! matrix.memcached && ! matrix.multisite }}
-      publish: ${{ ! matrix.memcached && ! matrix.multisite }}
+      publish: ${{ contains( fromJson( needs.determine-matrix.outputs.subjects ), 'base' ) && ! matrix.memcached && ! matrix.multisite }}
     secrets:
       CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }}
 
