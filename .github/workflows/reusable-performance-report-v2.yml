@@ -31,13 +31,6 @@ on:
         required: false
 
 env:
-  # This workflow takes three sets of measurements — one for the current commit,
-  # one for the previous commit,
-  # and another against a consistent version that is used as a baseline measurement.
-  # This is done to isolate variance in measurements caused by the GitHub runners
-  # from differences caused by code changes between commits. The BASE_TAG value here
-  # represents the version being used for baseline measurements. It should only be
-  # changed if we want to normalize results against a different baseline.
   BASE_TAG: ${{ inputs.BASE_TAG }}
 
 # Disable permissions for all available scopes by default.
@@ -98,14 +91,11 @@ jobs:
         if: ${{ inputs.publish }}
         env:
           BASE_SHA: ${{ steps.base-sha.outputs.result }}
-          CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }}
+          # CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }}
           # HOST_NAME: www.codevitals.run
-          # View captured data at https://webhook.cool/at/yellow-ice-88/
-          HOST_NAME: yellow-ice-88.webhook.cool
+          CODEVITALS_PROJECT_TOKEN: test
+          HOST_NAME: yellow-ice-88.webhook.cool # View captured data at https://webhook.cool/at/yellow-ice-88/
         run: |
-          # ========
-          CODEVITALS_PROJECT_TOKEN="test"
-          # ========
           if [ -z "$CODEVITALS_PROJECT_TOKEN" ]; then
             echo "Performance results could not be published. 'CODEVITALS_PROJECT_TOKEN' is not set"
             exit 1
