@@ -447,7 +447,7 @@ EOF;
 	 * @ticket 26649
 	 */
 	public function test_escaped_shortcode_should_not_execute() {
-		add_shortcode('example', fn () => 'foo');
+		add_shortcode( 'example', fn () => 'foo' );
 		$this->assertSame( '&#091;example&#093;', do_shortcode( strip_shortcodes( '[[example]]' ) ) );
 	}
 
