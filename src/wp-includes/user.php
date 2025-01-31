@@ -1219,7 +1219,7 @@ function get_user_meta( $user_id, $key = '', $single = false ) {
 /**
  * Queue user meta for lazy-loading.
  *
- * @since 6.4.0
+ * @since 6.8.0
  *
  * @param array $user_ids List of user IDs.
  */
