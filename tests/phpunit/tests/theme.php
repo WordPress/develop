@@ -1004,7 +1004,7 @@ class Tests_Theme extends WP_UnitTestCase {
 		$this->helper_requires_block_theme();
 
 		do_action( 'after_setup_theme' );
-		add_filter( 'should_load_block_assets_on_demand', '__return_false' );
+		add_filter( 'should_load_separate_core_block_assets', '__return_false' );
 
 		$this->assertTrue( wp_should_load_block_assets_on_demand() );
 	}
