@@ -48,24 +48,69 @@ concurrency:
 permissions: {}
 
 jobs:
+  determine-matrix:
+    name: Determine matrix
+    runs-on: ubuntu-24.04
+    if: ${{ ( github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' ) && ! contains( github.event.before, '00000000' ) }}
+    permissions: {}
+    env:
+      TARGET_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+    outputs:
+      subjects: ${{ steps.set-subjects.outputs.result }}
+      target_sha: ${{ env.TARGET_SHA }}
+    steps:
+      # The `workflow_dispatch` event is the only one missing the needed SHA to target.
+      - name: Retrieve previous commit SHA (if necessary)
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: echo "TARGET_SHA=$(git rev-parse HEAD^1)" >> "$GITHUB_ENV"
+
+      - name: Check previous build artifact exists
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        id: has-previous-build
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'wordpress-build-' + process.env.TARGET_SHA,
+            });
+            return !! artifacts.data.artifacts[0];
+
+      - name: Set subjects
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        id: set-subjects
+        with:
+          script: |
+            const subjects = [
+              'current',
+            ];
+            if ( context.eventName === 'push' && context.ref === 'refs/heads/trunk' ) {
+              subjects.push( 'base' );
+            } elseif ( process.env.HAS_PREVIOUS_BUILD === 'true' ) {
+              subjects.push( 'before' );
+            }
+            return subjects;
+        env:
+          HAS_PREVIOUS_BUILD: ${{ steps.has-previous-build.outputs.result }}
+
   # Runs the performance test suite.
   performance:
     name: ${{ matrix.multisite && 'Multisite' || 'Single Site' }} ${{ matrix.memcached && 'Memcached' || 'Default' }}
     uses: ./.github/workflows/reusable-performance-test-v2.yml
+    needs: [ determine-matrix ]
     permissions:
       contents: read
-    if: ${{ ( github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' ) && ! contains( github.event.before, '00000000' ) }}
     strategy:
       fail-fast: false
       matrix:
         memcached: [ true, false ]
         multisite: [ true, false ]
-        # subject: ${{ github.event_name == 'push' && github.ref == 'refs/heads/trunk' && fromJson('[ "current", "before", "base" ]') || fromJson('[ "current", "before" ]') }}
-        subject: ${{ fromJson('[ "current", "before", "base" ]') }}
+        subject: ${{ fromJson( needs.determine-matrix.outputs.subjects ) }}
     with:
       memcached: ${{ matrix.memcached }}
       multisite: ${{ matrix.multisite }}
       subject: ${{ matrix.subject }}
+      TARGET_SHA: ${{ needs.determine-matrix.outputs.target_sha }}
 
   compare:
     name: ${{ matrix.label }}

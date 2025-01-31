@@ -20,6 +20,10 @@ on:
         required: false
         type: 'string'
         default: '6.7.0'
+      TARGET_SHA:
+        description: 'The target SHA value.'
+        required: true
+        type: 'string'
       php-version:
         description: 'The PHP version to use.'
         required: false
@@ -66,8 +70,7 @@ env:
   # changed if we want to normalize results against a different baseline.
   BASE_TAG: ${{ inputs.BASE_TAG }}
   LOCAL_DIR: ${{ inputs.LOCAL_DIR }}
-  TARGET_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || '' }}
-  TARGET_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+  TARGET_SHA: ${{ inputs.TARGET_SHA }}
 
   LOCAL_PHP_MEMCACHED: ${{ inputs.memcached }}
   LOCAL_PHP: ${{ inputs.php-version }}${{ 'latest' != inputs.php-version && '-fpm' || '' }}
@@ -140,11 +143,6 @@ jobs:
           show-progress: ${{ runner.debug == '1' && 'true' || 'false' }}
           fetch-depth: ${{ github.event_name == 'workflow_dispatch' && '2' || '1' }}
           persist-credentials: false
-
-      # The `workflow_dispatch` event is the only one missing the needed SHA to target.
-      - name: Retrieve previous commit SHA (if necessary)
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: echo "TARGET_SHA=$(git rev-parse HEAD^1)" >> "$GITHUB_ENV"
 
       - name: Set up Node.js
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
