@@ -2672,7 +2672,13 @@ if ( ! function_exists( 'wp_check_password' ) ) :
 
 		// If the hash is still md5...
 		if ( strlen( $hash ) <= 32 ) {
-			$check = hash_equals( $hash, md5( $password ) );
+			// Ensure both $hash and the md5 of $password are strings before passing them to `hash_equals()`.
+			if ( is_string( $hash ) && is_string( md5( $password ) ) ) {
+				$check = hash_equals( $hash, md5( $password ) );
+			} else {
+				$check = false;
+			}
+
 			if ( $check && $user_id ) {
 				// Rehash using new hash.
 				wp_set_password( $password, $user_id );
@@ -2702,7 +2708,12 @@ if ( ! function_exists( 'wp_check_password' ) ) :
 			$wp_hasher = new PasswordHash( 8, true );
 		}
 
-		$check = $wp_hasher->CheckPassword( $password, $hash );
+		// Ensure that both $password and $hash are strings before passing them to `CheckPassword()`
+		if ( is_string( $password ) && is_string( $hash ) ) {
+			$check = $wp_hasher->CheckPassword( $password, $hash );
+		} else {
+			$check = false;
+		}
 
 		/** This filter is documented in wp-includes/pluggable.php */
 		return apply_filters( 'check_password', $check, $password, $hash, $user_id );
