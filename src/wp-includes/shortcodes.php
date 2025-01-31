@@ -470,7 +470,7 @@ function do_shortcodes_in_html_tags( $content, $ignore_html, $tagnames ) {
 	);
 	$content = strtr( $content, $trans );
 
-	$trans   = array(
+	$trans = array(
 		'[' => '&#91;',
 		']' => '&#93;',
 	);
@@ -547,7 +547,13 @@ function do_shortcodes_in_html_tags( $content, $ignore_html, $tagnames ) {
 					/**
 					 * Prevent escaped shortcodes to break the attribute reverting html chars back to brackets
 					 */
-					$new_attr = strtr( $new_attr, array( '&#091;' => '[', '&#093;' => ']' ));
+					$new_attr = strtr(
+						$new_attr,
+						array(
+							'&#091;' => '[',
+							'&#093;' => ']',
+						)
+					);
 
 					// Sanitize the shortcode output using KSES.
 					$new_attr = wp_kses_one_attr( $new_attr, $elname );
