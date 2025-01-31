@@ -2619,7 +2619,7 @@ function get_post_meta( $post_id, $key = '', $single = false ) {
 /**
  * Queue post meta for lazy-loading.
  *
- * @since 6.3.0
+ * @since 6.8.0
  *
  * @param array $post_ids List of post IDs.
  */

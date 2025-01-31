@@ -173,7 +173,7 @@ class WP_Metadata_Lazyloader {
 	 * This method is public so that it can be used as a filter callback. As a rule, there
 	 * is no need to invoke it directly.
 	 *
-	 * @since x.x.x
+	 * @since 6.8.0
 	 *
 	 * @param mixed  $check     The `$check` param passed from the 'get_*_metadata' hook.
 	 * @param int    $object_id ID of the object metadata is for.
