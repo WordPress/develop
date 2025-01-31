@@ -211,6 +211,8 @@ module.exports = function(grunt) {
 						src: buildFiles.concat( [
 							'!wp-includes/assets/**', // Assets is extracted into separate copy tasks.
 							'!js/**', // JavaScript is extracted into separate copy tasks.
+							'!wp-includes/certificates/cacert.pem*', // Exclude raw root certificate files that are combined into ca-bundle.crt.
+							'!wp-includes/certificates/legacy-1024bit.pem',
 							'!.{svn,git}', // Exclude version control folders.
 							'!wp-includes/version.php', // Exclude version.php.
 							'!**/*.map', // The build doesn't need .map files.
@@ -456,6 +458,32 @@ module.exports = function(grunt) {
 						} );
 					}
 				}
+			},
+			'workflow-references-local-to-remote': {
+				options: {
+					processContent: function( src ) {
+						return src.replace( /uses: \.\/\.github\/workflows\/([^\.]+)\.yml/g, function( match, $1 ) {
+							return 'uses: WordPress/wordpress-develop/.github/workflows/' + $1 + '.yml@trunk';
+						} );
+					}
+				},
+				src: '.github/workflows/*.yml',
+				dest: './'
+			},
+			'workflow-references-remote-to-local': {
+				options: {
+					processContent: function( src ) {
+						return src.replace( /uses: WordPress\/wordpress-develop\/\.github\/workflows\/([^\.]+)\.yml@trunk/g, function( match, $1 ) {
+							return 'uses: ./.github/workflows/' + $1 + '.yml';
+						} );
+					}
+				},
+				src: '.github/workflows/*.yml',
+				dest: './'
+			},
+			certificates: {
+				src: 'vendor/composer/ca-bundle/res/cacert.pem',
+				dest: SOURCE_DIR + 'wp-includes/certificates/cacert.pem'
 			}
 		},
 		sass: {
@@ -837,6 +865,16 @@ module.exports = function(grunt) {
 					WORKING_DIR + 'wp-includes/js/wp-emoji.min.js'
 				],
 				dest: WORKING_DIR + 'wp-includes/js/wp-emoji-release.min.js'
+			},
+			certificates: {
+				options: {
+					separator: '\n\n'
+				},
+				src: [
+					SOURCE_DIR + 'wp-includes/certificates/legacy-1024bit.pem',
+					SOURCE_DIR + 'wp-includes/certificates/cacert.pem'
+				],
+				dest: SOURCE_DIR + 'wp-includes/certificates/ca-bundle.crt'
 			}
 		},
 		patch:{
@@ -1506,12 +1544,48 @@ module.exports = function(grunt) {
 		'usebanner'
 	] );
 
+	grunt.registerTask( 'certificates:update', 'Updates the Composer package responsible for root certificate updates.', function() {
+		var done = this.async();
+		var flags = this.flags;
+		var args = [ 'update' ];
+
+		grunt.util.spawn( {
+			cmd: 'composer',
+			args: args,
+			opts: { stdio: 'inherit' }
+		}, function( error ) {
+			if ( flags.error && error ) {
+				done( false );
+			} else {
+				done( true );
+			}
+		} );
+	} );
+
+	grunt.registerTask( 'build:certificates', [
+		'concat:certificates'
+	] );
+
+	grunt.registerTask( 'certificates:upgrade', [
+		'certificates:update',
+		'copy:certificates',
+		'build:certificates'
+	] );
+
 	grunt.registerTask( 'build:files', [
 		'clean:files',
 		'copy:files',
 		'copy:block-json',
 		'copy:version',
 	] );
+
+	grunt.registerTask( 'replace:workflow-references-local-to-remote', [
+		'copy:workflow-references-local-to-remote',
+	]);
+
+	grunt.registerTask( 'replace:workflow-references-remote-to-local', [
+		'copy:workflow-references-remote-to-local',
+	]);
 
 	/**
 	 * Build verification tasks.
@@ -1625,9 +1699,11 @@ module.exports = function(grunt) {
 			grunt.task.run( [
 				'build:js',
 				'build:css',
+				'build:certificates'
 			] );
 		} else {
 			grunt.task.run( [
+				'build:certificates',
 				'build:files',
 				'build:js',
 				'build:css',
