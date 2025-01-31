@@ -1018,11 +1018,6 @@ function populate_network( $network_id = 1, $domain = '', $email = '', $site_nam
 		return $errors;
 	}
 
-	// Remove the cron event since Recovery Mode is not used in Multisite.
-	if ( wp_next_scheduled( 'recovery_mode_clean_expired_keys' ) ) {
-		wp_clear_scheduled_hook( 'recovery_mode_clean_expired_keys' );
-	}
-
 	if ( 1 === $network_id ) {
 		$wpdb->insert(
 			$wpdb->site,
