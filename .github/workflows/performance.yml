@@ -64,9 +64,9 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: echo "TARGET_SHA=$(git rev-parse HEAD^1)" >> "$GITHUB_ENV"
 
-      - name: Check previous build artifact exists
+      - name: Set subjects
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-        id: has-previous-build
+        id: set-subjects
         with:
           script: |
             const artifacts = await github.rest.actions.listArtifactsForRepo({
@@ -74,24 +74,19 @@ jobs:
               repo: context.repo.repo,
               name: 'wordpress-build-' + process.env.TARGET_SHA,
             });
-            return !! artifacts.data.artifacts[0];
+            const has_previous_build = !! artifacts.data.artifacts[0];
 
-      - name: Set subjects
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-        id: set-subjects
-        with:
-          script: |
             const subjects = [
               'current',
             ];
+
             if ( context.eventName === 'push' && context.ref === 'refs/heads/trunk' ) {
               subjects.push( 'base' );
-            } else if ( process.env.HAS_PREVIOUS_BUILD === 'true' ) {
+            } else if ( has_previous_build ) {
               subjects.push( 'before' );
             }
+
             return subjects;
-        env:
-          HAS_PREVIOUS_BUILD: ${{ steps.has-previous-build.outputs.result }}
 
   # Runs the performance test suite.
   performance:
