@@ -20,15 +20,25 @@
 		return;
 	}
 
+	// Assign an ID for the default page list if no menu is set as Primary.
+	if ( ! menu.id ) {
+		menu.setAttribute( 'id', 'twentytwelve-page-list-menu' );
+	}
+
+	button.setAttribute( 'aria-controls', menu.id );
+	button.setAttribute( 'aria-expanded', 'false' );
+
 	button.onclick = function() {
 		if ( -1 === menu.className.indexOf( 'nav-menu' ) ) {
 			menu.className = 'nav-menu';
 		}
 
 		if ( -1 !== button.className.indexOf( 'toggled-on' ) ) {
+			button.setAttribute( 'aria-expanded', 'false' );
 			button.className = button.className.replace( ' toggled-on', '' );
 			menu.className = menu.className.replace( ' toggled-on', '' );
 		} else {
+			button.setAttribute( 'aria-expanded', 'true' );
 			button.className += ' toggled-on';
 			menu.className += ' toggled-on';
 		}
@@ -52,14 +62,4 @@
       }
     } );
   }
-
-  // Get the id of the primary nav and apply to the aria controls on the menu button.
-  const navID = $( '.main-navigation .nav-menu' ).attr( 'id' );
-  $( '.main-navigation .menu-toggle' ).attr( 'aria-controls', navID );
-
-  // Toggle aria-expanded attribute on the menu button.
-  $( '.main-navigation .menu-toggle' ).click( function() {
-    const expanded = $( this ).attr( 'aria-expanded' ) === 'true';
-    $( this ).attr( 'aria-expanded', !expanded );
-  });
 } )( jQuery );
