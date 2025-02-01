@@ -22,7 +22,7 @@
 
 	// Assign an ID for the default page list if no menu is set as Primary.
 	if ( ! menu.id ) {
-		menu.setAttribute( 'id', 'twentytwelve-page-list-menu' );
+		menu.id = 'twentytwelve-page-list-menu';
 	}
 
 	button.setAttribute( 'aria-controls', menu.id );
