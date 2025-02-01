@@ -36,7 +36,10 @@
 <div id="page" class="hfeed site">
 	<header id="masthead" class="site-header">
 		<hgroup>
-			<h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
+			<?php
+			// Site title or logo.
+			twentytwelve_site_logo();
+			?>
 			<h2 class="site-description"><?php bloginfo( 'description' ); ?></h2>
 		</hgroup>
 
