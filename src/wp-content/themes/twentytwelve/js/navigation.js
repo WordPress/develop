@@ -52,4 +52,17 @@
       }
     } );
   }
+
+  // Get the id of the nav menu div.
+  var navID = $( '.main-navigation .nav-menu' ).attr( 'id' );
+
+  // Set the aria-controls of the button.
+  $( '.main-navigation .menu-toggle' ).attr( 'aria-controls', navID );
+
+  $( '.main-navigation .menu-toggle' ).click( function() {
+    var expanded = $( this ).attr( 'aria-expanded' ) === 'true';
+
+	// Toggle aria-expanded attribute.
+    $( this ).attr( 'aria-expanded', !expanded );
+  });
 } )( jQuery );

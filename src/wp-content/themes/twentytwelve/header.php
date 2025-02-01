@@ -41,7 +41,7 @@
 		</hgroup>
 
 		<nav id="site-navigation" class="main-navigation">
-			<button class="menu-toggle"><?php _e( 'Menu', 'twentytwelve' ); ?></button>
+			<button class="menu-toggle" aria-expanded="false"><?php _e( 'Menu', 'twentytwelve' ); ?></button>
 			<a class="assistive-text" href="#content"><?php _e( 'Skip to content', 'twentytwelve' ); ?></a>
 			<?php
 			wp_nav_menu(
