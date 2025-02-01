@@ -426,7 +426,7 @@ class wp_xmlrpc_server extends IXR_Server {
 				$meta['id'] = (int) $meta['id'];
 				$pmeta      = get_metadata_by_mid( 'post', $meta['id'] );
 
-				if ( ! $pmeta || $pmeta->post_id != $post_id ) {
+				if ( ! $pmeta || (int) $pmeta->post_id !== $post_id ) {
 					continue;
 				}
 
@@ -735,17 +735,20 @@ class wp_xmlrpc_server extends IXR_Server {
 		 */
 		do_action( 'xmlrpc_call', 'wp.getUsersBlogs', $args, $this );
 
-		$blogs           = (array) get_blogs_of_user( $user->ID );
-		$struct          = array();
+		$blogs  = (array) get_blogs_of_user( $user->ID );
+		$struct = array();
+
 		$primary_blog_id = 0;
 		$active_blog     = get_active_blog_for_user( $user->ID );
 		if ( $active_blog ) {
 			$primary_blog_id = (int) $active_blog->blog_id;
 		}
 
+		$current_network_id = get_current_network_id();
+
 		foreach ( $blogs as $blog ) {
 			// Don't include blogs that aren't hosted at this site.
-			if ( get_current_network_id() != $blog->site_id ) {
+			if ( $blog->site_id !== $current_network_id ) {
 				continue;
 			}
 
@@ -4327,7 +4330,7 @@ class wp_xmlrpc_server extends IXR_Server {
 				continue;
 			}
 
-			if ( true == $this->blog_options[ $o_name ]['readonly'] ) {
+			if ( $this->blog_options[ $o_name ]['readonly'] ) {
 				continue;
 			}
 
@@ -5790,7 +5793,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		}
 
 		// Thwart attempt to change the post type.
-		if ( ! empty( $content_struct['post_type'] ) && ( $content_struct['post_type'] != $postdata['post_type'] ) ) {
+		if ( ! empty( $content_struct['post_type'] ) && ( $content_struct['post_type'] !== $postdata['post_type'] ) ) {
 			return new IXR_Error( 401, __( 'The post type may not be changed.' ) );
 		}
 
@@ -5843,10 +5846,10 @@ class wp_xmlrpc_server extends IXR_Server {
 
 		$post_author = $postdata['post_author'];
 
-		// If an author id was provided then use it instead.
+		// If an author ID was provided then use it instead.
 		if ( isset( $content_struct['wp_author_id'] ) ) {
 			// Check permissions if attempting to switch author to or from another user.
-			if ( $user->ID != $content_struct['wp_author_id'] || $user->ID != $post_author ) {
+			if ( $user->ID !== (int) $content_struct['wp_author_id'] || $user->ID !== (int) $post_author ) {
 				switch ( $post_type ) {
 					case 'post':
 						if ( ! current_user_can( 'edit_others_posts' ) ) {
