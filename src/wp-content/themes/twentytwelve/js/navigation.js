@@ -54,12 +54,12 @@
   }
 
   // Get the id of the primary nav and apply to the aria controls on the menu button.
-  var navID = $( '.main-navigation .nav-menu' ).attr( 'id' );
+  const navID = $( '.main-navigation .nav-menu' ).attr( 'id' );
   $( '.main-navigation .menu-toggle' ).attr( 'aria-controls', navID );
 
   // Toggle aria-expanded attribute on the menu button.
   $( '.main-navigation .menu-toggle' ).click( function() {
-    var expanded = $( this ).attr( 'aria-expanded' ) === 'true';
+    const expanded = $( this ).attr( 'aria-expanded' ) === 'true';
     $( this ).attr( 'aria-expanded', !expanded );
   });
 } )( jQuery );
