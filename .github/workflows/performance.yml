@@ -78,7 +78,7 @@ jobs:
 
             const subjects = [
               'current',
-              # Only included while this PR is being worked on:
+              // Only included while this PR is being worked on:
               'base',
             ];
 
