@@ -49,7 +49,7 @@ permissions: {}
 
 jobs:
   determine-matrix:
-    name: Determine matrix
+    name: Determine Matrix
     runs-on: ubuntu-24.04
     if: ${{ ( github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' ) && ! contains( github.event.before, '00000000' ) }}
     permissions: {}
