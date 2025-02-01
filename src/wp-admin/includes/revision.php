@@ -389,7 +389,7 @@ function wp_print_revision_templates() {
 				<input type="checkbox" class="compare-two-revisions"
 				<#
 				if ( 'undefined' !== typeof data && data.model.attributes.compareTwoMode ) {
-					#> checked="checked"<#
+					#> checked<#
 				}
 				#>
 				/>

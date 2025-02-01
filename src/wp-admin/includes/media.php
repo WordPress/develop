@@ -1172,7 +1172,7 @@ function image_align_input_fields( $post, $checked = '' ) {
 	foreach ( $alignments as $name => $label ) {
 		$name     = esc_attr( $name );
 		$output[] = "<input type='radio' name='attachments[{$post->ID}][align]' id='image-align-{$name}-{$post->ID}' value='$name'" .
-			( $checked == $name ? " checked='checked'" : '' ) .
+			( $checked == $name ? ' checked' : '' ) .
 			" /><label for='image-align-{$name}-{$post->ID}' class='align image-align-{$name}-label'>$label</label>";
 	}
 
@@ -1224,7 +1224,7 @@ function image_size_input_fields( $post, $check = '' ) {
 		// If this size is the default but that's not available, don't select it.
 		if ( $size == $check ) {
 			if ( $enabled ) {
-				$checked = " checked='checked'";
+				$checked = ' checked';
 			} else {
 				$check = '';
 			}
@@ -1234,7 +1234,7 @@ function image_size_input_fields( $post, $check = '' ) {
 			 * that's bigger than a thumbnail.
 			 */
 			$check   = $size;
-			$checked = " checked='checked'";
+			$checked = ' checked';
 		}
 
 		$html = "<div class='image-size-item'><input type='radio' " . disabled( $enabled, false, false ) . "name='attachments[$post->ID][image-size]' id='{$css_id}' value='{$size}'$checked />";
@@ -2628,7 +2628,7 @@ function media_upload_gallery_form( $errors ) {
 			<input type="radio" name="linkto" id="linkto-file" value="file" />
 			<label for="linkto-file" class="radio"><?php _e( 'Image File' ); ?></label>
 
-			<input type="radio" checked="checked" name="linkto" id="linkto-post" value="post" />
+			<input type="radio" checked name="linkto" id="linkto-post" value="post" />
 			<label for="linkto-post" class="radio"><?php _e( 'Attachment Page' ); ?></label>
 		</td>
 		</tr>
@@ -2656,7 +2656,7 @@ function media_upload_gallery_form( $errors ) {
 			</label>
 		</th>
 		<td class="field">
-			<input type="radio" checked="checked" name="order" id="order-asc" value="asc" />
+			<input type="radio" checked name="order" id="order-asc" value="asc" />
 			<label for="order-asc" class="radio"><?php _e( 'Ascending' ); ?></label>
 
 			<input type="radio" name="order" id="order-desc" value="desc" />
@@ -2984,13 +2984,13 @@ function wp_media_insert_url_form( $default_view = 'image' ) {
 		<tr class="align image-only">
 			<th scope="row" class="label"><p><label for="align">' . __( 'Alignment' ) . '</label></p></th>
 			<td class="field">
-				<input name="align" id="align-none" value="none" onclick="addExtImage.align=\'align\'+this.value" type="radio"' . ( 'none' === $default_align ? ' checked="checked"' : '' ) . ' />
+				<input name="align" id="align-none" value="none" onclick="addExtImage.align=\'align\'+this.value" type="radio"' . ( 'none' === $default_align ? ' checked' : '' ) . ' />
 				<label for="align-none" class="align image-align-none-label">' . __( 'None' ) . '</label>
-				<input name="align" id="align-left" value="left" onclick="addExtImage.align=\'align\'+this.value" type="radio"' . ( 'left' === $default_align ? ' checked="checked"' : '' ) . ' />
+				<input name="align" id="align-left" value="left" onclick="addExtImage.align=\'align\'+this.value" type="radio"' . ( 'left' === $default_align ? ' checked' : '' ) . ' />
 				<label for="align-left" class="align image-align-left-label">' . __( 'Left' ) . '</label>
-				<input name="align" id="align-center" value="center" onclick="addExtImage.align=\'align\'+this.value" type="radio"' . ( 'center' === $default_align ? ' checked="checked"' : '' ) . ' />
+				<input name="align" id="align-center" value="center" onclick="addExtImage.align=\'align\'+this.value" type="radio"' . ( 'center' === $default_align ? ' checked' : '' ) . ' />
 				<label for="align-center" class="align image-align-center-label">' . __( 'Center' ) . '</label>
-				<input name="align" id="align-right" value="right" onclick="addExtImage.align=\'align\'+this.value" type="radio"' . ( 'right' === $default_align ? ' checked="checked"' : '' ) . ' />
+				<input name="align" id="align-right" value="right" onclick="addExtImage.align=\'align\'+this.value" type="radio"' . ( 'right' === $default_align ? ' checked' : '' ) . ' />
 				<label for="align-right" class="align image-align-right-label">' . __( 'Right' ) . '</label>
 			</td>
 		</tr>
@@ -3077,7 +3077,7 @@ function media_upload_text_after() {}
  * @since 3.3.0
  */
 function media_upload_max_image_resize() {
-	$checked = get_user_setting( 'upload_resize' ) ? ' checked="true"' : '';
+	$checked = get_user_setting( 'upload_resize' ) ? ' checked' : '';
 	$a       = '';
 	$end     = '';
 

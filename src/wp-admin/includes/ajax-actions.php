@@ -1072,7 +1072,7 @@ function wp_ajax_add_link_category( $action ) {
 			array(
 				'what'     => 'link-category',
 				'id'       => $cat_id,
-				'data'     => "<li id='link-category-$cat_id'><label for='in-link-category-$cat_id' class='selectit'><input value='" . esc_attr( $cat_id ) . "' type='checkbox' checked='checked' name='link_category[]' id='in-link-category-$cat_id'/> $cat_name</label></li>",
+				'data'     => "<li id='link-category-$cat_id'><label for='in-link-category-$cat_id' class='selectit'><input value='" . esc_attr( $cat_id ) . "' type='checkbox' checked name='link_category[]' id='in-link-category-$cat_id'/> $cat_name</label></li>",
 				'position' => -1,
 			)
 		);

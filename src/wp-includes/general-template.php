@@ -624,7 +624,7 @@ function wp_login_form( $args = array() ) {
 			sprintf(
 				'<p class="login-remember"><label><input name="rememberme" type="checkbox" id="%1$s" value="forever"%2$s /> %3$s</label></p>',
 				esc_attr( $args['id_remember'] ),
-				( $args['value_remember'] ? ' checked="checked"' : '' ),
+				( $args['value_remember'] ? ' checked' : '' ),
 				esc_html( $args['label_remember'] )
 			) : ''
 		) .
@@ -5181,7 +5181,11 @@ if ( PHP_VERSION_ID < 80100 ) {
  */
 function __checked_selected_helper( $helper, $current, $display, $type ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
 	if ( (string) $helper === (string) $current ) {
-		$result = " $type='$type'";
+		if ( 'checked' === $type ) {
+			$result = " $type";
+		} else {
+			$result = " $type='$type'";
+		}
 	} else {
 		$result = '';
 	}
