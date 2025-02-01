@@ -39,7 +39,14 @@ permissions: {}
 
 jobs:
   # Performs the following steps:
-  # - ...
+  # - Checkout repository.
+  # - Set up Node.js.
+  # - Download the relevant performance test artifacts.
+  # - List the downloaded files for debugging.
+  # - Compare results.
+  # - Add workflow summary.
+  # - Determine the sha of the baseline tag if necessary.
+  # - Publish performance results if necessary.
   compare:
     name: ${{ inputs.multisite && 'Multisite' || 'Single Site' }} ${{ inputs.memcached && 'Memcached' || 'Default' }} ${{ inputs.publish && '(Publishes)' || '' }}
     runs-on: ubuntu-24.04
