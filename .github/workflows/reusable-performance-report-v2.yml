@@ -87,7 +87,6 @@ jobs:
             return baseRef.data.object.sha;
 
       - name: Publish performance results
-        # Only publish results on pushes to trunk.
         if: ${{ inputs.publish }}
         env:
           BASE_SHA: ${{ steps.base-sha.outputs.result }}
