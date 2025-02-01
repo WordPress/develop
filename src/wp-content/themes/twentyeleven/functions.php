@@ -1012,9 +1012,7 @@ function twentyeleven_site_logo( $args = array(), $echo = true ) {
 		'logo_class'  => 'site-logo',
 		'title'       => '<a href="%1$s" rel="home">%2$s</a>',
 		'title_id'    => 'site-title',
-		'home_wrap'   => '<h1 id="%1$s"><span>%2$s</span></h1>',
-		'single_wrap' => '<div class="%1$s faux-heading">%2$s</div>',
-		'condition'   => ( is_front_page() || is_home() ) && ! is_page(),
+		'title_wrap'   => '<h1 id="%1$s"><span>%2$s</span></h1>',
 	);
 
 	$args = wp_parse_args( $args, $defaults );
@@ -1035,9 +1033,7 @@ function twentyeleven_site_logo( $args = array(), $echo = true ) {
 		$titleid   = $args['title_id'];
 	}
 
-	$wrap = $args['condition'] ? 'home_wrap' : 'single_wrap';
-
-	$html = sprintf( $args[ $wrap ], $titleid, $contents );
+	$html = sprintf( $args[ 'title_wrap' ], $titleid, $contents );
 
 	/**
 	 * Filters the arguments for `twentyeleven_site_logo()`.

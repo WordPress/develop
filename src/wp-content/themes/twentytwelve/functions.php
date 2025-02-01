@@ -774,11 +774,9 @@ function twentytwelve_site_logo( $args = array(), $echo = true ) {
 	$defaults = array(
 		'logo'        => '%1$s<span class="screen-reader-text">%2$s</span>',
 		'logo_class'  => 'site-logo',
-		'title'       => '<a href="%1$s">%2$s</a>',
+		'title'       => '<a href="%1$s" rel="home">%2$s</a>',
 		'title_class' => 'site-title',
-		'home_wrap'   => '<h1 class="%1$s">%2$s</h1>',
-		'single_wrap' => '<div class="%1$s faux-heading">%2$s</div>',
-		'condition'   => ( is_front_page() || is_home() ) && ! is_page(),
+		'title_wrap'   => '<h1 class="%1$s">%2$s</h1>',
 	);
 
 	$args = wp_parse_args( $args, $defaults );
@@ -799,9 +797,7 @@ function twentytwelve_site_logo( $args = array(), $echo = true ) {
 		$classname = $args['title_class'];
 	}
 
-	$wrap = $args['condition'] ? 'home_wrap' : 'single_wrap';
-
-	$html = sprintf( $args[ $wrap ], $classname, $contents );
+	$html = sprintf( $args[ 'title_wrap' ], $classname, $contents );
 
 	/**
 	 * Filters the arguments for `twentytwelve_site_logo()`.
