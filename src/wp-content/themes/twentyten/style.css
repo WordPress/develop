@@ -382,7 +382,9 @@ a:hover {
 	display: block;
 	float: left;
 }
-
+#branding img.custom-logo {
+	border: none;
+}
 
 /* =Menu
 -------------------------------------------------------------- */
