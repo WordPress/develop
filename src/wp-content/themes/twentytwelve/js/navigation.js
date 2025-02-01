@@ -53,16 +53,13 @@
     } );
   }
 
-  // Get the id of the nav menu div.
+  // Get the id of the primary nav and apply to the aria controls on the menu button.
   var navID = $( '.main-navigation .nav-menu' ).attr( 'id' );
-
-  // Set the aria-controls of the button.
   $( '.main-navigation .menu-toggle' ).attr( 'aria-controls', navID );
 
+  // Toggle aria-expanded attribute on the menu button.
   $( '.main-navigation .menu-toggle' ).click( function() {
     var expanded = $( this ).attr( 'aria-expanded' ) === 'true';
-
-	// Toggle aria-expanded attribute.
     $( this ).attr( 'aria-expanded', !expanded );
   });
 } )( jQuery );
