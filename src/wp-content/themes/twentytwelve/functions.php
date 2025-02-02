@@ -795,7 +795,7 @@ function twentytwelve_site_logo( $args = array(), $echo = true ) {
 		'logo_class'  => 'site-logo',
 		'title'       => '<a href="%1$s" rel="home">%2$s</a>',
 		'title_class' => 'site-title',
-		'title_wrap'   => '<h1 class="%1$s">%2$s</h1>',
+		'title_wrap'  => '<h1 class="%1$s">%2$s</h1>',
 	);
 
 	$args = wp_parse_args( $args, $defaults );
@@ -813,6 +813,13 @@ function twentytwelve_site_logo( $args = array(), $echo = true ) {
 		$classname = $args['logo_class'];
 	} else {
 		$contents  = sprintf( $args['title'], esc_url( get_home_url( null, '/' ) ), esc_html( $site_title ) );
+		if (
+			( is_front_page() || is_home() && ( (int) get_option( 'page_for_posts' ) !== get_queried_object_id() ) )
+			&& ! is_paged()
+			&& $args['title'] === $defaults['title']
+		) {
+			$contents = str_replace( ' rel=', ' aria-current="page" rel=', $contents );
+		}
 		$classname = $args['title_class'];
 	}
 

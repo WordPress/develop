@@ -858,6 +858,13 @@ function twentyten_site_logo( $args = array(), $echo = true ) {
 		$classname = $args['logo_class'];
 	} else {
 		$contents  = sprintf( $args['title'], esc_url( get_home_url( null, '/' ) ), esc_html( $site_title ) );
+		if (
+			( is_front_page() || is_home() && ( (int) get_option( 'page_for_posts' ) !== get_queried_object_id() ) )
+			&& ! is_paged()
+			&& $args['title'] === $defaults['title']
+		) {
+			$contents = str_replace( ' rel=', ' aria-current="page" rel=', $contents );
+		}
 		$classname = $args['title_class'];
 	}
 
