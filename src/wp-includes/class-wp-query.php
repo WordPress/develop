@@ -4381,6 +4381,12 @@ class WP_Query {
 			&& $this->is_page( get_option( 'page_on_front' ) )
 		) {
 			return true;
+		} elseif ( 'page' === get_option( 'show_on_front' ) && get_option( 'page_for_posts' )
+			&& ! get_option( 'page_on_front' )
+			&& $this->is_home()
+		) {
+			// Edge case where the Reading settings has a posts page set but not a static homepage.
+			return true;
 		} else {
 			return false;
 		}
