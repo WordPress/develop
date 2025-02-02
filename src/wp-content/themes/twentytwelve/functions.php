@@ -791,14 +791,18 @@ function twentytwelve_site_logo( $args = array(), $echo = true ) {
 	$classname  = '';
 
 	$defaults = array(
-		'logo'        => '%1$s<span class="screen-reader-text">%2$s</span>',
-		'logo_class'  => 'site-logo',
-		'title'       => '<a href="%1$s" rel="home">%2$s</a>',
-		'title_class' => 'site-title',
+		'logo'         => '%1$s<span class="screen-reader-text">%2$s</span>',
+		'logo_class'   => 'site-logo',
+		'home_title'   => '<a href="%1$s" aria-current="page" rel="home">%2$s</a>',
+		'single_title' => '<a href="%1$s" rel="home">%2$s</a>',
+		'title_class'  => 'site-title',
 		'title_wrap'   => '<h1 class="%1$s">%2$s</h1>',
+		'condition'    => ( is_front_page() || is_home() ) && ! is_page(),
 	);
 
 	$args = wp_parse_args( $args, $defaults );
+
+	$titlewrap = $args['condition'] ? 'home_title' : 'single_title';
 
 	/**
 	 * Filters the arguments for `twentytwelve_site_logo()`.
@@ -812,7 +816,7 @@ function twentytwelve_site_logo( $args = array(), $echo = true ) {
 		$contents  = sprintf( $args['logo'], $logo, esc_html( $site_title ) );
 		$classname = $args['logo_class'];
 	} else {
-		$contents  = sprintf( $args['title'], esc_url( get_home_url( null, '/' ) ), esc_html( $site_title ) );
+		$contents  = sprintf( $args[ $titlewrap ], esc_url( get_home_url( null, '/' ) ), esc_html( $site_title ) );
 		$classname = $args['title_class'];
 	}
 
