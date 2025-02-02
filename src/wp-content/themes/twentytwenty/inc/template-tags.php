@@ -37,6 +37,7 @@ function twentytwenty_site_logo( $args = array(), $display = true ) {
 	$contents   = '';
 	$classname  = '';
 
+
 	$defaults = array(
 		'logo'         => '%1$s<span class="screen-reader-text">%2$s</span>',
 		'logo_class'   => 'site-logo',
