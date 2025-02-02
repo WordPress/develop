@@ -4374,8 +4374,8 @@ class WP_Query {
 	 * @return bool Whether the query is for the front page of the site.
 	 */
 	public function is_front_page() {
-		$show_on_front = get_option( 'show_on_front' );
-		$page_on_front = get_option( 'page_on_front' );
+		$show_on_front  = get_option( 'show_on_front' );
+		$page_on_front  = get_option( 'page_on_front' );
 		$page_for_posts = get_option( 'page_for_posts' );
 
 		// Most likely case.
