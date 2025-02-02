@@ -882,3 +882,33 @@ function twentyten_site_logo( $args = array(), $echo = true ) {
 	echo $html; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 }
+
+/**
+ * Implements Twenty Ten theme options into Customizer
+ *
+ * @param WP_Customize_Manager $wp_customize Customizer object.
+ */
+function twentyten_customize_register( $wp_customize ) {
+	if ( isset( $wp_customize->selective_refresh ) ) {
+		$wp_customize->selective_refresh->add_partial(
+			'custom_logo',
+			array(
+				'selector'            => '.header-titles [class*=site-]:not(.site-description)',
+				'render_callback'     => 'twentyten_customize_partial_site_logo',
+				'container_inclusive' => true,
+			)
+		);
+	}
+}
+add_action( 'customize_register', 'twentyten_customize_register' );
+
+if ( ! function_exists( 'twentyten_customize_partial_site_logo' ) ) {
+	/**
+	 * Render the site logo for the selective refresh partial.
+	 *
+	 * Doing it this way so we don't have issues with `render_callback`'s arguments.
+	 */
+	function twentyten_customize_partial_site_logo() {
+		twentyten_site_logo();
+	}
+}

@@ -679,6 +679,14 @@ function twentytwelve_customize_register( $wp_customize ) {
 				'render_callback'     => 'twentytwelve_customize_partial_blogdescription',
 			)
 		);
+		$wp_customize->selective_refresh->add_partial(
+			'custom_logo',
+			array(
+				'selector'            => '.header-titles [class*=site-]:not(.site-description)',
+				'render_callback'     => 'twentytwelve_customize_partial_site_logo',
+				'container_inclusive' => true,
+			)
+		);
 	}
 }
 add_action( 'customize_register', 'twentytwelve_customize_register' );
@@ -707,6 +715,17 @@ function twentytwelve_customize_partial_blogname() {
  */
 function twentytwelve_customize_partial_blogdescription() {
 	bloginfo( 'description' );
+}
+
+if ( ! function_exists( 'twentytwelve_customize_partial_site_logo' ) ) {
+	/**
+	 * Render the site logo for the selective refresh partial.
+	 *
+	 * Doing it this way so we don't have issues with `render_callback`'s arguments.
+	 */
+	function twentytwelve_customize_partial_site_logo() {
+		twentytwelve_site_logo();
+	}
 }
 
 /**
