@@ -4374,22 +4374,27 @@ class WP_Query {
 	 * @return bool Whether the query is for the front page of the site.
 	 */
 	public function is_front_page() {
+		$show_on_front = get_option( 'show_on_front' );
+		$page_on_front = get_option( 'page_on_front' );
+		$page_for_posts = get_option( 'page_for_posts' );
+
 		// Most likely case.
-		if ( 'posts' === get_option( 'show_on_front' ) && $this->is_home() ) {
+		if ( 'posts' === $show_on_front && $this->is_home() ) {
 			return true;
-		} elseif ( 'page' === get_option( 'show_on_front' ) && get_option( 'page_on_front' )
-			&& $this->is_page( get_option( 'page_on_front' ) )
-		) {
-			return true;
-		} elseif ( 'page' === get_option( 'show_on_front' ) && get_option( 'page_for_posts' )
-			&& ! get_option( 'page_on_front' )
-			&& $this->is_home()
-		) {
-			// Edge case where the Reading settings has a posts page set but not a static homepage.
-			return true;
-		} else {
-			return false;
 		}
+
+		if ( 'page' === $show_on_front ) {
+			if ( $page_on_front && $this->is_page( $page_on_front ) ) {
+				return true;
+			}
+
+			// Edge case where the Reading settings has a posts page set but not a static homepage.
+			if ( $page_for_posts && ! $page_on_front && $this->is_home() ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
