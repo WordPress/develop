@@ -4378,17 +4378,18 @@ class WP_Query {
 		$page_on_front  = get_option( 'page_on_front' );
 		$page_for_posts = get_option( 'page_for_posts' );
 
-		// Most likely case.
+		// If Your Latest Posts is selected.
 		if ( 'posts' === $show_on_front && $this->is_home() ) {
 			return true;
 		}
 
 		if ( 'page' === $show_on_front ) {
+			// If a static homepage is set and we're on that page.
 			if ( $page_on_front && $this->is_page( $page_on_front ) ) {
 				return true;
 			}
 
-			// Edge case where the Reading settings has a posts page set but not a static homepage.
+			// Edge case where a posts page has been selected but a homepage is not set.
 			if ( $page_for_posts && ! $page_on_front && $this->is_home() ) {
 				return true;
 			}
