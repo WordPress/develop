@@ -66,7 +66,7 @@ function twentytwenty_site_logo( $args = array(), $display = true ) {
 		$contents  = sprintf( $args['logo'], $logo, esc_html( $site_title ) );
 		$classname = $args['logo_class'];
 	} else {
-		$contents  = sprintf( $args[$titlewrap], esc_url( get_home_url( null, '/' ) ), esc_html( $site_title ) );
+		$contents  = sprintf( $args[ $titlewrap ], esc_url( get_home_url( null, '/' ) ), esc_html( $site_title ) );
 		$classname = $args['title_class'];
 	}
 
