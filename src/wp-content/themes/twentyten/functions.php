@@ -129,8 +129,8 @@ if ( ! function_exists( 'twentyten_setup' ) ) :
 		add_theme_support(
 			'custom-logo',
 			array(
-				'height'      => 300,
-				'width'       => 100,
+				'height'      => 100,
+				'width'       => 300,
 				'flex-height' => true,
 			)
 		);
