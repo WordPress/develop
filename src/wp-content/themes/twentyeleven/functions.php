@@ -1033,7 +1033,7 @@ function twentyeleven_site_logo( $args = array(), $echo = true ) {
 		$titleid   = $args['title_id'];
 	}
 
-	$html = sprintf( $args[ 'title_wrap' ], $titleid, $contents );
+	$html = sprintf( $args['title_wrap'], $titleid, $contents );
 
 	/**
 	 * Filters the arguments for `twentyeleven_site_logo()`.
@@ -1050,5 +1050,4 @@ function twentyeleven_site_logo( $args = array(), $echo = true ) {
 	}
 
 	echo $html; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
 }

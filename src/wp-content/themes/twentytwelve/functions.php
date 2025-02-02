@@ -816,7 +816,7 @@ function twentytwelve_site_logo( $args = array(), $echo = true ) {
 		$classname = $args['title_class'];
 	}
 
-	$html = sprintf( $args[ 'title_wrap' ], $classname, $contents );
+	$html = sprintf( $args['title_wrap'], $classname, $contents );
 
 	/**
 	 * Filters the arguments for `twentytwelve_site_logo()`.
@@ -833,5 +833,4 @@ function twentytwelve_site_logo( $args = array(), $echo = true ) {
 	}
 
 	echo $html; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
 }

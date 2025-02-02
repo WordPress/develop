@@ -880,7 +880,6 @@ function twentyten_site_logo( $args = array(), $echo = true ) {
 	}
 
 	echo $html; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
 }
 
 /**
