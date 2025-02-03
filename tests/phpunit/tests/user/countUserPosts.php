@@ -91,7 +91,7 @@ class Tests_User_CountUserPosts extends WP_UnitTestCase {
 	}
 
 	/**
-	 * User count should work for users that don't exist but have posts assigned.
+	 * Post count should work for users that don't exist but have posts assigned.
 	 *
 	 * @ticket 39242
 	 */
@@ -146,14 +146,14 @@ class Tests_User_CountUserPosts extends WP_UnitTestCase {
 	 * @ticket 39242
 	 */
 	public function test_cache_should_be_hit_regardless_of_post_type_order() {
-		// Prime Cache
+		// Prime Cache.
 		count_user_posts( self::$user_id, array( 'wptests_pt', 'post' ) );
 
 		$query_num_start = get_num_queries();
 		count_user_posts( self::$user_id, array( 'post', 'wptests_pt' ) );
 		$total_queries = get_num_queries() - $query_num_start;
 
-		$this->assertSame( 0, $total_queries );
+		$this->assertSame( 0, $total_queries, 'Cache should be hit regardless of post type order.' );
 	}
 
 	/**
@@ -162,13 +162,13 @@ class Tests_User_CountUserPosts extends WP_UnitTestCase {
 	 * @ticket 39242
 	 */
 	public function test_cache_should_be_hit_for_string_and_array_equivalent_queries() {
-		// Prime Cache
+		// Prime Cache.
 		count_user_posts( self::$user_id, 'post' );
 
 		$query_num_start = get_num_queries();
 		count_user_posts( self::$user_id, array( 'post' ) );
 		$total_queries = get_num_queries() - $query_num_start;
 
-		$this->assertSame( 0, $total_queries );
+		$this->assertSame( 0, $total_queries, 'Cache should be hit for string and array equivalent post types.' );
 	}
 }
