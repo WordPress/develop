@@ -4391,7 +4391,7 @@ class WP_Query {
 			}
 
 			// Edge case where a posts page has been selected but a homepage is not set.
-			if ( $page_for_posts && ! $page_on_front && get_queried_object_id() !== (int) $page_for_posts ) {
+			if ( $page_for_posts && is_home() && ( (int) $page_for_posts !== get_queried_object_id() ) ) {
 				return true;
 			}
 		}
