@@ -4374,9 +4374,7 @@ class WP_Query {
 	 * @return bool Whether the query is for the front page of the site.
 	 */
 	public function is_front_page() {
-		$show_on_front  = get_option( 'show_on_front' );
-		$page_on_front  = get_option( 'page_on_front' );
-		$page_for_posts = get_option( 'page_for_posts' );
+		$show_on_front = get_option( 'show_on_front' );
 
 		// If Your Latest Posts is selected.
 		if ( 'posts' === $show_on_front && $this->is_home() ) {
@@ -4384,13 +4382,16 @@ class WP_Query {
 		}
 
 		if ( 'page' === $show_on_front ) {
+			$page_on_front = get_option( 'page_on_front' );
+			$page_for_posts = get_option( 'page_for_posts' );
+
 			// If a static homepage is set and we're on that page.
 			if ( $page_on_front && $this->is_page( $page_on_front ) ) {
 				return true;
 			}
 
 			// Edge case where a posts page has been selected but a homepage is not set.
-			if ( $page_for_posts && ! $page_on_front && $this->is_home() ) {
+			if ( $page_for_posts && ! $page_on_front && get_queried_object_id() !== (int) $page_for_posts ) {
 				return true;
 			}
 		}
