@@ -106,6 +106,7 @@ function wp_is_valid_speculation_rules_mode( string $mode ): bool {
  */
 function wp_is_valid_speculation_rules_eagerness( string $eagerness ): bool {
 	static $eagerness_allowlist = array(
+		'immediate'    => true,
 		'eager'        => true,
 		'moderate'     => true,
 		'conservative' => true,

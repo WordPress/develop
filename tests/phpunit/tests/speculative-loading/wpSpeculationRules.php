@@ -192,7 +192,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 				array(
 					'source'    => 'document',
 					'where'     => array( 'selector_matches' => '.prefetch' ),
-					'eagerness' => 'fast', // Only 'eager, 'moderate', and 'conservative' are allowed.
+					'eagerness' => 'fast', // Only 'immediate', 'eager, 'moderate', and 'conservative' are allowed.
 				),
 				false
 			),

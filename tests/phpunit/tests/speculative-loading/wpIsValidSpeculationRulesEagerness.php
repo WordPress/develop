@@ -31,6 +31,7 @@ class Tests_Speculative_Loading_wpIsValidSpeculationRulesEagerness extends WP_Un
 			'conservative' => array( 'conservative', true ),
 			'moderate'     => array( 'moderate', true ),
 			'eager'        => array( 'eager', true ),
+			'immediate'    => array( 'immediate', true ),
 			'auto'         => array( 'auto', false ),
 			'none'         => array( 'none', false ),
 			'42'           => array( 42, false ),
