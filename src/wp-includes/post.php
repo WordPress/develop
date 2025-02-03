@@ -8524,3 +8524,50 @@ function wp_create_initial_post_meta() {
 		)
 	);
 }
+
+/**
+ * Add revision support for changes made via Quick Edit in the WordPress admin.
+ *
+ * This functionality ensures that any updates made through the Quick Edit option 
+ * are tracked as revisions, allowing users to revert changes if needed.
+ *
+ * @param array $post_data An array of sanitized post data.
+ */
+
+ function edit_post($post_data) {
+    // Verify post ID exists.
+    if (empty($post_data['ID'])) {
+        return new WP_Error('missing_post_id', __('Post ID is missing.', 'dpb'));
+    }
+
+    // Retrieve the post to ensure it exists and can be updated.
+    $post = get_post($post_data['ID']);
+    if (!$post) {
+        return new WP_Error('invalid_post_id', __('Invalid post ID.', 'dpb'));
+    }
+
+    // Check if the post type supports revisions.
+    if (post_type_supports($post->post_type, 'revisions')) {
+        /**
+         * Check if the request was triggered by Quick Edit.
+         * The '_inline_edit' field in the $_POST data indicates Quick Edit usage.
+         */
+        if (isset($_POST['_inline_edit'])) {
+            // Save a new revision for the post being updated.
+            wp_save_post_revision($post_data['ID']);
+        }
+    }
+
+    // Continue with existing logic to update the post (simplified for illustration).
+    $updated = wp_update_post($post_data, true);
+
+    // Return an error if the update failed.
+    if (is_wp_error($updated)) {
+        return $updated;
+    }
+
+    // Perform any additional actions after the post is updated.
+    do_action('post_updated', $post_data['ID'], $post_data);
+
+    return $updated;
+}
