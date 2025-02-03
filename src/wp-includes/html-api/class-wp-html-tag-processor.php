@@ -1183,25 +1183,15 @@ class WP_HTML_Tag_Processor {
 
 		$is_quirks = self::QUIRKS_MODE === $this->compat_mode;
 
-		$at = 0;
+		$at = strspn( $class, " \t\f\r\n" );
 		while ( $at < strlen( $class ) ) {
-			// Skip past any initial boundary characters.
-			$at += strspn( $class, " \t\f\r\n", $at );
-			if ( $at >= strlen( $class ) ) {
-				return;
-			}
-
 			// Find the byte length until the next boundary.
 			$length = strcspn( $class, " \t\f\r\n", $at );
-			if ( 0 === $length ) {
-				return;
-			}
-
-			$name = str_replace( "\x00", "\u{FFFD}", substr( $class, $at, $length ) );
+			$name   = str_replace( "\x00", "\u{FFFD}", substr( $class, $at, $length ) );
 			if ( $is_quirks ) {
 				$name = strtolower( $name );
 			}
-			$at += $length;
+			$at += $length + strspn( $class, " \t\f\r\n", $at + $length );
 
 			/*
 			 * It's expected that the number of class names for a given tag is relatively small.
