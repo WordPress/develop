@@ -55,6 +55,9 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 			)
 		);
 
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
+
 		$this->assertArrayHasKey( 'prefetch', $rules );
 		$this->assertIsArray( $rules['prefetch'] );
 		foreach ( $rules['prefetch'] as $entry ) {
@@ -79,6 +82,9 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 				'eagerness' => $eagerness,
 			)
 		);
+
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
 
 		$this->assertArrayHasKey( 'prerender', $rules );
 		$this->assertIsArray( $rules['prerender'] );
@@ -107,6 +113,9 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	public function test_wp_get_speculation_rules_prefetch_entries() {
 		$rules = wp_get_speculation_rules( $this->prefetch_config );
 
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
+
 		$this->assertArrayHasKey( 'prefetch', $rules );
 		$this->assertCount( 4, $rules['prefetch'][0]['where']['and'] );
 		$this->assertArrayHasKey( 'not', $rules['prefetch'][0]['where']['and'][3] );
@@ -122,6 +131,9 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	public function test_wp_get_speculation_rules_prerender_entries() {
 		$rules = wp_get_speculation_rules( $this->prerender_config );
 
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
+
 		$this->assertArrayHasKey( 'prerender', $rules );
 		$this->assertCount( 4, $rules['prerender'][0]['where']['and'] );
 		$this->assertArrayHasKey( 'not', $rules['prerender'][0]['where']['and'][3] );
@@ -135,7 +147,10 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	 * @ticket 62503
 	 */
 	public function test_wp_get_speculation_rules_href_exclude_paths() {
-		$rules              = wp_get_speculation_rules( $this->prefetch_config );
+		$rules = wp_get_speculation_rules( $this->prefetch_config );
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
+
 		$href_exclude_paths = $rules['prefetch'][0]['where']['and'][1]['not']['href_matches'];
 
 		$this->assertSameSets(
@@ -161,7 +176,10 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 			}
 		);
 
-		$rules              = wp_get_speculation_rules( $this->prefetch_config );
+		$rules = wp_get_speculation_rules( $this->prefetch_config );
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
+
 		$href_exclude_paths = $rules['prefetch'][0]['where']['and'][1]['not']['href_matches'];
 
 		// Ensure the base exclude paths are still present and that the custom path was formatted correctly.
@@ -190,7 +208,10 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	public function test_wp_get_speculation_rules_href_exclude_paths_without_pretty_permalinks() {
 		update_option( 'permalink_structure', '' );
 
-		$rules              = wp_get_speculation_rules( $this->prefetch_config );
+		$rules = wp_get_speculation_rules( $this->prefetch_config );
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
+
 		$href_exclude_paths = $rules['prefetch'][0]['where']['and'][1]['not']['href_matches'];
 
 		$this->assertSameSets(
@@ -228,7 +249,10 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 			2
 		);
 
-		$rules              = wp_get_speculation_rules( $this->prerender_config );
+		$rules = wp_get_speculation_rules( $this->prerender_config );
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
+
 		$href_exclude_paths = $rules['prerender'][0]['where']['and'][1]['not']['href_matches'];
 
 		// Ensure the additional exclusion is present because the mode is 'prerender'.
@@ -250,7 +274,10 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		);
 
 		// Redo with 'prefetch'.
-		$rules              = wp_get_speculation_rules( $this->prefetch_config );
+		$rules = wp_get_speculation_rules( $this->prefetch_config );
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
+
 		$href_exclude_paths = $rules['prefetch'][0]['where']['and'][1]['not']['href_matches'];
 
 		// Ensure the additional exclusion is not present because the mode is 'prefetch'.
@@ -289,7 +316,10 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 			}
 		);
 
-		$rules              = wp_get_speculation_rules( $this->prerender_config );
+		$rules = wp_get_speculation_rules( $this->prerender_config );
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
+
 		$href_exclude_paths = $rules['prerender'][0]['where']['and'][1]['not']['href_matches'];
 		$this->assertSame(
 			array(
@@ -338,7 +368,10 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 			}
 		);
 
-		$rules              = wp_get_speculation_rules( $this->prerender_config );
+		$rules = wp_get_speculation_rules( $this->prerender_config );
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
+
 		$href_exclude_paths = $rules['prerender'][0]['where']['and'][1]['not']['href_matches'];
 		$this->assertSame(
 			array(
@@ -372,7 +405,66 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 			)
 		);
 
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
+
 		$this->assertArrayHasKey( 'prefetch', $rules );
 		$this->assertSame( 'conservative', $rules['prefetch'][0]['eagerness'] );
+	}
+
+	/**
+	 * Tests that the 'wp_load_speculation_rules' action allows providing additional rules.
+	 *
+	 * @ticket 62503
+	 */
+	public function test_wp_get_speculation_rules_with_additional_rules() {
+		$filtered_obj = null;
+		add_action(
+			'wp_load_speculation_rules',
+			static function ( $speculation_rules ) use ( &$filtered_obj ) {
+				$filtered_obj = $speculation_rules;
+
+				/*
+				 * In practice, these rules would ensure that links marked with the classes would be opt in to
+				 * prerendering with moderate and eager eagerness respectively.
+				 */
+				$speculation_rules->add_rule(
+					'prerender',
+					'prerender-moderate-marked-links',
+					array(
+						'source'    => 'document',
+						'where'     => array(
+							'selector_matches' => '.moderate-prerender, .moderate-prerender a',
+						),
+						'eagerness' => 'moderate',
+					)
+				);
+				$speculation_rules->add_rule(
+					'prerender',
+					'prerender-eager-marked-links',
+					array(
+						'source'    => 'document',
+						'where'     => array(
+							'selector_matches' => '.eager-prerender, .eager-prerender a',
+						),
+						'eagerness' => 'eager',
+					)
+				);
+			}
+		);
+
+		$rules = wp_get_speculation_rules( $this->prefetch_config );
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$this->assertSame( $filtered_obj, $rules );
+
+		$rules = $rules->jsonSerialize();
+
+		$this->assertArrayHasKey( 'prefetch', $rules );
+		$this->assertCount( 1, $rules['prefetch'] );
+		$this->assertArrayHasKey( 'prerender', $rules );
+		$this->assertCount( 2, $rules['prerender'] );
+		$this->assertSame( 'conservative', $rules['prefetch'][0]['eagerness'] );
+		$this->assertSame( 'moderate', $rules['prerender'][0]['eagerness'] );
+		$this->assertSame( 'eager', $rules['prerender'][1]['eagerness'] );
 	}
 }

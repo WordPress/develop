@@ -114,6 +114,22 @@ function wp_is_valid_speculation_rules_eagerness( string $eagerness ): bool {
 }
 
 /**
+ * Checks whether the given speculation rules source is valid.
+ *
+ * @since 6.8.0
+ *
+ * @param string $source Speculation rules source.
+ * @return bool True if valid, false otherwise.
+ */
+function wp_is_valid_speculation_rules_source( string $source ): bool {
+	static $source_allowlist = array(
+		'list'     => true,
+		'document' => true,
+	);
+	return isset( $source_allowlist[ $source ] );
+}
+
+/**
  * Returns the full speculation rules data based on the given configuration.
  *
  * Plugins with features that rely on frontend URLs to exclude from prefetching or prerendering should use the
@@ -123,9 +139,9 @@ function wp_is_valid_speculation_rules_eagerness( string $eagerness ): bool {
  * @access private
  *
  * @param array<string, string> $configuration Associative array with 'mode' and 'eagerness' keys.
- * @return array<string, array<int, array<string, mixed>>> Associative array of speculation rules by type.
+ * @return WP_Speculation_Rules Object representing the speculation rules to use.
  */
-function wp_get_speculation_rules( array $configuration ): array {
+function wp_get_speculation_rules( array $configuration ): WP_Speculation_Rules {
 	// If the passed configuration is invalid, trigger a warning and fall back to the default configuration.
 	if (
 		! isset( $configuration['mode'] ) ||
@@ -209,7 +225,11 @@ function wp_get_speculation_rules( array $configuration ): array {
 		)
 	);
 
-	$rules = array(
+	$speculation_rules = new WP_Speculation_Rules();
+
+	$speculation_rules->add_rule(
+		$mode,
+		'main',
 		array(
 			'source'    => 'document',
 			'where'     => array(
@@ -239,10 +259,19 @@ function wp_get_speculation_rules( array $configuration ): array {
 				),
 			),
 			'eagerness' => $eagerness,
-		),
+		)
 	);
 
-	return array( $mode => $rules );
+	/**
+	 * Fires when speculation rules data is loaded, allowing to amend the rules.
+	 *
+	 * @since 6.8.0
+	 *
+	 * @param WP_Speculation_Rules $speculation_rules Object representing the speculation rules to use.
+	 */
+	do_action( 'wp_load_speculation_rules', $speculation_rules );
+
+	return $speculation_rules;
 }
 
 /**
