@@ -216,61 +216,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests that transforming a speculation rules object into array data works as expected.
-	 *
-	 * @ticket 62503
-	 * @covers ::to_array
-	 */
-	public function test_to_array() {
-		$prefetch_rule_1  = array( 'where' => array( 'href_matches' => '/*' ) );
-		$prefetch_rule_2  = array( 'where' => array( 'selector_matches' => '.prefetch-opt-in' ) );
-		$prerender_rule_1 = array( 'urls' => array( 'https://example.org/high-priority-url/', 'https://example.org/another-high-priority-url/' ) );
-		$prerender_rule_2 = array(
-			'where'     => array(
-				'or' => array(
-					array( 'selector_matches' => '.prerender-opt-in' ),
-					array( 'selector_matches' => '.prerender-fast' ),
-				),
-			),
-			'eagerness' => 'moderate',
-		);
-
-		$speculation_rules = new WP_Speculation_Rules();
-		$this->assertSame( array(), $speculation_rules->to_array(), 'Speculation rules array data should be empty before adding any rules' );
-
-		$speculation_rules->add_rule( 'prefetch', 'prefetch-rule-1', $prefetch_rule_1 );
-		$this->assertSame(
-			array(
-				'prefetch' => array( 'prefetch-rule-1' => $prefetch_rule_1 ),
-			),
-			$speculation_rules->to_array(),
-			'Speculation rules array data should only contain a single "prefetch" entry when only that rule is added'
-		);
-
-		$speculation_rules->add_rule( 'prefetch', 'prefetch-rule-2', $prefetch_rule_2 );
-		$speculation_rules->add_rule( 'prerender', 'prerender-rule-1', $prerender_rule_1 );
-		$speculation_rules->add_rule( 'prerender', 'prerender-rule-2', $prerender_rule_2 );
-		$this->assertSame(
-			array(
-				'prefetch'  => array(
-					'prefetch-rule-1' => $prefetch_rule_1,
-					'prefetch-rule-2' => $prefetch_rule_2,
-				),
-				'prerender' => array(
-					'prerender-rule-1' => $prerender_rule_1,
-					'prerender-rule-2' => $prerender_rule_2,
-				),
-			),
-			$speculation_rules->to_array(),
-			'Speculation rules array data should contain all added rules'
-		);
-	}
-
-	/**
 	 * Tests that transforming a speculation rules object into JSON-encodable data works as expected.
-	 *
-	 * This is the same test as `test_to_array()`, with the key difference that all speculation rule IDs are omitted,
-	 * so every mode contains an indexed array of rules instead of a map of rule ID and its rule.
 	 *
 	 * @ticket 62503
 	 * @covers ::to_jsonSerialize

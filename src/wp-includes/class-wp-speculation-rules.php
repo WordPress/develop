@@ -176,17 +176,6 @@ final class WP_Speculation_Rules implements JsonSerializable {
 	}
 
 	/**
-	 * Returns the associative array representation of the speculation rules data.
-	 *
-	 * @since 6.8.0
-	 *
-	 * @return array<string, array<string, mixed>> Speculation rules data.
-	 */
-	public function to_array(): array {
-		return array_filter( $this->rules_by_mode );
-	}
-
-	/**
 	 * Returns the speculation rules data ready to be JSON-encoded.
 	 *
 	 * @since 6.8.0
@@ -200,7 +189,7 @@ final class WP_Speculation_Rules implements JsonSerializable {
 			static function ( array $rules ) {
 				return array_values( $rules );
 			},
-			$this->to_array()
+			array_filter( $this->rules_by_mode )
 		);
 	}
 
