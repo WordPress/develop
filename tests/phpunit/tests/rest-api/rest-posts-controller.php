@@ -5734,8 +5734,8 @@ Shankle pork chop prosciutto ribeye ham hock pastrami. T-bone shank brisket baco
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertSame( $data[0]['id'], $id1, 'Response has sticky post at the top' );
-		$this->assertSame( $data[1]['id'], $id2, 'It is followed by most recent post' );
+		$this->assertSame( $data[0]['id'], $id1, 'Response has sticky post at the top.' );
+		$this->assertSame( $data[1]['id'], $id2, 'It is followed by most recent post.' );
 	}
 
 	/**
@@ -5747,7 +5747,6 @@ Shankle pork chop prosciutto ribeye ham hock pastrami. T-bone shank brisket baco
 	 */
 	public function test_get_posts_ignore_sticky_ignores_post_stickiness() {
 		$id1 = self::$post_id;
-		// Create more recent post to avoid automatically placing other at the top.
 		$id2 = self::factory()->post->create( array( 'post_status' => 'publish' ) );
 
 		update_option( 'sticky_posts', array( $id1 ) );
@@ -5757,7 +5756,29 @@ Shankle pork chop prosciutto ribeye ham hock pastrami. T-bone shank brisket baco
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertSame( $data[0]['id'], $id2, 'Response has no sticky post at the top' );
+		$this->assertSame( $data[0]['id'], $id2, 'Response has no sticky post at the top.' );
+	}
+
+	/**
+	 * Test the REST API support for `ignore_sticky_posts`.
+	 *
+	 * @ticket 35907
+	 *
+	 * @covers WP_REST_Posts_Controller::get_items
+	 */
+	public function test_get_posts_ignore_sticky_honors_include() {
+		$id1 = self::$post_id;
+		$id2 = self::factory()->post->create( array( 'post_status' => 'publish' ) );
+
+		update_option( 'sticky_posts', array( $id1 ) );
+
+		$request = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+		$request->set_param( 'include', array( $id2 ) );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertCount( 1, $data, 'Only one post is expected to be returned.' );
+		$this->assertSame( $data[0]['id'], $id2, 'Returns the included post.' );
 	}
 
 	/**
