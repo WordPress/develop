@@ -2279,14 +2279,21 @@ function get_calendar( $initial = true, $display = true ) {
 
 	if ( isset( $_GET['w'] ) ) {
 		$w = (int) $_GET['w'];
+		if ( $w >= 52 ) {
+			$w = null;
+		}
 	}
+
 	// week_begins = 0 stands for Sunday.
 	$week_begins = (int) get_option( 'start_of_week' );
 
 	// Let's figure out when we are.
 	if ( ! empty( $monthnum ) && ! empty( $year ) ) {
 		$thismonth = zeroise( (int) $monthnum, 2 );
-		$thisyear  = (int) $year;
+		if ( $thismonth < 1 || $thismonth > 12 ) {
+			$thismonth = current_time( 'm' );
+		}
+		$thisyear = (int) $year;
 	} elseif ( ! empty( $w ) ) {
 		// We need to get the month from MySQL.
 		$thisyear = (int) substr( $m, 0, 4 );
