@@ -299,10 +299,14 @@ if ( ! $mysql_compat || ! $php_compat ) {
 	die( '<h1>' . __( 'Requirements Not Met' ) . '</h1><p>' . $compat . '</p></body></html>' );
 }
 
-$missing_extensions = array();
+if ( isset( $required_php_extensions ) && is_array( $required_php_extensions ) ) {
+	$missing_extensions = array();
 
-foreach ( $required_php_extensions as $extension ) {
-	if ( ! extension_loaded( $extension ) ) {
+	foreach ( $required_php_extensions as $extension ) {
+		if ( extension_loaded( $extension ) ) {
+			continue;
+		}
+
 		$missing_extensions[] = sprintf(
 			/* translators: 1: URL to WordPress release notes, 2: WordPress version number, 3: The PHP extension name needed. */
 			__( 'You cannot install because <a href="%1$s">WordPress %2$s</a> requires the %3$s PHP extension.' ),
@@ -311,11 +315,11 @@ foreach ( $required_php_extensions as $extension ) {
 			$extension
 		);
 	}
-}
 
-if ( count( $missing_extensions ) > 0 ) {
-	display_header();
-	die( '<h1>' . __( 'Requirements Not Met' ) . '</h1><p>' . implode( '</p><p>', $missing_extensions ) . '</p></body></html>' );
+	if ( count( $missing_extensions ) > 0 ) {
+		display_header();
+		die( '<h1>' . __( 'Requirements Not Met' ) . '</h1><p>' . implode( '</p><p>', $missing_extensions ) . '</p></body></html>' );
+	}
 }
 
 if ( ! is_string( $wpdb->base_prefix ) || '' === $wpdb->base_prefix ) {

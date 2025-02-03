@@ -1178,10 +1178,14 @@ function update_core( $from, $to ) {
 		);
 	}
 
-	$missing_extensions = new WP_Error();
+	if ( isset( $required_php_extensions ) && is_array( $required_php_extensions ) ) {
+		$missing_extensions = new WP_Error();
 
-	foreach ( $required_php_extensions as $extension ) {
-		if ( ! extension_loaded( $extension ) ) {
+		foreach ( $required_php_extensions as $extension ) {
+			if ( extension_loaded( $extension ) ) {
+				continue;
+			}
+
 			$missing_extensions->add(
 				"php_not_compatible_{$extension}",
 				sprintf(
@@ -1192,11 +1196,11 @@ function update_core( $from, $to ) {
 				)
 			);
 		}
-	}
 
-	// Add a warning when required PHP extensions are missing.
-	if ( $missing_extensions->has_errors() ) {
-		return $missing_extensions;
+		// Add a warning when required PHP extensions are missing.
+		if ( $missing_extensions->has_errors() ) {
+			return $missing_extensions;
+		}
 	}
 
 	/** This filter is documented in wp-admin/includes/update-core.php */
