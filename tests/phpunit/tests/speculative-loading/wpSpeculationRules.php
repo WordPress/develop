@@ -63,7 +63,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'where'     => array( 'selector_matches' => '.prefetch' ),
 					'eagerness' => 'eager',
 				),
-				true
+				true,
 			),
 			'basic-prefetch-no-source'     => array(
 				'prefetch',
@@ -72,16 +72,16 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'where'     => array( 'selector_matches' => '.prefetch' ),
 					'eagerness' => 'eager',
 				),
-				true
+				true,
 			),
 			'basic-prefetch-no-eagerness'  => array(
 				'prefetch',
 				'test-rule-3',
 				array(
-					'source'    => 'document',
-					'where'     => array( 'selector_matches' => '.prefetch' ),
+					'source' => 'document',
+					'where'  => array( 'selector_matches' => '.prefetch' ),
 				),
-				true
+				true,
 			),
 			'basic-prerender'              => array(
 				'prerender',
@@ -91,7 +91,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'urls'      => array( 'https://example.org/high-priority-url/', 'https://example.org/another-high-priority-url/' ),
 					'eagerness' => 'eager',
 				),
-				true
+				true,
 			),
 			'basic-prerender-no-source'    => array(
 				'prerender',
@@ -100,7 +100,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'urls'      => array( 'https://example.org/high-priority-url/', 'https://example.org/another-high-priority-url/' ),
 					'eagerness' => 'eager',
 				),
-				true
+				true,
 			),
 			'basic-prerender-no-eagerness' => array(
 				'prerender',
@@ -109,7 +109,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'source' => 'list',
 					'urls'   => array( 'https://example.org/high-priority-url/', 'https://example.org/another-high-priority-url/' ),
 				),
-				true
+				true,
 			),
 			'invalid-mode'                 => array(
 				'load-fast', // Only 'prefetch' and 'prerender' are allowed.
@@ -119,7 +119,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'where'     => array( 'selector_matches' => '.prefetch' ),
 					'eagerness' => 'eager',
 				),
-				false
+				false,
 			),
 			'invalid-id-characters'        => array(
 				'prefetch',
@@ -129,7 +129,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'where'     => array( 'selector_matches' => '.prefetch' ),
 					'eagerness' => 'eager',
 				),
-				false
+				false,
 			),
 			'invalid-id-start'             => array(
 				'prefetch',
@@ -139,7 +139,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'where'     => array( 'selector_matches' => '.prefetch' ),
 					'eagerness' => 'eager',
 				),
-				false
+				false,
 			),
 			'invalid-source'               => array(
 				'prerender',
@@ -149,13 +149,13 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'where'     => array( 'selector_matches' => '.prerender' ),
 					'eagerness' => 'eager',
 				),
-				false
+				false,
 			),
 			'missing-keys'                 => array(
 				'prefetch',
 				'test-rule-1',
 				array(), // The minimum requirements are presence of either a 'where' or 'urls' key.
-				false
+				false,
 			),
 			'conflicting-keys'             => array(
 				'prefetch',
@@ -164,7 +164,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'where' => array( 'selector_matches' => '.prefetch' ),
 					'urls'  => array( 'https://example.org/high-priority-url/', 'https://example.org/another-high-priority-url/' ),
 				),
-				false
+				false,
 			),
 			'conflicting-list-source'      => array(
 				'prefetch',
@@ -174,7 +174,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'where'     => array( 'selector_matches' => '.prefetch' ),
 					'eagerness' => 'eager',
 				),
-				false
+				false,
 			),
 			'conflicting-document-source'  => array(
 				'prefetch',
@@ -184,7 +184,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'urls'      => array( 'https://example.org/high-priority-url/', 'https://example.org/another-high-priority-url/' ),
 					'eagerness' => 'eager',
 				),
-				false
+				false,
 			),
 			'invalid-eagerness'            => array(
 				'prefetch',
@@ -194,7 +194,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 					'where'     => array( 'selector_matches' => '.prefetch' ),
 					'eagerness' => 'fast', // Only 'immediate', 'eager, 'moderate', and 'conservative' are allowed.
 				),
-				false
+				false,
 			),
 		);
 	}
@@ -226,13 +226,13 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 		$prefetch_rule_2  = array( 'where' => array( 'selector_matches' => '.prefetch-opt-in' ) );
 		$prerender_rule_1 = array( 'urls' => array( 'https://example.org/high-priority-url/', 'https://example.org/another-high-priority-url/' ) );
 		$prerender_rule_2 = array(
-			'where' => array(
+			'where'     => array(
 				'or' => array(
 					array( 'selector_matches' => '.prerender-opt-in' ),
 					array( 'selector_matches' => '.prerender-fast' ),
 				),
 			),
-			'eagerness' => 'moderate'
+			'eagerness' => 'moderate',
 		);
 
 		$speculation_rules = new WP_Speculation_Rules();
@@ -280,13 +280,13 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 		$prefetch_rule_2  = array( 'where' => array( 'selector_matches' => '.prefetch-opt-in' ) );
 		$prerender_rule_1 = array( 'urls' => array( 'https://example.org/high-priority-url/', 'https://example.org/another-high-priority-url/' ) );
 		$prerender_rule_2 = array(
-			'where' => array(
+			'where'     => array(
 				'or' => array(
 					array( 'selector_matches' => '.prerender-opt-in' ),
 					array( 'selector_matches' => '.prerender-fast' ),
 				),
 			),
-			'eagerness' => 'moderate'
+			'eagerness' => 'moderate',
 		);
 
 		$speculation_rules = new WP_Speculation_Rules();
