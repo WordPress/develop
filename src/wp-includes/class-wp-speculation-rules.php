@@ -23,7 +23,7 @@ class WP_Speculation_Rules implements JsonSerializable {
 	 * @since 6.8.0
 	 * @var array<string, array<string, mixed>>
 	 */
-	private $rules_by_mode;
+	private $rules_by_mode = array();
 
 	/**
 	 * Adds a speculation rule to the speculation rules to consider.
@@ -82,7 +82,7 @@ class WP_Speculation_Rules implements JsonSerializable {
 		 * a 'source' of 'list'.
 		 */
 		if (
-			( ! isset( $rule['where'] ) && ! isset( $where['urls'] ) ) ||
+			( ! isset( $rule['where'] ) && ! isset( $rule['urls'] ) ) ||
 			( isset( $rule['where'] ) && isset( $rule['urls'] ) )
 		) {
 			_doing_it_wrong(
