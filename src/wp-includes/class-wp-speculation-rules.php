@@ -13,7 +13,7 @@
  * @since 6.8.0
  * @access private
  */
-class WP_Speculation_Rules implements JsonSerializable {
+final class WP_Speculation_Rules implements JsonSerializable {
 
 	/**
 	 * Stored rules, as a map of `$mode => $rules` pairs.
