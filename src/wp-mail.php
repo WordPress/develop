@@ -39,7 +39,7 @@ if ( ! defined( 'WP_MAIL_INTERVAL' ) ) {
 $last_checked = get_transient( 'mailserver_last_checked' );
 
 if ( $last_checked ) {
-	wp_die( 
+	wp_die(
 		sprintf(
 			// translators: %s human readable rate limit.
 			__( 'Email checks are rate limited to once every %s.' ),
