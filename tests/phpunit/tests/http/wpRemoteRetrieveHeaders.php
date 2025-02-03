@@ -2,6 +2,8 @@
 
 /**
  * @group http
+ * @group external-http
+ *
  * @covers ::wp_remote_retrieve_headers
  */
 class Tests_HTTP_wpRemoteRetrieveHeaders extends WP_UnitTestCase {

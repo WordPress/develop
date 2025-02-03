@@ -9,6 +9,9 @@
  * inclusion of PEAR.
  *
  * The WP_Http tests require a class-http.php file of r17550 or later.
+ *
+ * @group http
+ * @group external-http
  */
 abstract class WP_HTTP_UnitTestCase extends WP_UnitTestCase {
 	// You can use your own version of data/WPHTTP-testcase-redirection-script.php here.
