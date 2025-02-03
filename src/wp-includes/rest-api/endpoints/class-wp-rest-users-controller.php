@@ -349,7 +349,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 
 		$users = array();
 
-		foreach ( $query->results as $user ) {
+		foreach ( $query->get_results() as $user ) {
 			$data    = $this->prepare_item_for_response( $user, $request );
 			$users[] = $this->prepare_response_for_collection( $data );
 		}
@@ -1310,7 +1310,12 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 	 * @param string          $param   The parameter name.
 	 * @return string|WP_Error The sanitized password, if valid, otherwise an error.
 	 */
-	public function check_user_password( $value, $request, $param ) {
+	public function check_user_password(
+		#[\SensitiveParameter]
+		$value,
+		$request,
+		$param
+	) {
 		$password = (string) $value;
 
 		if ( empty( $password ) ) {

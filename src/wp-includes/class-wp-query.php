@@ -442,6 +442,7 @@ class WP_Query {
 	 * via pre_get_posts hooks.
 	 *
 	 * @since 3.1.1
+	 * @var bool
 	 */
 	private $query_vars_changed = true;
 
@@ -4011,6 +4012,8 @@ class WP_Query {
 		if ( in_array( $name, $this->compat_fields, true ) ) {
 			return isset( $this->$name );
 		}
+
+		return false;
 	}
 
 	/**

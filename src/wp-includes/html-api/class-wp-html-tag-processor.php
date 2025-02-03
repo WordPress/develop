@@ -1668,7 +1668,7 @@ class WP_HTML_Tag_Processor {
 				 *
 				 * @see https://html.spec.whatwg.org/#tag-open-state
 				 */
-				if ( 1 !== strspn( $html, '!/?abcdefghijklmnopqrstuvwxyzABCEFGHIJKLMNOPQRSTUVWXYZ', $at + 1, 1 ) ) {
+				if ( 1 !== strspn( $html, '!/?abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $at + 1, 1 ) ) {
 					++$at;
 					continue;
 				}
@@ -2459,7 +2459,7 @@ class WP_HTML_Tag_Processor {
 			}
 
 			// Accumulate shift of the given pointer within this function call.
-			if ( $diff->start <= $shift_this_point ) {
+			if ( $diff->start < $shift_this_point ) {
 				$accumulated_shift_for_given_point += $shift;
 			}
 

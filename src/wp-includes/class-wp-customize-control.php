@@ -7,6 +7,11 @@
  * @since 3.4.0
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 /**
  * Customize Control class.
  *
@@ -608,7 +613,7 @@ class WP_Customize_Control {
 				$dropdown = str_replace( '<select', '<select ' . $this->get_link() . ' id="' . esc_attr( $input_id ) . '" ' . $describedby_attr, $dropdown );
 
 				/*
-				 * Even more hacikly add auto-draft page stubs.
+				 * Even more hackily add auto-draft page stubs.
 				 * @todo Eventually this should be removed in favor of the pages being injected into the underlying get_pages() call.
 				 * See <https://github.com/xwp/wp-customize-posts/pull/250>.
 				 */
