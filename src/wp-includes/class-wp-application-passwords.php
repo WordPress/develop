@@ -481,7 +481,10 @@ class WP_Application_Passwords {
 	 * @param string $password Plaintext password.
 	 * @return string Hashed password.
 	 */
-	public static function hash_password( string $password ): string {
+	public static function hash_password(
+		#[\SensitiveParameter]
+		string $password
+	): string {
 		return wp_fast_hash( $password );
 	}
 
@@ -494,7 +497,11 @@ class WP_Application_Passwords {
 	 * @param string     $hash     Hash of the password to check against.
 	 * @return bool Whether the password matches the hashed password.
 	 */
-	public static function check_password( string $password, string $hash ): bool {
+	public static function check_password(
+		#[\SensitiveParameter]
+		string $password,
+		string $hash
+	): bool {
 		return wp_verify_fast_hash( $password, $hash );
 	}
 
