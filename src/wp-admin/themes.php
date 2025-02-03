@@ -24,7 +24,7 @@ if ( current_user_can( 'switch_themes' ) && isset( $_GET['action'] ) ) {
 
 		if ( ! $theme->exists() || ! $theme->is_allowed() ) {
 			wp_die(
-				'<h1>' . __( 'An unexpected error occurred.' ) . '</h1>' .
+				'<h1>' . __( 'An error occurred.' ) . '</h1>' .
 				'<p>' . __( 'The requested theme does not exist.' ) . '</p>',
 				403
 			);

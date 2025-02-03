@@ -36,7 +36,7 @@ $post_id = isset( $post_id ) ? (int) $post_id : 0;
 if ( isset( $action ) && 'edit' === $action && ! $ID ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 	wp_die(
 		'<h1>' . __( 'An error occurred during the upload process.' ) . '</h1>' .
-		'<p>' . __( 'Invalid item ID. Please try again.' ) . '</p>',
+		'<p>' . __( 'Invalid item ID. You can view all media items in the <a href="upload.php">Media Library</a>.' ) . '</p>',
 		403
 	);
 }
