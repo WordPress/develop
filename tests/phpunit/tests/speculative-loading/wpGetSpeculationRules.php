@@ -135,10 +135,13 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		$rules = $rules->jsonSerialize();
 
 		$this->assertArrayHasKey( 'prerender', $rules );
-		$this->assertCount( 4, $rules['prerender'][0]['where']['and'] );
+		$this->assertCount( 5, $rules['prerender'][0]['where']['and'] );
 		$this->assertArrayHasKey( 'not', $rules['prerender'][0]['where']['and'][3] );
 		$this->assertArrayHasKey( 'selector_matches', $rules['prerender'][0]['where']['and'][3]['not'] );
 		$this->assertSame( '.no-prerender', $rules['prerender'][0]['where']['and'][3]['not']['selector_matches'] );
+		$this->assertArrayHasKey( 'not', $rules['prerender'][0]['where']['and'][4] );
+		$this->assertArrayHasKey( 'selector_matches', $rules['prerender'][0]['where']['and'][4]['not'] );
+		$this->assertSame( '.no-prefetch', $rules['prerender'][0]['where']['and'][4]['not']['selector_matches'] );
 	}
 
 	/**

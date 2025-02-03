@@ -228,36 +228,47 @@ function wp_get_speculation_rules( array $configuration ): WP_Speculation_Rules 
 
 	$speculation_rules = new WP_Speculation_Rules();
 
+	$main_rule_conditions = array(
+		// Include any URLs within the same site.
+		array(
+			'href_matches' => $prefixer->prefix_path_pattern( '/*' ),
+		),
+		// Except for excluded paths.
+		array(
+			'not' => array(
+				'href_matches' => $href_exclude_paths,
+			),
+		),
+		// Also exclude rel=nofollow links, as certain plugins use that on their links that perform an action.
+		array(
+			'not' => array(
+				'selector_matches' => 'a[rel~="nofollow"]',
+			),
+		),
+		// Last but not least, exclude links that are explicitly marked to opt out.
+		array(
+			'not' => array(
+				'selector_matches' => ".no-{$mode}",
+			),
+		),
+	);
+
+	// If using 'prerender', we need to also exclude links that opt-out of 'prefetch' because it's part of 'prerender'.
+	if ( 'prerender' === $mode ) {
+		$main_rule_conditions[] = array(
+			'not' => array(
+				'selector_matches' => '.no-prefetch',
+			),
+		);
+	}
+
 	$speculation_rules->add_rule(
 		$mode,
 		'main',
 		array(
 			'source'    => 'document',
 			'where'     => array(
-				'and' => array(
-					// Include any URLs within the same site.
-					array(
-						'href_matches' => $prefixer->prefix_path_pattern( '/*' ),
-					),
-					// Except for excluded paths.
-					array(
-						'not' => array(
-							'href_matches' => $href_exclude_paths,
-						),
-					),
-					// Also exclude rel=nofollow links, as certain plugins use that on their links that perform an action.
-					array(
-						'not' => array(
-							'selector_matches' => 'a[rel~="nofollow"]',
-						),
-					),
-					// Last but not least, exclude links that are explicitly marked to opt out.
-					array(
-						'not' => array(
-							'selector_matches' => ".no-{$mode}",
-						),
-					),
-				),
+				'and' => $main_rule_conditions,
 			),
 			'eagerness' => $eagerness,
 		)
