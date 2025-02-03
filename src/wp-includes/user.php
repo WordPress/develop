@@ -584,11 +584,14 @@ function wp_validate_logged_in_cookie( $user_id ) {
 function count_user_posts( $userid, $post_type = 'post', $public_only = false ) {
 	global $wpdb;
 
+	$post_type = (array) $post_type;
+	sort( $post_type );
+
 	$where = get_posts_by_author_sql( $post_type, true, $userid, $public_only );
 	$query = "SELECT COUNT(*) FROM $wpdb->posts $where";
 
 	$last_changed = wp_cache_get_last_changed( 'posts' );
-	$cache_key    = md5( $query ) . ':' . $last_changed;
+	$cache_key    = 'count_user_posts:' . md5( $query ) . ':' . $last_changed;
 	$count        = wp_cache_get( $cache_key, 'post-queries' );
 	if ( false === $count ) {
 		$count = $wpdb->get_var( $query );
