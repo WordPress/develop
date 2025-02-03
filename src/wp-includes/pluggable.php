@@ -598,7 +598,11 @@ if ( ! function_exists( 'wp_authenticate' ) ) :
 	 * @return WP_User|WP_Error WP_User object if the credentials are valid,
 	 *                          otherwise WP_Error.
 	 */
-	function wp_authenticate( $username, $password ) {
+	function wp_authenticate(
+		$username,
+		#[\SensitiveParameter]
+		$password
+	) {
 		$username = sanitize_user( $username );
 		$password = trim( $password );
 
@@ -2645,7 +2649,10 @@ if ( ! function_exists( 'wp_hash_password' ) ) :
 	 * @param string $password Plain text user password to hash.
 	 * @return string The hash string of the password.
 	 */
-	function wp_hash_password( $password ) {
+	function wp_hash_password(
+		#[\SensitiveParameter]
+		$password
+	) {
 		global $wp_hasher;
 
 		if ( ! empty( $wp_hasher ) ) {
@@ -2731,7 +2738,12 @@ if ( ! function_exists( 'wp_check_password' ) ) :
 	 * @param string|int $user_id  Optional. ID of a user associated with the password.
 	 * @return bool False, if the $password does not match the hashed password.
 	 */
-	function wp_check_password( $password, $hash, $user_id = '' ) {
+	function wp_check_password(
+		#[\SensitiveParameter]
+		$password,
+		$hash,
+		$user_id = ''
+	) {
 		global $wp_hasher;
 
 		$check = false;
@@ -2972,7 +2984,11 @@ if ( ! function_exists( 'wp_set_password' ) ) :
 	 * @param string $password The plaintext new user password.
 	 * @param int    $user_id  User ID.
 	 */
-	function wp_set_password( $password, $user_id ) {
+	function wp_set_password(
+		#[\SensitiveParameter]
+		$password,
+		$user_id
+	) {
 		global $wpdb;
 
 		$old_user_data = get_userdata( $user_id );
