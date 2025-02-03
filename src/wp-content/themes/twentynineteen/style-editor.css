@@ -1633,3 +1633,49 @@ ul.wp-block-archives li ul,
 .wp-block-post-author__avatar img {
   border-radius: 100%;
 }
+
+/** === Search Block === */
+.wp-block-search__input {
+  padding: 0.38rem 0.66rem;
+  min-height: auto;
+  font-size: 22px;
+}
+
+.wp-block-search input[type=search] {
+  padding: 0.38rem 0.66rem;
+  min-height: auto;
+  font-size: 22px;
+}
+
+.wp-block-search__button {
+  transition: background 150ms ease-in-out;
+  background: #0073aa;
+  border: none;
+  border-radius: 5px;
+  box-sizing: border-box;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-size: 0.8888888889em;
+  font-weight: 700;
+  line-height: 1.2;
+  outline: none;
+  padding: 0.76rem 1rem;
+  text-decoration: none;
+  vertical-align: bottom;
+}
+
+.wp-block-search__button:hover {
+  background: #111;
+  cursor: pointer;
+}
+
+.wp-block-search__button:visited {
+  color: #fff;
+  text-decoration: none;
+}
+
+.wp-block-search__button:focus {
+  background: #111;
+  outline: thin dotted;
+  outline-offset: -4px;
+}
