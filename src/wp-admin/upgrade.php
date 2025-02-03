@@ -65,7 +65,7 @@ if ( isset( $required_php_extensions ) && is_array( $required_php_extensions ) )
 
 		$missing_extensions[] = sprintf(
 			/* translators: 1: URL to WordPress release notes, 2: WordPress version number, 3: The PHP extension name needed. */
-			__( 'You cannot install because <a href="%1$s">WordPress %2$s</a> requires the %3$s PHP extension.' ),
+			__( 'You cannot upgrade because <a href="%1$s">WordPress %2$s</a> requires the %3$s PHP extension.' ),
 			$version_url,
 			$wp_version,
 			$extension
