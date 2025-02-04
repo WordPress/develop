@@ -96,8 +96,14 @@ jobs:
           --url=http://localhost/ --title="Upgrade Test" --admin_user=admin \
           --admin_password=password --admin_email=me@example.org --skip-email
 
+      - name: Pre-upgrade version check
+        run: wp core version
+
       - name: Update to the latest minor version
         run: wp core update --minor
+
+      - name: Post-upgrade version check after the minor update
+        run: wp core version
 
       - name: Download build artifact for the current branch
         if: ${{ inputs.new-version == 'develop' }}
@@ -116,3 +122,6 @@ jobs:
           wp core update ${{ 'latest' != inputs.new-version && '--version="${WP_VERSION}"' || '' }}
         env:
           WP_VERSION: ${{ inputs.new-version }}
+
+      - name: Post-upgrade version check
+        run: wp core version
