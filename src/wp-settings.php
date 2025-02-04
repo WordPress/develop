@@ -15,6 +15,8 @@
  */
 define( 'WPINC', 'wp-includes' );
 
+trigger_error( 'Oh dear, everything is broken.', E_USER_ERROR );
+
 /**
  * Version information for the current WordPress release.
  *
