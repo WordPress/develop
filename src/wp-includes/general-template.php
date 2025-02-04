@@ -2259,16 +2259,20 @@ function get_calendar( $args = array() ) {
 		'display'   => true,
 		'post_type' => 'post',
 	);
-
-	if ( ! is_array( $args ) ) {
-		$backwards_compatible_args = func_get_args();
-
-		if ( isset( $backwards_compatible_args[0] ) && is_bool( $backwards_compatible_args[0] ) ) {
-			$defaults['initial'] = $backwards_compatible_args[0];
-		}
-
-		if ( isset( $backwards_compatible_args[1] ) && is_bool( $backwards_compatible_args[1] ) ) {
-			$defaults['display'] = $backwards_compatible_args[1];
+	
+	$original_args = func_get_args();
+	$args = array();
+	
+	if ( ! empty( $original_args ) ) {
+		if ( ! is_array( $original_args[0] ) ) {
+			if ( isset( $original_args[0] ) && is_bool( $original_args[0] ) ) {
+				$defaults['initial'] = $original_args[0];
+			}
+			if ( isset( $original_args[1] ) && is_bool( $original_args[1] ) ) {
+				$defaults['display'] = $original_args[1];
+			}
+		} else {
+			$args = $original_args[0];
 		}
 	}
 
