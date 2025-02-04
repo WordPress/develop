@@ -103,7 +103,7 @@ jobs:
         run: wp core update --minor
 
       - name: Update the database after the minor update
-        run: wp core update-db
+        run: wp core update-db ${{ inputs.multisite && '--network' || '' }}
 
       - name: Post-upgrade version check after the minor update
         run: wp core version
@@ -127,7 +127,7 @@ jobs:
           WP_VERSION: ${{ inputs.new-version }}
 
       - name: Update the database
-        run: wp core update-db
+        run: wp core update-db ${{ inputs.multisite && '--network' || '' }}
 
       - name: Post-upgrade version check
         run: wp core version
