@@ -271,7 +271,6 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 		);
 	}
 
-
 	/**
 	 * @ticket 59442
 	 * @ticket 59516
