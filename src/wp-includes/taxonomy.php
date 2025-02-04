@@ -426,6 +426,7 @@ function is_taxonomy_hierarchical( $taxonomy ) {
  * @since 5.4.0 Added the registered taxonomy object as a return value.
  * @since 5.5.0 Introduced `default_term` argument.
  * @since 5.9.0 Introduced `rest_namespace` argument.
+ * @since 6.8.0 Introduced `root_taxonomy_archive` argument.
  *
  * @global WP_Taxonomy[] $wp_taxonomies Registered taxonomies.
  *
@@ -506,6 +507,8 @@ function is_taxonomy_hierarchical( $taxonomy ) {
  *         @type string $slug         Slug for default term. Default empty.
  *         @type string $description  Description for default term. Default empty.
  *     }
+ *     @type bool          $root_taxonomy_archive Whether to show a page at the root taxonomy route, displaying all
+ *                                                posts that have any term from the taxonomy assigned. Default false.
  *     @type bool          $sort                  Whether terms in this taxonomy should be sorted in the order they are
  *                                                provided to `wp_set_object_terms()`. Default null which equates to false.
  *     @type array         $args                  Array of arguments to automatically use inside `wp_get_object_terms()`
