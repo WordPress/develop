@@ -93,7 +93,7 @@ function the_media_upload_tabs() {
 		foreach ( $tabs as $callback => $text ) {
 			$class = '';
 
-			if ( $current == $callback ) {
+			if ( $current === $callback ) {
 				$class = " class='current'";
 			}
 
@@ -1172,7 +1172,7 @@ function image_align_input_fields( $post, $checked = '' ) {
 	foreach ( $alignments as $name => $label ) {
 		$name     = esc_attr( $name );
 		$output[] = "<input type='radio' name='attachments[{$post->ID}][align]' id='image-align-{$name}-{$post->ID}' value='$name'" .
-			( $checked == $name ? " checked='checked'" : '' ) .
+			( $checked === $name ? " checked='checked'" : '' ) .
 			" /><label for='image-align-{$name}-{$post->ID}' class='align image-align-{$name}-label'>$label</label>";
 	}
 
@@ -1222,7 +1222,7 @@ function image_size_input_fields( $post, $check = '' ) {
 		$css_id  = "image-size-{$size}-{$post->ID}";
 
 		// If this size is the default but that's not available, don't select it.
-		if ( $size == $check ) {
+		if ( $size === $check ) {
 			if ( $enabled ) {
 				$checked = " checked='checked'";
 			} else {
@@ -1762,7 +1762,7 @@ function get_media_item( $attachment_id, $args = null ) {
 	if ( 'image' === $type && $calling_post_id
 		&& current_theme_supports( 'post-thumbnails', get_post_type( $calling_post_id ) )
 		&& post_type_supports( get_post_type( $calling_post_id ), 'thumbnail' )
-		&& get_post_thumbnail_id( $calling_post_id ) != $attachment_id
+		&& get_post_thumbnail_id( $calling_post_id ) !== $attachment_id
 	) {
 
 		$calling_post             = get_post( $calling_post_id );
