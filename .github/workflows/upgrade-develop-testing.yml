@@ -82,7 +82,7 @@ jobs:
 
   # ...
   upgrade-tests-develop:
-    name: ${{ matrix.wp }}
+    name: Upgrade from ${{ matrix.wp }}
     uses: ./.github/workflows/reusable-upgrade-testing.yml
     if: ${{ github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' }}
     needs: [ build ]
