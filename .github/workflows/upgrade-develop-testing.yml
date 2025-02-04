@@ -70,8 +70,11 @@ jobs:
       - name: Build WordPress
         run: npm run build
 
+      - name: Prepare the directory structure for the ZIP
+        run: mv build wordpress
+
       - name: Create ZIP of built files
-        run: zip -r develop.zip build/.
+        run: zip -q -r develop.zip build/.
 
       - name: Upload ZIP as a GitHub Actions artifact
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
