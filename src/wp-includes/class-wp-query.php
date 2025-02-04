@@ -964,6 +964,9 @@ class WP_Query {
 							break;
 						default:
 							$this->is_tax = true;
+							if ( empty( $tax_query['terms'] ) && 'EXISTS' === $tax_query['operator'] ) {
+								$this->is_tax_without_term = true;
+							}
 					}
 				}
 			}
@@ -986,7 +989,7 @@ class WP_Query {
 				}
 			}
 
-			if ( $this->is_post_type_archive || $this->is_date || $this->is_author || $this->is_category || $this->is_tag || $this->is_tax ) {
+			if ( $this->is_post_type_archive || $this->is_date || $this->is_author || $this->is_category || $this->is_tag || $this->is_tax_without_term || $this->is_tax ) {
 				$this->is_archive = true;
 			}
 		}
@@ -1170,40 +1173,55 @@ class WP_Query {
 				continue; // Handled further down in the $q['tag'] block.
 			}
 
-			if ( $t->query_var && ! empty( $q[ $t->query_var ] ) ) {
-				$tax_query_defaults = array(
-					'taxonomy' => $taxonomy,
-					'field'    => 'slug',
-				);
+			if ( ! $t->query_var || ! isset( $q[ $t->query_var ] ) ) {
+				continue;
+			}
 
-				if ( ! empty( $t->rewrite['hierarchical'] ) ) {
-					$q[ $t->query_var ] = wp_basename( $q[ $t->query_var ] );
-				}
+			if ( 'category' === $taxonomy && empty( $q[ $t->query_var ] ) ) {
+				// Unlike custom taxonomies, the category field is automatically added to every query.
+				// Thus, we need to skip it if it is empty.
+				continue;
+			}
 
-				$term = $q[ $t->query_var ];
+			$tax_query_defaults = array(
+				'taxonomy' => $taxonomy,
+				'field'    => 'slug',
+			);
 
-				if ( is_array( $term ) ) {
-					$term = implode( ',', $term );
-				}
+			if ( ! empty( $t->rewrite['hierarchical'] ) ) {
+				$q[ $t->query_var ] = wp_basename( $q[ $t->query_var ] );
+			}
 
-				if ( str_contains( $term, '+' ) ) {
-					$terms = preg_split( '/[+]+/', $term );
-					foreach ( $terms as $term ) {
-						$tax_query[] = array_merge(
-							$tax_query_defaults,
-							array(
-								'terms' => array( $term ),
-							)
-						);
-					}
-				} else {
+			$term = $q[ $t->query_var ];
+
+			if ( is_array( $term ) ) {
+				$term = implode( ',', $term );
+			}
+
+			if ( str_contains( $term, '+' ) ) {
+				$terms = preg_split( '/[+]+/', $term );
+				foreach ( $terms as $term ) {
 					$tax_query[] = array_merge(
 						$tax_query_defaults,
 						array(
-							'terms' => preg_split( '/[,]+/', $term ),
+							'terms' => array( $term ),
 						)
 					);
 				}
+			} elseif ( ! empty( $term ) ) {
+				$tax_query[] = array_merge(
+					$tax_query_defaults,
+					array(
+						'terms' => preg_split( '/[,]+/', $term ),
+					)
+				);
+			} else {
+				$tax_query[] = array_merge(
+					$tax_query_defaults,
+					array(
+						'operator' => 'EXISTS',
+					)
+				);
 			}
 		}
 
@@ -3861,6 +3879,7 @@ class WP_Query {
 	 * query variable. After it is set up, it will be returned.
 	 *
 	 * @since 1.5.0
+	 * @since 6.8.0 Return the queried taxonomy object for taxonomy queries if no term is specified.
 	 *
 	 * @return WP_Term|WP_Post_Type|WP_Post|WP_User|null The queried object.
 	 */
@@ -3915,6 +3934,9 @@ class WP_Query {
 				if ( $this->is_category && 'category' === $this->queried_object->taxonomy ) {
 					_make_cat_compat( $this->queried_object );
 				}
+			} elseif ( $this->is_tax_without_term ) {
+				// If no term is specified, return the queried taxonomy object instead.
+				return get_taxonomy( $matched_taxonomy );
 			}
 		} elseif ( $this->is_post_type_archive ) {
 			$post_type = $this->get( 'post_type' );
@@ -4230,6 +4252,44 @@ class WP_Query {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Determines whether the query is for an existing custom taxonomy root archive page.
+	 *
+	 * If the $taxonomy parameter is specified, this function will additionally
+	 * check if the query is for that specific $taxonomy.
+	 *
+	 * @since 6.8.0
+	 *
+	 * @global WP_Taxonomy[] $wp_taxonomies Registered taxonomies.
+	 *
+	 * @param string|string[] $taxonomy Optional. Taxonomy slug or slugs to check against.
+	 *                                  Default empty.
+	 * @return bool Whether the query is for an existing custom taxonomy root archive page.
+	 *              True for custom taxonomy root archive pages, false for built-in taxonomies
+	 *              (category and tag archives).
+	 */
+	public function is_tax_without_term( $taxonomy = '' ) {
+		global $wp_taxonomies;
+
+		if ( ! $this->is_tax_without_term ) {
+			return false;
+		}
+
+		if ( empty( $taxonomy ) ) {
+			return true;
+		}
+
+		$queried_object = $this->get_queried_object();
+		$tax_array      = array_intersect( array_keys( $wp_taxonomies ), (array) $taxonomy );
+
+		// Check that the taxonomy matches.
+		if ( ! ( isset( $queried_object->name ) && count( $tax_array ) && in_array( $queried_object->name, $tax_array, true ) ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

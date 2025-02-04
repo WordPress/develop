@@ -318,6 +318,40 @@ function get_tag_template() {
 }
 
 /**
+ * Retrieves path of custom taxonomy root template in current or parent template.
+ *
+ * The hierarchy for this template looks like:
+ *
+ * 1. root-taxonomy-{taxonomy_slug}.php
+ * 2. root-taxonomy.php
+ *
+ * An example of this is:
+ *
+ * 1. root-taxonomy-location.php
+ * 2. root-taxonomy.php
+ *
+ * The template hierarchy and template path are filterable via the {@see '$type_template_hierarchy'}
+ * and {@see '$type_template'} dynamic hooks, where `$type` is 'taxonomy'.
+ *
+ * @since 6.8.0
+ *
+ * @see get_query_template()
+ *
+ * @return string Full path to custom taxonomy root template file.
+ */
+function get_root_taxonomy_template() {
+	$tax      = get_queried_object();
+	$taxonomy = $tax->name;
+
+	$templates = array();
+
+	$templates[] = "root-taxonomy-$taxonomy.php";
+	$templates[] = 'root-taxonomy.php';
+
+	return get_query_template( 'root-taxonomy', $templates );
+}
+
+/**
  * Retrieves path of custom taxonomy term template in current or parent template.
  *
  * The hierarchy for this template looks like:

@@ -1758,6 +1758,12 @@ function get_the_archive_title() {
 	} elseif ( is_post_type_archive() ) {
 		$title  = post_type_archive_title( '', false );
 		$prefix = _x( 'Archives:', 'post type archive title prefix' );
+	} elseif ( is_tax_without_term() ) {
+		$queried_object = get_queried_object();
+		if ( $queried_object ) {
+			$title  = $queried_object->labels->singular_name;
+			$prefix = _x( 'Archives:', 'taxonomy archive title prefix' );
+		}
 	} elseif ( is_tax() ) {
 		$queried_object = get_queried_object();
 		if ( $queried_object ) {

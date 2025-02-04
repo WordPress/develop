@@ -309,6 +309,37 @@ function is_tag( $tag = '' ) {
 }
 
 /**
+ * Determines whether the query is for an existing custom taxonomy root archive page.
+ *
+ * If the $taxonomy parameter is specified, this function will additionally
+ * check if the query is for that specific $taxonomy.
+ *
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/
+ * Conditional Tags} article in the Theme Developer Handbook.
+ *
+ * @since 6.8.0
+ *
+ * @global WP_Query $wp_query WordPress Query object.
+ *
+ * @param string|string[] $taxonomy Optional. Taxonomy slug or slugs to check against.
+ *                                  Default empty.
+ * @return bool Whether the query is for an existing custom taxonomy root archive page.
+ *              True for custom taxonomy root archive pages, false for built-in taxonomies
+ *              (category and tag archives).
+ */
+function is_tax_without_term( $taxonomy = '' ) {
+	global $wp_query;
+
+	if ( ! isset( $wp_query ) ) {
+		_doing_it_wrong( __FUNCTION__, __( 'Conditional query tags do not work before the query is run. Before then, they always return false.' ), '3.1.0' );
+		return false;
+	}
+
+	return $wp_query->is_tax_without_term( $taxonomy );
+}
+
+/**
  * Determines whether the query is for an existing custom taxonomy archive page.
  *
  * If the $taxonomy parameter is specified, this function will additionally
