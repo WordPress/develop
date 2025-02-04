@@ -9,30 +9,30 @@ on:
     tags:
       - '[0-9]+.[0-9]'
       - '[0-9]+.[0-9].[0-9]+'
-  pull_request:
-    branches:
-      - trunk
-      - '3.[7-9]'
-      - '[4-9].[0-9]'
-    paths:
-      # Any change to a PHP, CSS, JavaScript, JSON, HTML, or otherwise tested file should run checks.
-      - '**.css'
-      - '**.html'
-      - '**.js'
-      - '**.json'
-      - '**.php'
-      - 'src/license.txt'
-      - 'src/SECURITY.md'
-      # These files configure npm and the task runner. Changes could affect the outcome.
-      - 'package*.json'
-      - 'Gruntfile.js'
-      # These files configure Composer. Changes could affect the outcome.
-      - 'composer.*'
-      # This files affect the phpunit tests. Changes could affect the outcome.
-      - 'tests/phpunit/**'
-      # Confirm any changes to relevant workflow files.
-      - '.github/workflows/phpunit-tests.yml'
-      - '.github/workflows/reusable-phpunit-tests-*.yml'
+  # pull_request:
+  #   branches:
+  #     - trunk
+  #     - '3.[7-9]'
+  #     - '[4-9].[0-9]'
+  #   paths:
+  #     # Any change to a PHP, CSS, JavaScript, JSON, HTML, or otherwise tested file should run checks.
+  #     - '**.css'
+  #     - '**.html'
+  #     - '**.js'
+  #     - '**.json'
+  #     - '**.php'
+  #     - 'src/license.txt'
+  #     - 'src/SECURITY.md'
+  #     # These files configure npm and the task runner. Changes could affect the outcome.
+  #     - 'package*.json'
+  #     - 'Gruntfile.js'
+  #     # These files configure Composer. Changes could affect the outcome.
+  #     - 'composer.*'
+  #     # This files affect the phpunit tests. Changes could affect the outcome.
+  #     - 'tests/phpunit/**'
+  #     # Confirm any changes to relevant workflow files.
+  #     - '.github/workflows/phpunit-tests.yml'
+  #     - '.github/workflows/reusable-phpunit-tests-*.yml'
   workflow_dispatch:
   # Once weekly On Sundays at 00:00 UTC.
   schedule:
