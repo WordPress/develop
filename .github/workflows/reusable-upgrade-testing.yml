@@ -36,6 +36,11 @@ on:
         required: false
         type: 'string'
         default: '5.7'
+      run-id:
+        description: 'The ID of the workflow run to fetch the build from.'
+        required: false
+        type: 'number'
+        default: ${{ github.event.workflow_run.id }}
 
 # Disable permissions for all available scopes by default.
 # Any needed permissions should be configured at the job level.
@@ -129,7 +134,7 @@ jobs:
             const fs = require( 'fs' );
             fs.writeFileSync( process.env.GITHUB_WORKSPACE + '/develop.zip', Buffer.from( download.data ) )
         env:
-          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_ID: ${{ inputs.run-id }}
 
       - name: Upgrade to WordPress at current branch
         if: ${{ inputs.new-version == 'develop' }}

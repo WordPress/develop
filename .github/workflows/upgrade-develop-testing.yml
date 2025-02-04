@@ -8,6 +8,12 @@ on:
     workflows: [ 'Test Build Processes' ]
     types:
       - completed
+  workflow_dispatch:
+    inputs:
+      run-id:
+        description: 'The ID of the workflow run to fetch the build from.'
+        required: true
+        type: 'number'
 
 # Cancels all previous workflow runs for pull requests that have not completed.
 concurrency:
@@ -48,6 +54,7 @@ jobs:
       db-version: ${{ matrix.db-version }}
       wp: ${{ matrix.wp }}
       new-version: develop
+      run-id: ${{ inputs.run-id || github.event.workflow_run.id }}
       multisite: ${{ matrix.multisite }}
 
 
