@@ -91,6 +91,31 @@ class Tests_User_CountUserPosts extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Post count be correct after reassigning posts to another user.
+	 *
+	 * @ticket 39242
+	 */
+	public function test_reassigning_users_posts_modifies_count() {
+		// Create new user.
+		$new_user_id = self::factory()->user->create(
+			array(
+				'role' => 'author',
+			)
+		);
+
+		// Prior to reassigning posts.
+		$this->assertSame( '4', count_user_posts( self::$user_id ), 'Original user is expected to have a count of four posts prior to reassignment.' );
+		$this->assertSame( '0', count_user_posts( $new_user_id ), 'New user is expected to have a count of zero posts prior to reassignment.' );
+
+		// Delete the original user, reassigning their posts to the new user.
+		wp_delete_user( self::$user_id, $new_user_id );
+
+		// After reassigning posts.
+		$this->assertSame( '0', count_user_posts( self::$user_id ), 'Original user is expected to have a count of zero posts following reassignment.' );
+		$this->assertSame( '4', count_user_posts( $new_user_id ), 'New user is expected to have a count of four posts following reassignment.' );
+	}
+
+	/**
 	 * Post count should work for users that don't exist but have posts assigned.
 	 *
 	 * @ticket 39242
