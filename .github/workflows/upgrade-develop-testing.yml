@@ -42,7 +42,7 @@ concurrency:
 # Any needed permissions should be configured at the job level.
 permissions: {}
 
-# ...
+# Build WordPress from the current branch ready for the upgrade tests.
 jobs:
   build:
     name: Build
@@ -83,7 +83,7 @@ jobs:
           path: develop.zip
           if-no-files-found: error
 
-  # ...
+  # Run upgrade tests for the current branch.
   upgrade-tests-develop:
     name: Upgrade from ${{ matrix.wp }}
     uses: ./.github/workflows/reusable-upgrade-testing.yml
