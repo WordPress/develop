@@ -12,26 +12,26 @@ on:
       - '[0-9]+.[0-9]'
       - '[0-9]+.[0-9].[0-9]+'
       - '!3.7.[0-9]+'
-  pull_request:
-    branches:
-      - trunk
-      - '3.[89]'
-      - '[4-9].[0-9]'
-    paths:
-      # Any change to a PHP or JavaScript file should run checks.
-      - '**.js'
-      - '**.php'
-      # These files configure npm. Changes could affect the outcome.
-      - 'package*.json'
-      # These files configure Composer. Changes could affect the outcome.
-      - 'composer.*'
-      # This file configures JSHint. Changes could affect the outcome.
-      - '.jshintrc'
-      # This file configures PHPCS. Changes could affect the outcome.
-      - 'phpcs.xml.dist'
-      # Confirm any changes to relevant workflow files.
-      - '.github/workflows/coding-standards.yml'
-      - '.github/workflows/reusable-coding-standards-*.yml'
+  # pull_request:
+  #   branches:
+  #     - trunk
+  #     - '3.[89]'
+  #     - '[4-9].[0-9]'
+  #   paths:
+  #     # Any change to a PHP or JavaScript file should run checks.
+  #     - '**.js'
+  #     - '**.php'
+  #     # These files configure npm. Changes could affect the outcome.
+  #     - 'package*.json'
+  #     # These files configure Composer. Changes could affect the outcome.
+  #     - 'composer.*'
+  #     # This file configures JSHint. Changes could affect the outcome.
+  #     - '.jshintrc'
+  #     # This file configures PHPCS. Changes could affect the outcome.
+  #     - 'phpcs.xml.dist'
+  #     # Confirm any changes to relevant workflow files.
+  #     - '.github/workflows/coding-standards.yml'
+  #     - '.github/workflows/reusable-coding-standards-*.yml'
   workflow_dispatch:
 
 # Cancels all previous workflow runs for pull requests that have not completed.

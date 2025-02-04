@@ -11,11 +11,11 @@ on:
     paths:
       - '.github/workflows/upgrade-testing.yml'
       - '.github/workflows/reusable-upgrade-testing.yml'
-  pull_request:
-    # Always test the workflow when changes are suggested.
-    paths:
-      - '.github/workflows/upgrade-testing.yml'
-      - '.github/workflows/reusable-upgrade-testing.yml'
+  # pull_request:
+  #   # Always test the workflow when changes are suggested.
+  #   paths:
+  #     - '.github/workflows/upgrade-testing.yml'
+  #     - '.github/workflows/reusable-upgrade-testing.yml'
   workflow_dispatch:
     inputs:
       new-version:
