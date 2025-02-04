@@ -9083,8 +9083,9 @@ function wp_get_admin_notice( $message, $args = array() ) {
 		 * @param string $url  URL pointing to the image.
 		 * @param array  $args The arguments for the admin notice.
 		 */
-		$url = apply_filters( 'wp_get_admin_notice_icon', $url, $args );
-		$img = '<img src="' . esc_url( $url ) . '" width="24" height="24" class="wp-notice-icon" alt="' . esc_attr( $label ) . '">'; 
+		$url     = apply_filters( 'wp_get_admin_notice_icon', $url, $args );
+		$img     = '<img src="' . esc_url( $url ) . '" width="24" height="24" class="wp-notice-icon" alt="' . esc_attr( $label ) . '">';
+		$message = '<div class="notice-wrap">' . $message . '</div>';
 	}
 
 	$markup = sprintf( '<div %1$sclass="%2$s"%3$s>%4$s%5$s</div>', $id, $classes, $attributes, $img, $message );
