@@ -29,7 +29,7 @@ if ( ! current_user_can( 'edit_theme_options' ) ) {
  *
  * @return string|false The new URL to redirect to, or false if no redirection is needed.
  */
-function _get_site_editor_redirection_url() {
+function _wp_get_site_editor_redirection_url() {
 	global $pagenow;
 	if ( 'site-editor.php' !== $pagenow || isset( $_REQUEST['p'] ) || ! $_SERVER['QUERY_STRING'] ) {
 		return false;
@@ -111,7 +111,7 @@ function _get_site_editor_redirection_url() {
 }
 
 // Redirect to the site editor to the new URLs if needed.
-$redirection = _get_site_editor_redirection_url();
+$redirection = _wp_get_site_editor_redirection_url();
 if ( false !== $redirection ) {
 	wp_safe_redirect( $redirection );
 	exit;
