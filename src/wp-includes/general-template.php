@@ -2259,10 +2259,10 @@ function get_calendar( $args = array() ) {
 		'display'   => true,
 		'post_type' => 'post',
 	);
-	
+
 	$original_args = func_get_args();
-	$args = array();
-	
+	$args          = array();
+
 	if ( ! empty( $original_args ) ) {
 		if ( ! is_array( $original_args[0] ) ) {
 			if ( isset( $original_args[0] ) && is_bool( $original_args[0] ) ) {
