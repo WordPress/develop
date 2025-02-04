@@ -567,6 +567,9 @@ a.assistive-text:focus,
 	display: block;
 	width: 100%;
 }
+#branding img.custom-logo {
+	width: auto;
+}
 
 
 /* =Menu

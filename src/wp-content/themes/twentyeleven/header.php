@@ -78,7 +78,10 @@ if ( is_singular() && get_option( 'thread_comments' ) ) {
 <div id="page" class="hfeed">
 	<header id="branding">
 			<hgroup>
-				<h1 id="site-title"><span><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></span></h1>
+				<?php
+				// Site title or logo.
+				twentyeleven_site_logo();
+				?>
 				<h2 id="site-description"><?php bloginfo( 'description' ); ?></h2>
 			</hgroup>
 

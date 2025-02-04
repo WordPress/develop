@@ -125,6 +125,16 @@ if ( ! function_exists( 'twentyten_setup' ) ) :
 		// Add default posts and comments RSS feed links to head.
 		add_theme_support( 'automatic-feed-links' );
 
+		// Enable support for custom logo.
+		add_theme_support(
+			'custom-logo',
+			array(
+				'height'      => 100,
+				'width'       => 300,
+				'flex-height' => true,
+			)
+		);
+
 		/*
 		 * Make theme available for translation.
 		 * Translations can be filed in the /languages/ directory.
@@ -809,3 +819,102 @@ if ( ! function_exists( 'wp_body_open' ) ) :
 		do_action( 'wp_body_open' );
 	}
 endif;
+
+/**
+ * Displays the site logo, either text or image.
+ *
+ * @param array $args    Arguments for displaying the site logo either as an image or text.
+ * @param bool  $display Display or return the HTML.
+ * @return string Compiled HTML based on our arguments.
+ */
+function twentyten_site_logo( $args = array(), $echo = true ) {
+	$logo       = get_custom_logo();
+	$site_title = get_bloginfo( 'name' );
+	$contents   = '';
+	$classname  = '';
+
+	$defaults = array(
+		'logo'        => '%1$s<span class="screen-reader-text">%2$s</span>',
+		'logo_class'  => 'site-title',
+		'title'       => '<a href="%1$s" rel="home">%2$s</a>',
+		'title_class' => 'site-title',
+		'home_wrap'   => '<h1 id="%1$s">%2$s</h1>',
+		'single_wrap' => '<div id="%1$s">%2$s</div>',
+		'condition'   => ( is_front_page() || is_home() ) && ! is_page(),
+	);
+
+	$args = wp_parse_args( $args, $defaults );
+
+	/**
+	 * Filters the arguments for `twentyten_site_logo()`.
+	 *
+	 * @param array  $args     Parsed arguments.
+	 * @param array  $defaults Function's default arguments.
+	 */
+	$args = apply_filters( 'twentyten_site_logo_args', $args, $defaults );
+
+	if ( has_custom_logo() ) {
+		$contents  = sprintf( $args['logo'], $logo, esc_html( $site_title ) );
+		$classname = $args['logo_class'];
+	} else {
+		$contents  = sprintf( $args['title'], esc_url( get_home_url( null, '/' ) ), esc_html( $site_title ) );
+		if (
+			( is_front_page() || is_home() && ( (int) get_option( 'page_for_posts' ) !== get_queried_object_id() ) )
+			&& ! is_paged()
+			&& $args['title'] === $defaults['title']
+		) {
+			$contents = str_replace( ' rel=', ' aria-current="page" rel=', $contents );
+		}
+		$classname = $args['title_class'];
+	}
+
+	$wrap = $args['condition'] ? 'home_wrap' : 'single_wrap';
+
+	$html = sprintf( $args[ $wrap ], $classname, $contents );
+
+	/**
+	 * Filters the arguments for `twentyten_site_logo()`.
+	 *
+	 * @param string $html      Compiled html based on our arguments.
+	 * @param array  $args      Parsed arguments.
+	 * @param string $classname Class name based on current view, home or single.
+	 * @param string $contents  HTML for site title or logo.
+	 */
+	$html = apply_filters( 'twentyten_site_logo', $html, $args, $classname, $contents );
+
+	if ( ! $echo ) {
+		return $html;
+	}
+
+	echo $html; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+
+/**
+ * Implements Twenty Ten theme options into Customizer
+ *
+ * @param WP_Customize_Manager $wp_customize Customizer object.
+ */
+function twentyten_customize_register( $wp_customize ) {
+	if ( isset( $wp_customize->selective_refresh ) ) {
+		$wp_customize->selective_refresh->add_partial(
+			'custom_logo',
+			array(
+				'selector'            => '.header-titles [class*=site-]:not(.site-description)',
+				'render_callback'     => 'twentyten_customize_partial_site_logo',
+				'container_inclusive' => true,
+			)
+		);
+	}
+}
+add_action( 'customize_register', 'twentyten_customize_register' );
+
+if ( ! function_exists( 'twentyten_customize_partial_site_logo' ) ) {
+	/**
+	 * Render the site logo for the selective refresh partial.
+	 *
+	 * Doing it this way so we don't have issues with `render_callback`'s arguments.
+	 */
+	function twentyten_customize_partial_site_logo() {
+		twentyten_site_logo();
+	}
+}
