@@ -211,4 +211,20 @@ class Tests_User_CountUserPosts extends WP_UnitTestCase {
 
 		$this->assertSame( 0, $total_queries, 'Cache should be hit for string and array equivalent post types.' );
 	}
+
+	/**
+	 * User count cache should be hit for array duplicates and equivalent queries.
+	 *
+	 * @ticket 39242
+ */
+	public function test_cache_should_be_hit_for_and_array_duplicates_equivalent_queries() {
+		// Prime Cache
+		count_user_posts( self::$user_id, array( 'post', 'post', 'post' ) );
+
+		$query_num_start = get_num_queries();
+		count_user_posts( self::$user_id, array( 'post' ) );
+		$total_queries = get_num_queries() - $query_num_start;
+
+		$this->assertSame( 0, $total_queries );
+	}
 }

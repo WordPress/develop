@@ -604,7 +604,7 @@ function wp_validate_logged_in_cookie( $user_id ) {
 function count_user_posts( $userid, $post_type = 'post', $public_only = false ) {
 	global $wpdb;
 
-	$post_type = (array) $post_type;
+	$post_type = array_unique( (array) $post_type );
 	sort( $post_type );
 
 	$where = get_posts_by_author_sql( $post_type, true, $userid, $public_only );
