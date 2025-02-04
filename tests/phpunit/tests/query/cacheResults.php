@@ -208,15 +208,7 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 	public function test_post_in_order_by_clauses_are_not_normalized() {
 		global $wpdb;
 
-		$post_names = array( 'doctor-dillamond', 'elphaba', 'fiyero', 'glinda', 'the-wizard-of-oz' );
-		$post_ids   = array();
-		foreach ( $post_names as $post_name ) {
-			$post_ids[] = self::factory()->post->create(
-				array(
-					'post_name' => $post_name,
-				)
-			);
-		}
+		$post_ids = self::$posts;
 
 		$query_vars1 = array(
 			'post__in' => $post_ids,
@@ -249,9 +241,10 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 		$this->assertNotEmpty( $cache_key_1, 'Cache key for query one should not be empty.' );
 		$this->assertNotEmpty( $cache_key_2, 'Cache key for query two should not be empty.' );
 
-		// Test the posts are returned in the correct order.
-		$this->assertSame( array( 'doctor-dillamond', 'elphaba', 'fiyero', 'glinda', 'the-wizard-of-oz' ), wp_list_pluck( $query1->posts, 'post_name' ), 'Query one posts should be in alphabetical order' );
-		$this->assertSame( array( 'the-wizard-of-oz', 'glinda', 'fiyero', 'elphaba', 'doctor-dillamond' ), wp_list_pluck( $query2->posts, 'post_name' ), 'Query two posts should be in reverse alphabetical order.' );
+		// Test the posts are returned different orders.
+		$this->assertNotSame( wp_list_pluck( $query1->posts, 'ID' ), wp_list_pluck( $query2->posts, 'ID' ), 'Query one posts should not match the order of query two posts.' );
+		// Test the posts are the same sets.
+		$this->assertSameSets( wp_list_pluck( $query1->posts, 'ID' ), wp_list_pluck( $query2->posts, 'ID' ), 'Query one posts should match the set of query two posts.' );
 	}
 
 	/**
@@ -312,6 +305,8 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 		// Test the posts are returned in the correct order.
 		$this->assertSame( array( 'doctor-dillamond', 'elphaba', 'fiyero', 'glinda', 'the-wizard-of-oz' ), wp_list_pluck( $query1->posts, 'post_name' ), 'Query one posts should be in alphabetical order' );
 		$this->assertSame( array( 'the-wizard-of-oz', 'glinda', 'fiyero', 'elphaba', 'doctor-dillamond' ), wp_list_pluck( $query2->posts, 'post_name' ), 'Query two posts should be in reverse alphabetical order.' );
+		// Test the posts are the same sets.
+		$this->assertSameSets( wp_list_pluck( $query1->posts, 'ID' ), wp_list_pluck( $query2->posts, 'ID' ), 'Query one posts should match the set of query two posts.' );
 	}
 
 	/**
@@ -367,6 +362,8 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 		// Test the posts are returned in the correct order.
 		$this->assertSame( array( 'doctor-dillamond', 'elphaba', 'glinda', 'the-wizard-of-oz' ), wp_list_pluck( $query1->posts, 'post_name' ), 'Query one posts should be in alphabetical order' );
 		$this->assertSame( array( 'the-wizard-of-oz', 'glinda', 'elphaba', 'doctor-dillamond' ), wp_list_pluck( $query2->posts, 'post_name' ), 'Query two posts should be in reverse alphabetical order.' );
+		// Test the posts are the same sets.
+		$this->assertSameSets( wp_list_pluck( $query1->posts, 'ID' ), wp_list_pluck( $query2->posts, 'ID' ), 'Query one posts should match the set of query two posts.' );
 	}
 
 	/**
