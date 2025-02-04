@@ -204,14 +204,28 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 	 * @ticket 59516
 	 *
 	 * @covers WP_Query::generate_cache_key
-	 *
-	 * @dataProvider data_orderby_clauses_are_not_normalized
 	 */
-	public function test_orderby_clauses_are_not_normalized( $query_vars1, $query_vars2 ) {
+	public function test_post_in_order_by_clauses_are_not_normalized() {
 		global $wpdb;
 
-		$this->assertArrayHasKey( 'orderby', $query_vars1, 'First query vars should have orderby.' );
-		$this->assertArrayHasKey( 'orderby', $query_vars2, 'Second query vars should have orderby.' );
+		$post_names = array( 'doctor-dillamond', 'elphaba', 'fiyero', 'glinda', 'the-wizard-of-oz' );
+		$post_ids   = array();
+		foreach ( $post_names as $post_name ) {
+			$post_ids[] = self::factory()->post->create(
+				array(
+					'post_name' => $post_name,
+				)
+			);
+		}
+
+		$query_vars1 = array(
+			'post__in' => $post_ids,
+			'orderby'  => 'post__in',
+		);
+		$query_vars2 = array(
+			'post__in' => array_reverse( $post_ids ),
+			'orderby'  => 'post__in',
+		);
 
 		$fields   = "{$wpdb->posts}.ID";
 		$query1   = new WP_Query( $query_vars1 );
@@ -234,41 +248,125 @@ class Test_Query_CacheResults extends WP_UnitTestCase {
 		$this->assertNotSame( $cache_key_1, $cache_key_2, 'Cache key should differ.' );
 		$this->assertNotEmpty( $cache_key_1, 'Cache key for query one should not be empty.' );
 		$this->assertNotEmpty( $cache_key_2, 'Cache key for query two should not be empty.' );
+
+		// Test the posts are returned in the correct order.
+		$this->assertSame( array( 'doctor-dillamond', 'elphaba', 'fiyero', 'glinda', 'the-wizard-of-oz' ), wp_list_pluck( $query1->posts, 'post_name' ), 'Query one posts should be in alphabetical order' );
+		$this->assertSame( array( 'the-wizard-of-oz', 'glinda', 'fiyero', 'elphaba', 'doctor-dillamond' ), wp_list_pluck( $query2->posts, 'post_name' ), 'Query two posts should be in reverse alphabetical order.' );
 	}
 
-	public function data_orderby_clauses_are_not_normalized() {
-		return array(
-			'orderby post__in'      => array(
-				'query_vars1' => array(
-					'post__in' => array( 1, 2, 3, 4, 5 ),
-					'orderby'  => 'post__in',
-				),
-				'query_vars2' => array(
-					'post__in' => array( 5, 4, 3, 2, 1 ),
-					'orderby'  => 'post__in',
-				),
-			),
-			'post parent in order'  => array(
-				'query_vars1' => array(
-					'post_parent__in' => array( 1, 2, 3, 4, 5 ),
-					'orderby'         => 'post_parent__in',
-				),
-				'query_vars2' => array(
-					'post_parent__in' => array( 5, 4, 3, 2, 1 ),
-					'orderby'         => 'post_parent__in',
-				),
-			),
-			'orderby post_name__in' => array(
-				'query_vars1' => array(
-					'post_name__in' => array( 'elphaba', 'glinda', 'the-wizard-of-oz', 'doctor-dillamond' ),
-					'orderby'       => 'post_name__in',
-				),
-				'query_vars2' => array(
-					'post_name__in' => array( 'doctor-dillamond', 'elphaba', 'the-wizard-of-oz', 'glinda' ),
-					'orderby'       => 'post_name__in',
-				),
-			),
+	/**
+	 * @ticket 59516
+	 *
+	 * @covers WP_Query::generate_cache_key
+	 */
+	public function test_post_parent_in_order_by_clauses_are_not_normalized() {
+		global $wpdb;
+
+		$parent_pages = self::$pages;
+		$post_names   = array( 'doctor-dillamond', 'elphaba', 'fiyero', 'glinda', 'the-wizard-of-oz' );
+		$child_pages  = array();
+		foreach ( $parent_pages as $key => $parent_page ) {
+			$child_pages[] = self::factory()->post->create(
+				array(
+					'post_parent' => $parent_page,
+					'post_type'   => 'page',
+					'post_name'   => $post_names[ $key ],
+				)
+			);
+		}
+
+		$query_vars1 = array(
+			'post_parent__in' => $parent_pages,
+			'post_type'       => 'page',
+			'orderby'         => 'post_parent__in',
 		);
+
+		$query_vars2 = array(
+			'post_parent__in' => array_reverse( $parent_pages ),
+			'post_type'       => 'page',
+			'orderby'         => 'post_parent__in',
+		);
+
+		$fields   = "{$wpdb->posts}.ID";
+		$query1   = new WP_Query( $query_vars1 );
+		$request1 = str_replace( $fields, "{$wpdb->posts}.*", $query1->request );
+
+		$query2   = new WP_Query( $query_vars2 );
+		$request2 = str_replace( $fields, "{$wpdb->posts}.*", $query2->request );
+
+		$reflection_q1 = new ReflectionProperty( $query1, 'query_cache_key' );
+		$reflection_q1->setAccessible( true );
+
+		$reflection_q2 = new ReflectionProperty( $query2, 'query_cache_key' );
+		$reflection_q2->setAccessible( true );
+
+		$this->assertNotSame( $request1, $request2, 'Queries should not match' );
+
+		$cache_key_1 = $reflection_q1->getValue( $query1 );
+		$cache_key_2 = $reflection_q2->getValue( $query2 );
+
+		$this->assertNotSame( $cache_key_1, $cache_key_2, 'Cache key should differ.' );
+		$this->assertNotEmpty( $cache_key_1, 'Cache key for query one should not be empty.' );
+		$this->assertNotEmpty( $cache_key_2, 'Cache key for query two should not be empty.' );
+
+		// Test the posts are returned in the correct order.
+		$this->assertSame( array( 'doctor-dillamond', 'elphaba', 'fiyero', 'glinda', 'the-wizard-of-oz' ), wp_list_pluck( $query1->posts, 'post_name' ), 'Query one posts should be in alphabetical order' );
+		$this->assertSame( array( 'the-wizard-of-oz', 'glinda', 'fiyero', 'elphaba', 'doctor-dillamond' ), wp_list_pluck( $query2->posts, 'post_name' ), 'Query two posts should be in reverse alphabetical order.' );
+	}
+
+	/**
+	 * @ticket 59516
+	 *
+	 * @covers WP_Query::generate_cache_key
+	 */
+	public function test_post_name_in_order_by_clauses_are_not_normalized() {
+		global $wpdb;
+		$post_names = array( 'doctor-dillamond', 'elphaba', 'glinda', 'the-wizard-of-oz' );
+		$posts      = array();
+
+		foreach ( $post_names as $post_name ) {
+			$posts[] = self::factory()->post->create(
+				array(
+					'post_name' => $post_name,
+				)
+			);
+		}
+
+		$query_vars1 = array(
+			'post_name__in' => $post_names,
+			'orderby'       => 'post_name__in',
+		);
+
+		$query_vars2 = array(
+			'post_name__in' => array_reverse( $post_names ),
+			'orderby'       => 'post_name__in',
+		);
+
+		$fields   = "{$wpdb->posts}.ID";
+		$query1   = new WP_Query( $query_vars1 );
+		$request1 = str_replace( $fields, "{$wpdb->posts}.*", $query1->request );
+
+		$query2   = new WP_Query( $query_vars2 );
+		$request2 = str_replace( $fields, "{$wpdb->posts}.*", $query2->request );
+
+		$reflection_q1 = new ReflectionProperty( $query1, 'query_cache_key' );
+		$reflection_q1->setAccessible( true );
+
+		$reflection_q2 = new ReflectionProperty( $query2, 'query_cache_key' );
+		$reflection_q2->setAccessible( true );
+
+		$this->assertNotSame( $request1, $request2, 'Queries should not match' );
+
+		$cache_key_1 = $reflection_q1->getValue( $query1 );
+		$cache_key_2 = $reflection_q2->getValue( $query2 );
+
+		$this->assertNotSame( $cache_key_1, $cache_key_2, 'Cache key should differ.' );
+		$this->assertNotEmpty( $cache_key_1, 'Cache key for query one should not be empty.' );
+		$this->assertNotEmpty( $cache_key_2, 'Cache key for query two should not be empty.' );
+
+		// Test the posts are returned in the correct order.
+		$this->assertSame( array( 'doctor-dillamond', 'elphaba', 'glinda', 'the-wizard-of-oz' ), wp_list_pluck( $query1->posts, 'post_name' ), 'Query one posts should be in alphabetical order' );
+		$this->assertSame( array( 'the-wizard-of-oz', 'glinda', 'elphaba', 'doctor-dillamond' ), wp_list_pluck( $query2->posts, 'post_name' ), 'Query two posts should be in reverse alphabetical order.' );
 	}
 
 	/**
