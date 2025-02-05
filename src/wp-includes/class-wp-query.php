@@ -3662,25 +3662,23 @@ class WP_Query {
 	 *
 	 * @since 1.5.0
 	 *
-	 * @return WP_Post|int Next post.
+	 * @return WP_Post Next post.
 	 */
 	public function next_post() {
 
 		++$this->current_post;
 
-		if ( $this->posts[ $this->current_post ] instanceof WP_Post ) {
-			$this->post = $this->posts[ $this->current_post ];
-		} else {
-			$current_item = $this->posts[ $this->current_post ];
+		$current_item = $this->posts[ $this->current_post ];
 
-			if ( is_object( $current_item ) && property_exists( $current_item, 'ID' ) ) {
-				$this->post = $current_item->ID;
-			} else {
-				$this->post = $current_item;
-			}
+		if ( $current_item instanceof WP_Post ) {
+			return $this->post = $current_item;
 		}
 
-		return $this->post;
+		if ( is_object( $current_item ) && property_exists( $current_item, 'ID' ) ) {
+			return $this->post = get_post( $current_item->ID ) ?: $current_item;
+		}
+
+		return $this->post = $current_item;
 	}
 
 	/**
