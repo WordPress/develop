@@ -1802,7 +1802,7 @@ function wp_dropdown_users( $args = '' ) {
 			// Add the gravatar image if enabled.
 			$gravatar = '';
 			if ( $parsed_args['show_gravatar'] ) {
-				$gravatar = get_avatar( $user->ID, 16 ) . ' ';
+				$gravatar = get_avatar( $user->ID, 24 ) . ' ';
 			}
 			$output   .= sprintf(
 				"\t<option value='%s'%s>%s<span>%s</span></option>\n",
