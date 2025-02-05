@@ -11,6 +11,24 @@
 /** Make sure that the WordPress bootstrap has run before continuing. */
 require __DIR__ . '/wp-load.php';
 
+/**
+ * Prevents user registration if the 'users_can_register' option is disabled.
+ *
+ * This function checks if user registration is disabled (`users_can_register` = 0)
+ * and blocks access to the registration page (`wp-login.php?action=register`) by 
+ * displaying an error message.
+ *
+ * @since 6.7.1
+ */
+function disable_wp_registration() {
+    if ( ! get_option( 'users_can_register' ) && isset( $_GET['action'] ) && 'register' === $_GET['action'] ) {
+        wp_die(
+            apply_filters( 'disable_registration_message', __( 'Registration is disabled on this site.', 'default' ) )
+        );
+    }
+}
+add_action( 'init', 'disable_wp_registration' );
+
 // Redirect to HTTPS login if forced to use SSL.
 if ( force_ssl_admin() && ! is_ssl() ) {
 	if ( str_starts_with( $_SERVER['REQUEST_URI'], 'http' ) ) {
