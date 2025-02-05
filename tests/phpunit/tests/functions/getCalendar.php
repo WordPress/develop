@@ -39,9 +39,7 @@ class Tests_Get_Calendar extends WP_UnitTestCase {
 	 */
 	public function test_get_calendar_display() {
 		$expected = '<table id="wp-calendar"';
-		ob_start();
-		get_calendar( array( 'display' => true ) );
-		$actual = ob_get_clean();
+		$actual   = get_echo( 'get_calendar', array( array( 'display' => true ) ) );
 		$this->assertStringContainsString( $expected, $actual );
 	}
 
@@ -66,9 +64,7 @@ class Tests_Get_Calendar extends WP_UnitTestCase {
 			}
 		);
 
-		ob_start();
-		get_calendar();
-		$calendar_html = ob_get_clean();
+		$calendar_html = get_echo( 'get_calendar' );
 
 		remove_all_filters( 'get_calendar_args' );
 
@@ -83,9 +79,7 @@ class Tests_Get_Calendar extends WP_UnitTestCase {
 	 * @ticket 34093
 	 */
 	public function test_get_calendar_backwards_compatibility() {
-		ob_start();
-		get_calendar( false );
-		$first_calendar_html = ob_get_clean();
+		$first_calendar_html = get_echo( 'get_calendar', array( false ) );
 
 		wp_cache_delete( 'get_calendar', 'calendar' );
 
