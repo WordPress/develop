@@ -380,4 +380,128 @@ class Tests_Post_wpUniquePostSlug extends WP_UnitTestCase {
 		$found = wp_unique_post_slug( 'embed', $p, 'publish', 'attachment', 0 );
 		$this->assertSame( 'embed-2', $found );
 	}
+
+	/**
+	 * Test that a post cannot use an existing page's slug.
+	 *
+	 * @ticket 13459
+	 */
+	public function test_unique_slug_page_before_post() {
+		$this->set_permalink_structure( '/%postname%/' );
+
+		$page = self::factory()->post->create(
+			array(
+				'post_type'  => 'page',
+				'post_title' => 'Test Page',
+				'post_name'  => 'test-slug',
+			)
+		);
+
+		$post = self::factory()->post->create(
+			array(
+				'post_type'  => 'post',
+				'post_title' => 'Test Post',
+				'post_name'  => 'test-slug',
+			)
+		);
+
+		$page_obj = get_post( $page );
+		$post_obj = get_post( $post );
+
+		$this->assertSame( 'test-slug', $page_obj->post_name );
+		$this->assertSame( 'test-slug-2', $post_obj->post_name );
+	}
+
+	/**
+	 * Test that a page cannot use an existing post's slug.
+	 *
+	 * @ticket 13459
+	 */
+	public function test_unique_slug_post_before_page() {
+		$this->set_permalink_structure( '/%postname%/' );
+
+		$post = self::factory()->post->create(
+			array(
+				'post_type'  => 'post',
+				'post_title' => 'Test Post',
+				'post_name'  => 'test-slug',
+			)
+		);
+
+		$page = self::factory()->post->create(
+			array(
+				'post_type'  => 'page',
+				'post_title' => 'Test Page',
+				'post_name'  => 'test-slug',
+			)
+		);
+
+		$post_obj = get_post( $post );
+		$page_obj = get_post( $page );
+
+		$this->assertSame( 'test-slug', $post_obj->post_name );
+		$this->assertSame( 'test-slug-2', $page_obj->post_name );
+	}
+
+	/**
+	 * Test that two posts cannot share the same slug.
+	 *
+	 * @ticket 13459
+	 */
+	public function test_unique_slug_post_before_post() {
+		$this->set_permalink_structure( '/%postname%/' );
+
+		$post1 = self::factory()->post->create(
+			array(
+				'post_type'  => 'post',
+				'post_title' => 'First Post',
+				'post_name'  => 'test-slug',
+			)
+		);
+
+		$post2 = self::factory()->post->create(
+			array(
+				'post_type'  => 'post',
+				'post_title' => 'Second Post',
+				'post_name'  => 'test-slug',
+			)
+		);
+
+		$post1_obj = get_post( $post1 );
+		$post2_obj = get_post( $post2 );
+
+		$this->assertSame( 'test-slug', $post1_obj->post_name );
+		$this->assertSame( 'test-slug-2', $post2_obj->post_name );
+	}
+
+	/**
+	 * Test that two pages cannot share the same slug.
+	 *
+	 * @ticket 13459
+	 */
+	public function test_unique_slug_page_before_page() {
+		$this->set_permalink_structure( '/%postname%/' );
+
+		$page1 = self::factory()->post->create(
+			array(
+				'post_type'  => 'page',
+				'post_title' => 'First Page',
+				'post_name'  => 'test-slug',
+			)
+		);
+
+		$page2 = self::factory()->post->create(
+			array(
+				'post_type'  => 'page',
+				'post_title' => 'Second Page',
+				'post_name'  => 'test-slug',
+			)
+		);
+
+		$page1_obj = get_post( $page1 );
+		$page2_obj = get_post( $page2 );
+
+		$this->assertSame( 'test-slug', $page1_obj->post_name );
+		$this->assertSame( 'test-slug-2', $page2_obj->post_name );
+	}
 }
