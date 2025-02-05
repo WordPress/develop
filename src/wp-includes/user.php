@@ -1804,7 +1804,7 @@ function wp_dropdown_users( $args = '' ) {
 			if ( $parsed_args['show_gravatar'] ) {
 				$gravatar = get_avatar( $user->ID, 24 ) . ' ';
 			}
-			$output   .= sprintf(
+			$output .= sprintf(
 				"\t<option value='%s'%s>%s%s</option>\n",
 				$user->ID,
 				$_selected,
