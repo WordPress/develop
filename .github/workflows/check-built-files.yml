@@ -1,0 +1,183 @@
+# Checks for uncommitted changes to built files and pushes changes back.
+name: Check built files
+
+on:
+  # Because all commits happen through SVN and should always be manually reviewed by a committer, this workflow only
+  # runs for pull requests.
+  #
+  # Other workflows that run on push will detect changes to versioned files and fail.
+  pull_request_target:
+    branches:
+      - trunk
+      - '6.[8-9]'
+      - '[7-9].[0-9]'
+    paths:
+      # Any change to a CSS, JavaScript, JSON, or SASS file should run checks.
+      - '**.css'
+      - '**.js'
+      - '**.json'
+      - '**.sass'
+      # These files configure npm and the task runner. Changes could affect the outcome.
+      - 'package*.json'
+      - 'Gruntfile.js'
+      - 'webpack.config.js'
+      - 'tools/webpack/**'
+      # These files configure Composer. Changes could affect the outcome.
+      - 'composer.*'
+      # Confirm any changes to relevant workflow files.
+      - '.github/workflows/check-built-files.yml'
+
+# Cancels all previous workflow runs for pull requests that have not completed.
+concurrency:
+  # The concurrency group contains the workflow name and the branch name for pull requests
+  # or the commit hash for any other events.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request_target' && github.head_ref || github.sha }}
+
+# Disable permissions for all available scopes by default.
+# Any needed permissions should be configured at the job level.
+permissions: {}
+
+jobs:
+  # Checks a PR for uncommitted changes to built files.
+  #
+  # This job uses a GitHub App instead of $GITHUB_TOKEN because Dependabot pull requests are only granted
+  # read-only access.
+  #
+  # Performs the following steps:
+  # - Generates a token for authenticating with the GitHub App.
+  # - Checks out the repository.
+  # - Sets up Node.js.
+  # - Configures caching for Composer.
+  # - Installs Composer dependencies.
+  # - Logs general debug information about the runner.
+  # - Installs npm dependencies.
+  # - Builds CSS file using SASS.
+  # - Builds Emoji files.
+  # - Builds bundled Root Certificate files.
+  # - Builds WordPress.
+  # - Configures the Git author.
+  # - Checks for changes to versioned files.
+  # - Stages changes.
+  # - Commits changes.
+  # - Pushes changes.
+  update-built-files:
+    name: Check and update built files
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    # This prevents a second run after changes are committed back because Dependabot always rebases updates onto trunk.
+    if: ${{ github.actor != 'dependabot[bot]' || github.event.commits < 2 }}
+    steps:
+      - name: Generate Installation Token
+        id: generate_token
+        env:
+          GH_APP_ID: ${{ secrets.GH_APP_ID }}
+          GH_APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
+        run: |
+          echo "${{ env.GH_APP_PRIVATE_KEY }}" > private-key.pem
+
+          APP_ID=${{ env.GH_APP_ID }}
+
+          # Generate JWT
+          JWT=$(python3 - <<EOF
+          import jwt, time
+          private_key = open("private-key.pem", "r").read()
+          payload = {
+              "iat": int(time.time()),
+              "exp": int(time.time()) + 600,  # 10-minute expiration
+              "iss": $APP_ID
+          }
+          print(jwt.encode(payload, private_key, algorithm="RS256"))
+          EOF
+          )
+
+          # Get Installation ID
+          INSTALLATION_ID=$(curl -s -X GET -H "Authorization: Bearer $JWT" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/app/installations | jq -r '.[0].id')
+
+          # Request Installation Access Token
+          ACCESS_TOKEN=$(curl -s -X POST -H "Authorization: Bearer $JWT" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/app/installations/$INSTALLATION_ID/access_tokens | jq -r '.token')
+
+          echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> "$GITHUB_ENV"
+
+          rm -f private-key.pem
+
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.head_ref }}
+          show-progress: ${{ runner.debug == '1' && 'true' || 'false' }}
+          token: ${{ env.ACCESS_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      # This date is used to ensure that the PHPCS cache is cleared at least once every week.
+      # http://man7.org/linux/man-pages/man1/date.1.html
+      - name: "Get last Monday's date"
+        id: get-date
+        run: echo "date=$(/bin/date -u --date='last Mon' "+%F")" >> "$GITHUB_OUTPUT"
+
+      # Since Composer dependencies are installed using `composer update` and no lock file is in version control,
+      # passing a custom cache suffix ensures that the cache is flushed at least once per week.
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # v3.0.0
+        with:
+          custom-cache-suffix: ${{ steps.get-date.outputs.date }}
+
+      - name: Log debug information
+        run: |
+          npm --version
+          node --version
+          curl --version
+          git --version
+
+      - name: Install npm Dependencies
+        run: npm ci
+
+      - name: Run SASS precommit tasks
+        run: npm run grunt precommit:css
+
+      - name: Run Emoji precommit task
+        run: npm run grunt precommit:emoji
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run certificate tasks
+        run: npm run grunt copy:certificates
+
+      - name: Build WordPress
+        run: npm run build:dev
+
+      - name: Configure git user name and email
+        run: |
+          git config user.name "dependabot[bot]"
+          git config user.email 49699333+dependabot[bot]@users.noreply.github.com
+
+      - name: Check for changes to versioned files
+        id: built-file-check
+        run: |
+          diff_output=$(git diff)
+          if [ -n "$diff_output" ]; then
+            echo "uncommitted_changes=$(echo $diff_output)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Stage changes
+        if: ${{ steps.built-file-check.outputs.uncommitted_changes != '' }}
+        run: git add .
+
+      - name: Commit changes
+        if: ${{ steps.built-file-check.outputs.uncommitted_changes != '' }}
+        run: |
+          git commit -m "Automation: Updating built files with changes. [dependabot skip]"
+
+      - name: Push changes
+        if: ${{ steps.built-file-check.outputs.uncommitted_changes != '' }}
+        run: git push
+
