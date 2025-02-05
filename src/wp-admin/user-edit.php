@@ -529,9 +529,6 @@ switch ( $action ) {
 								$public_display = array_filter( $public_display );
 								$public_display = array_unique( $public_display );
 
-								error_log( print_r( $public_display, true ) );
-								error_log( print_r( $profile_user->display_name, true ) );
-
 								?>
 								<?php foreach ( $public_display as $id => $item ) : ?>
 									<option <?php selected( $profile_user->display_name, $item ); ?>><?php echo $item; ?></option>
