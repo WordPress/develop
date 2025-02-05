@@ -245,7 +245,7 @@ function wp_get_speculation_rules( array $configuration ): WP_Speculation_Rules 
 				'selector_matches' => 'a[rel~="nofollow"]',
 			),
 		),
-		// Last but not least, exclude links that are explicitly marked to opt out.
+		// Exclude links that are explicitly marked to opt out.
 		array(
 			'not' => array(
 				'selector_matches' => ".no-{$mode}",
