@@ -3671,14 +3671,20 @@ class WP_Query {
 		$current_item = $this->posts[ $this->current_post ];
 
 		if ( $current_item instanceof WP_Post ) {
-			return $this->post = $current_item;
+			$this->post = $current_item;
+		} else {
+			if ( is_object( $current_item ) && property_exists( $current_item, 'ID' ) ) {
+				$this->post = get_post( $current_item->ID );
+
+				if ( ! $this->post ) {
+					$this->post = $current_item;
+				}
+			} else {
+				$this->post = $current_item;
+			}
 		}
 
-		if ( is_object( $current_item ) && property_exists( $current_item, 'ID' ) ) {
-			return $this->post = get_post( $current_item->ID ) ?: $current_item;
-		}
-
-		return $this->post = $current_item;
+		return $this->post;
 	}
 
 	/**
