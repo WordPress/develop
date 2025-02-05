@@ -606,7 +606,7 @@ function count_user_posts( $userid, $post_type = 'post', $public_only = false ) 
 
 	$where = get_posts_by_author_sql( $post_type, true, $userid, $public_only );
 
-	$count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->posts $where" );
+	$count = $wpdb->get_var( "SELECT COUNT(ID) FROM $wpdb->posts $where" );
 
 	/**
 	 * Filters the number of posts a user has written.
