@@ -78,18 +78,22 @@ class WP_URL_Pattern_Prefixer {
 			return $path_pattern;
 		}
 
-		// In the event that the context path contains a :, ? or # (which can cause the URL pattern parser to
-		// switch to another state, though only the latter two should be percent encoded anyway), we need to
-		// additionally enclose it in grouping braces. The final forward slash (trailingslashit ensures there is
-		// one) affects the meaning of the * wildcard, so is left outside the braces.
+		/*
+		 * In the event that the context path contains a :, ? or # (which can cause the URL pattern parser to switch to
+		 * another state, though only the latter two should be percent encoded anyway), it additionally needs to be
+		 * enclosed in grouping braces. The final forward slash (trailingslashit ensures there is one) affects the
+		 * meaning of the * wildcard, so is left outside the braces.
+		 */
 		$context_path         = $this->contexts[ $context ];
 		$escaped_context_path = $context_path;
 		if ( strcspn( $context_path, ':?#' ) !== strlen( $context_path ) ) {
 			$escaped_context_path = '{' . substr( $context_path, 0, -1 ) . '}/';
 		}
 
-		// If the path already starts with the context path (including '/'), remove it first
-		// since it is about to be added back.
+		/*
+		 * If the path already starts with the context path (including '/'), remove it first
+		 * since it is about to be added back.
+		 */
 		if ( str_starts_with( $path_pattern, $context_path ) ) {
 			$path_pattern = substr( $path_pattern, strlen( $context_path ) );
 		}

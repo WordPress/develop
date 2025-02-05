@@ -245,7 +245,7 @@ function wp_get_speculation_rules( array $configuration ): WP_Speculation_Rules 
 				'selector_matches' => 'a[rel~="nofollow"]',
 			),
 		),
-		// Exclude links that are explicitly marked to opt out.
+		// Also exclude links that are explicitly marked to opt out.
 		array(
 			'not' => array(
 				'selector_matches' => ".no-{$mode}",
@@ -253,7 +253,7 @@ function wp_get_speculation_rules( array $configuration ): WP_Speculation_Rules 
 		),
 	);
 
-	// If using 'prerender', we need to also exclude links that opt-out of 'prefetch' because it's part of 'prerender'.
+	// If using 'prerender', also exclude links that opt-out of 'prefetch' because it's part of 'prerender'.
 	if ( 'prerender' === $mode ) {
 		$main_rule_conditions[] = array(
 			'not' => array(

@@ -184,7 +184,7 @@ final class WP_Speculation_Rules implements JsonSerializable {
 	 */
 	#[ReturnTypeWillChange]
 	public function jsonSerialize() {
-		// For the JSON output, we need to strip the IDs, which are not relevant for the Speculation Rules API.
+		// Strip the IDs for JSON output, since they are not relevant for the Speculation Rules API.
 		return array_map(
 			static function ( array $rules ) {
 				return array_values( $rules );
