@@ -181,6 +181,17 @@ class Tests_Speculative_Loading_wpGetSpeculationRulesConfiguration extends WP_Un
 					'eagerness' => 'conservative',
 				),
 			),
+			// 'immediate' is a valid eagerness, but for safety WordPress does not allow it for document-level rules.
+			'immediate eagerness'    => array(
+				array(
+					'mode'      => 'auto',
+					'eagerness' => 'immediate',
+				),
+				array(
+					'mode'      => 'prefetch',
+					'eagerness' => 'conservative',
+				),
+			),
 			'null'                   => array(
 				null,
 				null,

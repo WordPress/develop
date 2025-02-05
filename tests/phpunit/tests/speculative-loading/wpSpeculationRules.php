@@ -196,6 +196,27 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 				),
 				false,
 			),
+			'immediate-eagerness-list'     => array(
+				'prefetch',
+				'test-rule-1',
+				array(
+					'source'    => 'list',
+					'urls'      => array( 'https://example.org/high-priority-url/', 'https://example.org/another-high-priority-url/' ),
+					'eagerness' => 'immediate',
+				),
+				true,
+			),
+			// 'immediate' is a valid eagerness, but for safety WordPress does not allow it for document-level rules.
+			'immediate-eagerness-document' => array(
+				'prefetch',
+				'test-rule-1',
+				array(
+					'source'    => 'document',
+					'where'     => array( 'selector_matches' => '.prefetch' ),
+					'eagerness' => 'immediate',
+				),
+				false,
+			),
 		);
 	}
 

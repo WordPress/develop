@@ -67,10 +67,20 @@ function wp_get_speculation_rules_configuration(): ?array {
 			'eagerness' => $default_eagerness,
 		);
 	}
-	if ( ! isset( $config['mode'] ) || 'auto' === $config['mode'] || ! wp_is_valid_speculation_rules_mode( $config['mode'] ) ) {
+	if (
+		! isset( $config['mode'] ) ||
+		'auto' === $config['mode'] ||
+		! wp_is_valid_speculation_rules_mode( $config['mode'] )
+	) {
 		$config['mode'] = $default_mode;
 	}
-	if ( ! isset( $config['eagerness'] ) || 'auto' === $config['eagerness'] || ! wp_is_valid_speculation_rules_eagerness( $config['eagerness'] ) ) {
+	if (
+		! isset( $config['eagerness'] ) ||
+		'auto' === $config['eagerness'] ||
+		! wp_is_valid_speculation_rules_eagerness( $config['eagerness'] ) ||
+		// 'immediate' is a valid eagerness, but for safety WordPress does not allow it for document-level rules.
+		'immediate' === $config['eagerness']
+	) {
 		$config['eagerness'] = $default_eagerness;
 	}
 
@@ -148,7 +158,9 @@ function wp_get_speculation_rules( array $configuration ): WP_Speculation_Rules 
 		! isset( $configuration['mode'] ) ||
 		! wp_is_valid_speculation_rules_mode( $configuration['mode'] ) ||
 		! isset( $configuration['eagerness'] ) ||
-		! wp_is_valid_speculation_rules_eagerness( $configuration['eagerness'] )
+		! wp_is_valid_speculation_rules_eagerness( $configuration['eagerness'] ) ||
+		// 'immediate' is a valid eagerness, but for safety WordPress does not allow it for document-level rules.
+		'immediate' === $configuration['eagerness']
 	) {
 		_doing_it_wrong(
 			__FUNCTION__,

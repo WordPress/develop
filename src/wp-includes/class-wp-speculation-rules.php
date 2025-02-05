@@ -141,17 +141,32 @@ final class WP_Speculation_Rules implements JsonSerializable {
 		}
 
 		// If there is an 'eagerness' key specified, make sure it's valid.
-		if ( isset( $rule['eagerness'] ) && ! wp_is_valid_speculation_rules_eagerness( $rule['eagerness'] ) ) {
-			_doing_it_wrong(
-				__METHOD__,
-				sprintf(
-					/* translators: %s: invalid eagerness value */
-					__( 'The value "%s" is not a valid eagerness for a speculation rule.' ),
-					esc_html( $rule['eagerness'] )
-				),
-				'6.8.0'
-			);
-			return false;
+		if ( isset( $rule['eagerness'] ) ) {
+			if ( ! wp_is_valid_speculation_rules_eagerness( $rule['eagerness'] ) ) {
+				_doing_it_wrong(
+					__METHOD__,
+					sprintf(
+						/* translators: %s: invalid eagerness value */
+						__( 'The value "%s" is not a valid eagerness for a speculation rule.' ),
+						esc_html( $rule['eagerness'] )
+					),
+					'6.8.0'
+				);
+				return false;
+			}
+
+			if ( isset( $rule['where'] ) && 'immediate' === $rule['eagerness'] ) {
+				_doing_it_wrong(
+					__METHOD__,
+					sprintf(
+						/* translators: %s: forbidden eagerness value */
+						__( 'The eagerness value "%s" is forbidden for document-level speculation rules.' ),
+						'immediate'
+					),
+					'6.8.0'
+				);
+				return false;
+			}
 		}
 
 		if ( ! isset( $this->rules_by_mode[ $mode ] ) ) {

@@ -416,6 +416,28 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests that passing an eagerness of 'immediate' to the function is not allowed.
+	 *
+	 * @ticket 62503
+	 */
+	public function test_wp_get_speculation_rules_with_immediate_eagerness() {
+		$this->setExpectedIncorrectUsage( 'wp_get_speculation_rules' );
+
+		$rules = wp_get_speculation_rules(
+			array(
+				'mode'      => 'prefetch',
+				'eagerness' => 'immediate',
+			)
+		);
+
+		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
+		$rules = $rules->jsonSerialize();
+
+		$this->assertArrayHasKey( 'prefetch', $rules );
+		$this->assertSame( 'conservative', $rules['prefetch'][0]['eagerness'] );
+	}
+
+	/**
 	 * Tests that the 'wp_load_speculation_rules' action allows providing additional rules.
 	 *
 	 * @ticket 62503
