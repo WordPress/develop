@@ -382,126 +382,88 @@ class Tests_Post_wpUniquePostSlug extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that a post cannot use an existing page's slug.
+	 * Data provider for testing unique slug constraints.
 	 *
-	 * @ticket 13459
+	 * @return array[] Test data.
 	 */
-	public function test_unique_slug_page_before_post() {
-		$this->set_permalink_structure( '/%postname%/' );
-
-		$page = self::factory()->post->create(
-			array(
-				'post_type'  => 'page',
-				'post_title' => 'Test Page',
-				'post_name'  => 'test-slug',
-			)
+	public static function unique_slug_test_cases() {
+		return array(
+			'page_before_post' => array(
+				'first'  => array(
+					'type'  => 'page',
+					'title' => 'Test Page',
+				),
+				'second' => array(
+					'type'  => 'post',
+					'title' => 'Test Post',
+				),
+			),
+			'post_before_page' => array(
+				'first'  => array(
+					'type'  => 'post',
+					'title' => 'Test Post',
+				),
+				'second' => array(
+					'type'  => 'page',
+					'title' => 'Test Page',
+				),
+			),
+			'post_before_post' => array(
+				'first'  => array(
+					'type'  => 'post',
+					'title' => 'First Post',
+				),
+				'second' => array(
+					'type'  => 'post',
+					'title' => 'Second Post',
+				),
+			),
+			'page_before_page' => array(
+				'first'  => array(
+					'type'  => 'page',
+					'title' => 'First Page',
+				),
+				'second' => array(
+					'type'  => 'page',
+					'title' => 'Second Page',
+				),
+			),
 		);
-
-		$post = self::factory()->post->create(
-			array(
-				'post_type'  => 'post',
-				'post_title' => 'Test Post',
-				'post_name'  => 'test-slug',
-			)
-		);
-
-		$page_obj = get_post( $page );
-		$post_obj = get_post( $post );
-
-		$this->assertSame( 'test-slug', $page_obj->post_name );
-		$this->assertSame( 'test-slug-2', $post_obj->post_name );
 	}
 
 	/**
-	 * Test that a page cannot use an existing post's slug.
+	 * Test that posts and pages maintain unique slugs.
 	 *
 	 * @ticket 13459
-	 */
-	public function test_unique_slug_post_before_page() {
-		$this->set_permalink_structure( '/%postname%/' );
-
-		$post = self::factory()->post->create(
-			array(
-				'post_type'  => 'post',
-				'post_title' => 'Test Post',
-				'post_name'  => 'test-slug',
-			)
-		);
-
-		$page = self::factory()->post->create(
-			array(
-				'post_type'  => 'page',
-				'post_title' => 'Test Page',
-				'post_name'  => 'test-slug',
-			)
-		);
-
-		$post_obj = get_post( $post );
-		$page_obj = get_post( $page );
-
-		$this->assertSame( 'test-slug', $post_obj->post_name );
-		$this->assertSame( 'test-slug-2', $page_obj->post_name );
-	}
-
-	/**
-	 * Test that two posts cannot share the same slug.
 	 *
-	 * @ticket 13459
-	 */
-	public function test_unique_slug_post_before_post() {
-		$this->set_permalink_structure( '/%postname%/' );
-
-		$post1 = self::factory()->post->create(
-			array(
-				'post_type'  => 'post',
-				'post_title' => 'First Post',
-				'post_name'  => 'test-slug',
-			)
-		);
-
-		$post2 = self::factory()->post->create(
-			array(
-				'post_type'  => 'post',
-				'post_title' => 'Second Post',
-				'post_name'  => 'test-slug',
-			)
-		);
-
-		$post1_obj = get_post( $post1 );
-		$post2_obj = get_post( $post2 );
-
-		$this->assertSame( 'test-slug', $post1_obj->post_name );
-		$this->assertSame( 'test-slug-2', $post2_obj->post_name );
-	}
-
-	/**
-	 * Test that two pages cannot share the same slug.
+	 * @dataProvider unique_slug_test_cases
 	 *
-	 * @ticket 13459
+	 * @param array $first_item  First post/page to create.
+	 * @param array $second_item Second post/page to create.
 	 */
-	public function test_unique_slug_page_before_page() {
+	public function test_unique_slugs( $first_item, $second_item ) {
 		$this->set_permalink_structure( '/%postname%/' );
 
-		$page1 = self::factory()->post->create(
+		$first = self::factory()->post->create(
 			array(
-				'post_type'  => 'page',
-				'post_title' => 'First Page',
+				'post_type'  => $first_item['type'],
+				'post_title' => $first_item['title'],
 				'post_name'  => 'test-slug',
 			)
 		);
 
-		$page2 = self::factory()->post->create(
+		$second = self::factory()->post->create(
 			array(
-				'post_type'  => 'page',
-				'post_title' => 'Second Page',
+				'post_type'  => $second_item['type'],
+				'post_title' => $second_item['title'],
 				'post_name'  => 'test-slug',
 			)
 		);
 
-		$page1_obj = get_post( $page1 );
-		$page2_obj = get_post( $page2 );
+		$first_obj  = get_post( $first );
+		$second_obj = get_post( $second );
 
-		$this->assertSame( 'test-slug', $page1_obj->post_name );
-		$this->assertSame( 'test-slug-2', $page2_obj->post_name );
+		$this->assertSame( 'test-slug', $first_obj->post_name );
+		$this->assertSame( 'test-slug-2', $second_obj->post_name );
 	}
 }
