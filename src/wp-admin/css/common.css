@@ -2481,7 +2481,7 @@ h1.nav-tab-wrapper, /* Back-compat for pre-4.4 */
 
 .accordion-section.open .accordion-section-title span.dashicons.dashicons-arrow-down,
 .nav-menus-php .metabox-holder .accordion-section.open .accordion-section-title span.dashicons.dashicons-arrow-down {
-	transform: rotate(180deg);
+	transform: rotate(180deg) translate(0, 50%);
 }
 
 #templateside ul li a {
