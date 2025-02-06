@@ -950,6 +950,11 @@
 		}
 	}
 
+	//! wp-block-social-links
+	.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor {
+		text-decoration: none;
+	}
+
 	//! Font Sizes
 	.has-small-font-size {
 		font-size: $font__size-sm;
