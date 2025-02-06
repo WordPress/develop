@@ -199,7 +199,7 @@ class WP_REST_Request implements ArrayAccess {
 	 * @return string|null String value if set, null otherwise.
 	 */
 	public function get_header( $key ) {
-		$key = $this->canonicalize_header_name( $key );
+		$key = static::canonicalize_header_name( $key );
 
 		if ( ! isset( $this->headers[ $key ] ) ) {
 			return null;
@@ -217,7 +217,7 @@ class WP_REST_Request implements ArrayAccess {
 	 * @return array|null List of string values if set, null otherwise.
 	 */
 	public function get_header_as_array( $key ) {
-		$key = $this->canonicalize_header_name( $key );
+		$key = static::canonicalize_header_name( $key );
 
 		if ( ! isset( $this->headers[ $key ] ) ) {
 			return null;
@@ -235,7 +235,7 @@ class WP_REST_Request implements ArrayAccess {
 	 * @param string $value Header value, or list of values.
 	 */
 	public function set_header( $key, $value ) {
-		$key   = $this->canonicalize_header_name( $key );
+		$key   = static::canonicalize_header_name( $key );
 		$value = (array) $value;
 
 		$this->headers[ $key ] = $value;
@@ -250,7 +250,7 @@ class WP_REST_Request implements ArrayAccess {
 	 * @param string $value Header value, or list of values.
 	 */
 	public function add_header( $key, $value ) {
-		$key   = $this->canonicalize_header_name( $key );
+		$key   = static::canonicalize_header_name( $key );
 		$value = (array) $value;
 
 		if ( ! isset( $this->headers[ $key ] ) ) {
@@ -268,7 +268,7 @@ class WP_REST_Request implements ArrayAccess {
 	 * @param string $key Header name.
 	 */
 	public function remove_header( $key ) {
-		$key = $this->canonicalize_header_name( $key );
+		$key = static::canonicalize_header_name( $key );
 		unset( $this->headers[ $key ] );
 	}
 
