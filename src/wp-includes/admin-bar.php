@@ -471,23 +471,29 @@ function wp_admin_bar_edit_site_menu( $wp_admin_bar ) {
 		return;
 	}
 
-	// Don't show for users who can't edit theme options or when in the admin.
-	if ( ! current_user_can( 'edit_theme_options' ) || is_admin() ) {
+	// Don't show for users who can't edit theme options
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
 		return;
+	}
+
+	if ( is_admin() ) {
+		$site_editor_url = admin_url( 'site-editor.php' );
+	} else {
+		$site_editor_url = add_query_arg(
+			array(
+				'postType' => 'wp_template',
+				'postId'   => $_wp_current_template_id,
+				'canvas'   => 'edit',
+			),
+			admin_url( 'site-editor.php' ),
+		);
 	}
 
 	$wp_admin_bar->add_node(
 		array(
 			'id'    => 'site-editor',
-			'title' => __( 'Edit site' ),
-			'href'  => add_query_arg(
-				array(
-					'postType' => 'wp_template',
-					'postId'   => $_wp_current_template_id,
-					'canvas'   => 'edit',
-				),
-				admin_url( 'site-editor.php' )
-			),
+			'title' => __( 'Editor' ),
+			'href'  => $site_editor_url,
 		)
 	);
 }
