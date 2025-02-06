@@ -130,7 +130,7 @@ function wp_print_scripts( $handles = false ) {
 function wp_add_inline_script( $handle, $data, $position = 'after' ) {
 	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__, $handle );
 
-	if ( false !== stripos( $data, '</script>' ) ) {
+	if ( false !== stripos( $data, '<script>' ) || false !== stripos( $data, '</script>' ) ) {
 		_doing_it_wrong(
 			__FUNCTION__,
 			sprintf(
@@ -141,7 +141,7 @@ function wp_add_inline_script( $handle, $data, $position = 'after' ) {
 			),
 			'4.5.0'
 		);
-		$data = trim( preg_replace( '#<script[^>]*>(.*)</script>#is', '$1', $data ) );
+		$data = trim( preg_replace( '#<script[^>]*>(.*)</script>|<script[^>]*>#is', '$1', $data ) );
 	}
 
 	return wp_scripts()->add_inline_script( $handle, $data, $position );
