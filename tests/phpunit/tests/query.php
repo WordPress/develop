@@ -755,7 +755,8 @@ class Tests_Query extends WP_UnitTestCase {
 			)
 		);
 
-		$child = self::factory()->post->create(
+		$children = self::factory()->post->create_many(
+			2,
 			array(
 				'post_type'   => 'page',
 				'post_parent' => $parent,
@@ -764,17 +765,58 @@ class Tests_Query extends WP_UnitTestCase {
 
 		$query = new WP_Query(
 			array(
-				'fields'    => 'id=>parent',
-				'post_type' => 'page',
-				'page_id'   => $child,
+				'fields'      => 'id=>parent',
+				'post_type'   => 'page',
+				'post_parent' => $parent,
 			)
 		);
 
 		$query->the_post();
 		$global_post   = get_post( null, ARRAY_A );
-		$specific_post = get_post( $child, ARRAY_A );
+		$specific_post = get_post( $children[0], ARRAY_A );
 
-		$this->assertEqualSetsWithIndex( $global_post, $specific_post );
+		$this->assertEqualSetsWithIndex( $specific_post, $global_post, 'Global post is expected to match the first child page.' );
+
+		$next_post = $query->next_post();
+		$this->assertInstanceOf( 'WP_Post', $next_post, 'WP_Query::next_post() should always return a WP_Post object' );
+		$this->assertSame( $children[1], $next_post->ID, 'The next post is expected to be the second child page.' );
+	}
+
+	/**
+	 * @ticket 56992
+	 */
+	public function test_the_loop_when_querying_post_ids_only() {
+		$parent = self::factory()->post->create(
+			array(
+				'post_type' => 'page',
+			)
+		);
+
+		$children = self::factory()->post->create_many(
+			2,
+			array(
+				'post_type'   => 'page',
+				'post_parent' => $parent,
+			)
+		);
+
+		$query = new WP_Query(
+			array(
+				'fields'      => 'id',
+				'post_type'   => 'page',
+				'post_parent' => $parent,
+			)
+		);
+
+		$query->the_post();
+		$global_post   = get_post( null, ARRAY_A );
+		$specific_post = get_post( $children[0], ARRAY_A );
+
+		$this->assertEqualSetsWithIndex( $specific_post, $global_post, 'Global post is expected to match the first child page.' );
+
+		$next_post = $query->next_post();
+		$this->assertInstanceOf( 'WP_Post', $next_post, 'WP_Query::next_post() should always return a WP_Post object' );
+		$this->assertSame( $children[1], $next_post->ID, 'The next post is expected to be the second child page.' );
 	}
 
 	/**
