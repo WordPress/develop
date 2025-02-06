@@ -2466,6 +2466,8 @@ h1.nav-tab-wrapper, /* Back-compat for pre-4.4 */
 	left: auto;
 	color: #787c82;
 	border-radius: 50px;
+	top: 50%;
+	transform: translateY(-50%);
 }
 
 .accordion-section-title:hover span.dashicons.dashicons-arrow-down,
