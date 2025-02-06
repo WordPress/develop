@@ -226,7 +226,7 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 				'/wp-content/plugins/*',
 				'/wp-content/themes/stylesheet/*',
 				'/wp-content/themes/template/*',
-				'/*\\?*(^|&)_wpnonce=*',
+				'/*\\?*(^|&)*nonce*=*',
 			),
 			$href_exclude_paths,
 			'Snapshot: ' . var_export( $href_exclude_paths, true )

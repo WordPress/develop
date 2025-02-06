@@ -196,12 +196,13 @@ function wp_get_speculation_rules( array $configuration ): WP_Speculation_Rules 
 
 	/*
 	 * If pretty permalinks are enabled, exclude any URLs with query parameters.
-	 * Otherwise, exclude specifically the URLs with a `_wpnonce` query parameter.
+	 * Otherwise, exclude specifically the URLs with a `_wpnonce` query parameter or any other query parameter
+	 * containing the word `nonce`.
 	 */
 	if ( get_option( 'permalink_structure' ) ) {
 		$base_href_exclude_paths[] = $prefixer->prefix_path_pattern( '/*\\?(.+)', 'home' );
 	} else {
-		$base_href_exclude_paths[] = $prefixer->prefix_path_pattern( '/*\\?*(^|&)_wpnonce=*', 'home' );
+		$base_href_exclude_paths[] = $prefixer->prefix_path_pattern( '/*\\?*(^|&)*nonce*=*', 'home' );
 	}
 
 	/**
