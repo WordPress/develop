@@ -10,23 +10,20 @@
 		secondary, button;
 
 	function initMainNavigation( container ) {
-		// Add dropdown toggle that display child menu items.
-		container.find( '.menu-item-has-children > a' ).after( '<button class="dropdown-toggle" aria-expanded="false">' + screenReaderText.expand + '</button>' );
+		container.querySelectorAll( '.sub-menu[popover]' ).forEach( function ( subMenu ) {
+			var toggleButton = container.querySelector( '.dropdown-toggle[popovertarget="' + subMenu.id + '"]' );
+			subMenu.addEventListener( 'toggle', function () {
+				toggleButton.classList.toggle( 'toggle-on' );
+				toggleButton.setAttribute( 'aria-expanded', toggleButton.getAttribute( 'aria-expanded' ) === 'false' ? 'true' : 'false' );
+				toggleButton.innerHTML = toggleButton.innerHTML === screenReaderText.expand ? screenReaderText.collapse : screenReaderText.expand;
+			} );
+		} );
 
-		// Toggle buttons and submenu items with active children menu items.
-		container.find( '.current-menu-ancestor > button' ).addClass( 'toggle-on' );
-		container.find( '.current-menu-ancestor > .sub-menu' ).addClass( 'toggled-on' );
-
-		container.find( '.dropdown-toggle' ).on( 'click', function( e ) {
-			var _this = $( this );
-			e.preventDefault();
-			_this.toggleClass( 'toggle-on' );
-			_this.next( '.children, .sub-menu' ).toggleClass( 'toggled-on' );
-			_this.attr( 'aria-expanded', _this.attr( 'aria-expanded' ) === 'false' ? 'true' : 'false' );
-			_this.html( _this.html() === screenReaderText.expand ? screenReaderText.collapse : screenReaderText.expand );
+		container.querySelectorAll( '.current-menu-ancestor > .sub-menu[popover]' ).forEach( function ( subMenu ) {
+			subMenu.showPopover();
 		} );
 	}
-	initMainNavigation( $( '.main-navigation' ) );
+	initMainNavigation( document.querySelector( '.main-navigation' ) );
 
 	// Re-initialize the main navigation when it is updated, persisting any existing submenu expanded states.
 	$( document ).on( 'customize-preview-menu-refreshed', function( e, params ) {

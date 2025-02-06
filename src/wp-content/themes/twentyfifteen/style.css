@@ -676,13 +676,21 @@ a:focus {
 	margin: 0;
 }
 
-.main-navigation ul ul {
+.main-navigation ul ul:not([popover]) {
 	display: none;
 	margin-left: 0.8em;
 }
 
-.main-navigation ul .toggled-on {
+.main-navigation ul ul:not([popover]).toggled-on {
 	display: block;
+}
+
+.main-navigation ul ul[popover] {
+	margin-left: 0.8em;
+	position-anchor: --parent-link;
+	top: anchor(bottom);
+	left: anchor(center);
+	justify-self: anchor-center;
 }
 
 .main-navigation li {
@@ -702,6 +710,7 @@ a:focus {
 }
 
 .main-navigation .menu-item-has-children > a {
+	anchor-name: --parent-link;
 	padding-right: 48px;
 }
 

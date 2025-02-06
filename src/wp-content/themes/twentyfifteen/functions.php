@@ -477,6 +477,43 @@ function twentyfifteen_scripts() {
 }
 add_action( 'wp_enqueue_scripts', 'twentyfifteen_scripts' );
 
+$_wp2015_id = null;
+$_wp2015_i  = 0;
+add_filter(
+	'walker_nav_menu_start_el',
+	static function ( $output, $item, $depth, $args ) {
+		global $_wp2015_id, $_wp2015_i;
+
+		if ( isset( $item->classes ) && in_array( 'menu-item-has-children', $item->classes, true ) ) {
+			$_wp2015_i++;
+			$_wp2015_id = 'wp-submenu-' . $_wp2015_i;
+
+			$output .= '<button class="dropdown-toggle" popovertarget="' . esc_attr( $_wp2015_id ) . '" aria-expanded="false">';
+			$output .= '<span class="screen-reader-text">';
+			$output .= __( 'expand child menu', 'twentyfifteen' );
+			$output .= '</span>';
+			$output .= '</button>';
+		}
+		return $output;
+	},
+	10,
+	4
+);
+
+add_filter(
+	'nav_menu_submenu_attributes',
+	static function ( $attrs ) {
+		global $_wp2015_id;
+		if ( isset( $_wp2015_id ) ) {
+			$attrs['id']      = $_wp2015_id;
+			$attrs['popover'] = 'auto';
+
+			$_wp2015_id = null;
+		}
+		return $attrs;
+	}
+);
+
 /**
  * Enqueue styles for the block-based editor.
  *
