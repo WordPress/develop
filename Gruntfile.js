@@ -111,12 +111,13 @@ module.exports = function(grunt) {
 
 	// Load grunt-* tasks.
 	for ( var key in gruntDependencies ) {
-		if ( gruntDependencies.hasOwnProperty( key ) ) {
-			gruntDependencies[key].forEach( function( dependency ) {
-				var contrib = key === 'contrib' ? 'contrib-' : '';
-				grunt.loadNpmTasks( 'grunt-' + contrib + dependency );
-			} );
+		if ( ! gruntDependencies.hasOwnProperty( key ) ) {
+			continue;
 		}
+		gruntDependencies[key].forEach( function( dependency ) {
+			var contrib = key === 'contrib' ? 'contrib-' : '';
+			grunt.loadNpmTasks( 'grunt-' + contrib + dependency );
+		} );
 	}
 
 	// Load PostCSS tasks.
