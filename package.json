@@ -101,7 +101,7 @@
 		"@wordpress/deprecated": "4.8.2",
 		"@wordpress/dom": "4.8.2",
 		"@wordpress/dom-ready": "4.8.1",
-		"@wordpress/edit-post": "8.8.19",
+		"@wordpress/edit-post": "8.8.20",
 		"@wordpress/edit-site": "6.8.19",
 		"@wordpress/edit-widgets": "6.8.17",
 		"@wordpress/editor": "14.8.19",
