@@ -423,6 +423,8 @@ twentytwenty.primaryMenu = {
 
 	init: function() {
 		this.focusMenuWithChildren();
+		this.addUniqueIDToSubMenus();
+		this.toggleAriaExpandedOnHover();
 	},
 
 	// The focusMenuWithChildren() function implements Keyboard Navigation in the Primary Menu
@@ -454,13 +456,56 @@ twentytwenty.primaryMenu = {
 				if ( 'li' === self.tagName.toLowerCase() ) {
 					if ( -1 !== self.className.indexOf( 'focus' ) ) {
 						self.className = self.className.replace( ' focus', '' );
+						// If there is an <a> tag with aria-expanded attribute set to true, toggle it to false
+						var link = self.querySelector('a[aria-expanded="true"]');
+						if (link) {
+							link.setAttribute('aria-expanded', 'false');
+						}
 					} else {
 						self.className += ' focus';
+						// If there is an <a> tag with aria-expanded attribute set to false, toggle it to true
+						var link = self.querySelector('a[aria-expanded="false"]');
+						if (link) {
+							link.setAttribute('aria-expanded', 'true');
+						}
 					}
 				}
 				self = self.parentElement;
 			}
 		}
+	},
+
+	// Add unique ID to each .sub-menu and aria-controls to parent links
+	addUniqueIDToSubMenus: function() {
+		var subMenus = document.querySelectorAll( '.primary-menu-wrapper .sub-menu' );
+		subMenus.forEach( function( subMenu, index ) {
+			var parentLi = subMenu.closest( 'li.menu-item-has-children' );
+			subMenu.id = 'sub-menu-' + (index + 1);
+			if ( parentLi ) {
+				var parentLink = parentLi.querySelector( 'a' );
+				if ( parentLink ) {
+					parentLink.setAttribute( 'aria-controls', subMenu.id );
+					parentLink.setAttribute( 'aria-expanded', 'false' );
+				}
+			}
+		} );
+	},
+
+	toggleAriaExpandedOnHover: function() {
+		document.querySelectorAll('.primary-menu-wrapper li.menu-item-has-children').forEach(function(li) {
+			li.addEventListener('mouseenter', function() {
+				var anchor = li.querySelector('a');
+				if (anchor) {
+					anchor.setAttribute('aria-expanded', 'true');
+				}
+			});
+			li.addEventListener('mouseleave', function() {
+				var anchor = li.querySelector('a');
+				if (anchor) {
+					anchor.setAttribute('aria-expanded', 'false');
+				}
+			});
+		});
 	}
 }; // twentytwenty.primaryMenu
 
