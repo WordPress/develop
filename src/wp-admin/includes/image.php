@@ -372,28 +372,27 @@ function wp_create_image_subsizes( $file, $attachment_id ) {
 
 			$editor = wp_get_image_editor( $file );
 
-			if ( is_wp_error( $editor ) ) {
-				// This image cannot be edited.
-				return $image_meta;
-			}
+		if ( is_wp_error( $editor ) ) {
+			// This image cannot be edited.
+			return $image_meta;
+		}
 
 			// Rotate the image.
 			$rotated = $editor->maybe_exif_rotate();
 
-			if ( true === $rotated ) {
-				// Append `-rotated` to the image file name.
-				$saved = $editor->save( $editor->generate_filename( 'rotated' ) );
+		if ( true === $rotated ) {
+			// Append `-rotated` to the image file name.
+			$saved = $editor->save( $editor->generate_filename( 'rotated' ) );
 
-				if ( ! is_wp_error( $saved ) ) {
-					$image_meta = _wp_image_meta_replace_original( $saved, $file, $image_meta, $attachment_id );
+			if ( ! is_wp_error( $saved ) ) {
+				$image_meta = _wp_image_meta_replace_original( $saved, $file, $image_meta, $attachment_id );
 
-					// Update the stored EXIF data.
-					if ( ! empty( $image_meta['image_meta']['orientation'] ) ) {
-						$image_meta['image_meta']['orientation'] = 1;
-					}
-				} else {
-					// TODO: Log errors.
+				// Update the stored EXIF data.
+				if ( ! empty( $image_meta['image_meta']['orientation'] ) ) {
+					$image_meta['image_meta']['orientation'] = 1;
 				}
+			} else {
+				// TODO: Log errors.
 			}
 		}
 	}
