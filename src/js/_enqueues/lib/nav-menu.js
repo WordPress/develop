@@ -1122,7 +1122,6 @@
 				urlWrap.removeClass('has-error');
 
 				if ('' === url || 'https://' === url || 'http://' === url) {
-					console.log(url);
 					e.preventDefault();
 					urlInput.addClass('form-invalid')
 						.attr('aria-invalid', 'true')
