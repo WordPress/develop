@@ -382,11 +382,47 @@ class Tests_Post_wpUniquePostSlug extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test that posts and pages maintain unique slugs.
+	 *
+	 * @ticket 13459
+	 *
+	 * @dataProvider data_unique_slugs
+	 *
+	 * @param array $first_item  First post/page to create.
+	 * @param array $second_item Second post/page to create.
+	 */
+	public function test_unique_slugs( $first_item, $second_item ) {
+		$this->set_permalink_structure( '/%postname%/' );
+
+		$first = self::factory()->post->create(
+			array(
+				'post_type'  => $first_item['type'],
+				'post_title' => $first_item['title'],
+				'post_name'  => 'test-slug',
+			)
+		);
+
+		$second = self::factory()->post->create(
+			array(
+				'post_type'  => $second_item['type'],
+				'post_title' => $second_item['title'],
+				'post_name'  => 'test-slug',
+			)
+		);
+
+		$first_obj  = get_post( $first );
+		$second_obj = get_post( $second );
+
+		$this->assertSame( 'test-slug', $first_obj->post_name );
+		$this->assertSame( 'test-slug-2', $second_obj->post_name );
+	}
+
+	/**
 	 * Data provider for testing unique slug constraints.
 	 *
 	 * @return array[] Test data.
 	 */
-	public static function unique_slug_test_cases() {
+	public static function data_unique_slugs() {
 		return array(
 			'page_before_post' => array(
 				'first'  => array(
@@ -429,41 +465,5 @@ class Tests_Post_wpUniquePostSlug extends WP_UnitTestCase {
 				),
 			),
 		);
-	}
-
-	/**
-	 * Test that posts and pages maintain unique slugs.
-	 *
-	 * @ticket 13459
-	 *
-	 * @dataProvider unique_slug_test_cases
-	 *
-	 * @param array $first_item  First post/page to create.
-	 * @param array $second_item Second post/page to create.
-	 */
-	public function test_unique_slugs( $first_item, $second_item ) {
-		$this->set_permalink_structure( '/%postname%/' );
-
-		$first = self::factory()->post->create(
-			array(
-				'post_type'  => $first_item['type'],
-				'post_title' => $first_item['title'],
-				'post_name'  => 'test-slug',
-			)
-		);
-
-		$second = self::factory()->post->create(
-			array(
-				'post_type'  => $second_item['type'],
-				'post_title' => $second_item['title'],
-				'post_name'  => 'test-slug',
-			)
-		);
-
-		$first_obj  = get_post( $first );
-		$second_obj = get_post( $second );
-
-		$this->assertSame( 'test-slug', $first_obj->post_name );
-		$this->assertSame( 'test-slug-2', $second_obj->post_name );
 	}
 }

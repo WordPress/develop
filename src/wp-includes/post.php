@@ -5411,6 +5411,8 @@ function wp_unique_post_slug( $slug, $post_id, $post_status, $post_type, $post_p
 		$feeds = array();
 	}
 
+	$permalink_structure = get_option( 'permalink_structure' );
+
 	if ( 'attachment' === $post_type ) {
 		// Attachment slugs must be unique across all types.
 		$check_sql       = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND ID != %d LIMIT 1";
@@ -5448,7 +5450,11 @@ function wp_unique_post_slug( $slug, $post_id, $post_status, $post_type, $post_p
 		 * namespace than posts so page slugs are allowed to overlap post slugs.
 		 */
 		if ( 'page' === $post_type ) {
-			$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type IN ( %s, 'post', 'attachment' ) AND ID != %d AND post_parent = %d LIMIT 1";
+			if ( 0 === $post_parent && '/%postname%/' === $permalink_structure ) {
+				$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type IN ( %s, 'post', 'attachment' ) AND ID != %d AND post_parent = %d LIMIT 1";
+			} else {
+				$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type IN ( %s, 'attachment' ) AND ID != %d AND post_parent = %d LIMIT 1";
+			}
 		} else {
 			$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type IN ( %s, 'attachment' ) AND ID != %d AND post_parent = %d LIMIT 1";
 		}
@@ -5482,7 +5488,11 @@ function wp_unique_post_slug( $slug, $post_id, $post_status, $post_type, $post_p
 	} else {
 		// Post slugs must be unique across all posts.
 		if ( 'post' === $post_type ) {
-			$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type IN( %s, 'page' ) AND ID != %d LIMIT 1";
+			if ( '/%postname%/' === $permalink_structure ) {
+				$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND ((post_type = %s) OR (post_type = 'page' AND post_parent = 0)) AND ID != %d LIMIT 1";
+			} else {
+				$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type = %s AND ID != %d LIMIT 1";
+			}
 		} else {
 			$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type = %s AND ID != %d LIMIT 1";
 		}
