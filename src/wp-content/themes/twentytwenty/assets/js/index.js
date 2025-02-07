@@ -457,14 +457,14 @@ twentytwenty.primaryMenu = {
 					if ( -1 !== self.className.indexOf( 'focus' ) ) {
 						self.className = self.className.replace( ' focus', '' );
 						// If there is an <a> tag with aria-expanded attribute set to true, toggle it to false
-						var link = self.querySelector('a[aria-expanded="true"]');
+						const link = self.querySelector('a[aria-expanded="true"]');
 						if (link) {
 							link.setAttribute('aria-expanded', 'false');
 						}
 					} else {
 						self.className += ' focus';
 						// If there is an <a> tag with aria-expanded attribute set to false, toggle it to true
-						var link = self.querySelector('a[aria-expanded="false"]');
+						const link = self.querySelector('a[aria-expanded="false"]');
 						if (link) {
 							link.setAttribute('aria-expanded', 'true');
 						}
