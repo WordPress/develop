@@ -224,24 +224,28 @@ function the_author_meta( $field = '', $user_id = false ) {
  * the author's name.
  *
  * @since 3.0.0
+ * @since 6.8.0 Added `$use_title_attr` parameter.
  *
  * @global WP_User $authordata The current author's data.
  *
+ * @param bool $use_title_attr Optional. Whether to add a title attribute.
+ *                             Default true.
  * @return string An HTML link if the author's URL exists in user meta,
  *                otherwise the result of get_the_author().
  */
-function get_the_author_link() {
+function get_the_author_link( $use_title_attr = true ) {
 	if ( get_the_author_meta( 'url' ) ) {
 		global $authordata;
 
 		$author_url          = get_the_author_meta( 'url' );
 		$author_display_name = get_the_author();
+		/* translators: %s: Author's display name. */
+		$author_title        = sprintf( __( 'Visit %s&#8217;s website' ), $author_display_name );
 
 		$link = sprintf(
-			'<a href="%1$s" title="%2$s" rel="author external">%3$s</a>',
+			'<a href="%1$s"%2$s rel="author external">%3$s</a>',
 			esc_url( $author_url ),
-			/* translators: %s: Author's display name. */
-			esc_attr( sprintf( __( 'Visit %s&#8217;s website' ), $author_display_name ) ),
+			$use_title_attr ? ' title="' . esc_attr( $author_title ) . '"' : '',
 			$author_display_name
 		);
 
@@ -269,9 +273,13 @@ function get_the_author_link() {
  * @link https://developer.wordpress.org/reference/functions/the_author_link/
  *
  * @since 2.1.0
+ * @since 6.8.0 Added `$use_title_attr` parameter.
+ *
+ * @param bool $use_title_attr Optional. Whether to add a title attribute.
+ *                             Default true.
  */
-function the_author_link() {
-	echo get_the_author_link();
+function the_author_link( $use_title_attr = true ) {
+	echo get_the_author_link( $use_title_attr );
 }
 
 /**
@@ -318,10 +326,8 @@ function get_the_author_posts_link() {
 	}
 
 	$link = sprintf(
-		'<a href="%1$s" title="%2$s" rel="author">%3$s</a>',
+		'<a href="%1$s" rel="author">%2$s</a>',
 		esc_url( get_author_posts_url( $authordata->ID, $authordata->user_nicename ) ),
-		/* translators: %s: Author's display name. */
-		esc_attr( sprintf( __( 'Posts by %s' ), get_the_author() ) ),
 		get_the_author()
 	);
 
@@ -531,10 +537,8 @@ function wp_list_authors( $args = '' ) {
 		}
 
 		$link = sprintf(
-			'<a href="%1$s" title="%2$s">%3$s</a>',
+			'<a href="%1$s">%2$s</a>',
 			esc_url( get_author_posts_url( $author->ID, $author->user_nicename ) ),
-			/* translators: %s: Author's display name. */
-			esc_attr( sprintf( __( 'Posts by %s' ), $author->display_name ) ),
 			$name
 		);
 
