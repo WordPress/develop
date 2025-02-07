@@ -774,7 +774,14 @@ module.exports = function(grunt) {
 		},
 		uglify: {
 			options: {
+				parse: {
+					module: false
+				},
+				compress: {
+					module: false
+				},
 				output: {
+					module: false,
 					ascii_only: true
 				}
 			},
@@ -1663,6 +1670,7 @@ module.exports = function(grunt) {
 	grunt.registerTask( 'verify:source-maps', function() {
 		const ignoredFiles = [
 			'build/wp-includes/js/dist/components.js',
+			'build/wp-includes/js/dist/data.js',
 		];
 		const files = buildFiles.reduce( ( acc, path ) => {
 			// Skip excluded paths and any path that isn't a file.
