@@ -367,8 +367,7 @@ function wp_create_image_subsizes( $file, $attachment_id ) {
 		} else {
 			// TODO: Log errors.
 		}
-
-		if ( ! empty( $exif_meta['orientation'] ) && 1 !== (int) $exif_meta['orientation'] ) {
+	} elseif ( ! empty( $exif_meta['orientation'] ) && 1 !== (int) $exif_meta['orientation'] ) {
 			// Rotate the whole original image if there is EXIF data and "orientation" is not 1.
 
 			$editor = wp_get_image_editor( $file );
