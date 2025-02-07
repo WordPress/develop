@@ -93,7 +93,6 @@ const normalizeJoin = ( ...paths ) => join( ...paths ).replace( /\\/g, '/' );
 
 const BUNDLED_PACKAGES = [
 	'@wordpress/dataviews',
-	'@wordpress/dataviews/wp',
 	'@wordpress/icons',
 	'@wordpress/interface',
 	'@wordpress/interactivity',
