@@ -1780,7 +1780,7 @@ p.customize-section-description {
 
 .control-panel-themes .customize-themes-full-container {
 	position: fixed;
-	top: 0;
+	top: 30px;
 	left: 0;
 	transition: .18s left ease-in-out;
 	margin: 0 0 0 300px;
@@ -2142,6 +2142,7 @@ p.customize-section-description {
 	align-items: center;
 	gap: 10px;
 	grid-template-columns: auto 1fr;
+	margin-top: 8px;
 }
 
 .customize-preview-header .filter-themes-wrapper .filter-themes-count {
