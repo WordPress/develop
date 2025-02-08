@@ -1081,4 +1081,94 @@ class Tests_REST_Request extends WP_UnitTestCase {
 		$this->assertWPError( $valid );
 		$this->assertSame( 'rest_invalid_param', $valid->get_error_code() );
 	}
+
+
+	/**
+	 * @ticket 61061
+	 */
+	public function test_sanitize_params_with_string_parameters() {
+		$this->request->set_url_params( 'foobar' );
+
+		$this->request->set_attributes(
+			array(
+				'args' => array(
+					'someinteger' => array(
+						'sanitize_callback' => 'absint',
+					),
+					'somestring'  => array(
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
+
+		$this->request->sanitize_params();
+
+		$this->assertSame( 'foobar', $this->request->get_url_params() );
+	}
+
+	/**
+	 * @ticket 61061
+	 */
+	public function test_has_valid_params_with_string_parameter_and_required_attribute() {
+		$this->request->set_url_params( 'foobar' );
+
+		$this->request->set_attributes(
+			array(
+				'args' => array(
+					'someinteger' => array(
+						'sanitize_callback' => 'absint',
+						'required'          => true,
+					),
+				),
+			)
+		);
+
+		$this->assertWPError( $this->request->has_valid_params() );
+	}
+
+	/**
+	 * @ticket 61061
+	 */
+	public function test_has_valid_params_with_string_parameter_without_required_attribute() {
+		$this->request->set_url_params( 'foobar' );
+
+		$this->request->set_attributes(
+			array(
+				'args' => array(
+					'someinteger' => array(
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
+
+		$this->assertTrue( $this->request->has_valid_params() );
+	}
+
+	/**
+	 * @ticket 61061
+	 */
+	public function test_scalar_request_body_should_not_throw_fatal_errors() {
+
+		$user_id = self::factory()->user->create(
+			array(
+				'role' => 'editor',
+			)
+		);
+
+		wp_set_current_user( $user_id );
+
+		$request = new WP_REST_Request( 'POST', sprintf( '/wp/v2/users/%d', $user_id ) );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body( '"+response.write(document.domain)+"' );
+
+		try {
+			$response = rest_get_server()->dispatch( $request );
+			$this->assertNotNull( $response, 'Response should not be null' );
+			$this->assertInstanceOf( 'WP_REST_Response', $response, 'Response should be a WP_REST_Response object' );
+		} catch ( Exception $e ) {
+			$this->fail( 'Fatal error thrown when parsing scalar request body.' );
+		}
+	}
 }
