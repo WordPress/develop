@@ -1358,6 +1358,82 @@ class Tests_REST_Server extends WP_Test_REST_TestCase {
 		);
 	}
 
+	/**
+	 * Test that the "get_index" method doesn't include the default_template_part_areas
+	 * and default_template_types fields by default.
+	 * @ticket 62574
+	 *
+	 * @covers WP_REST_Server::get_index
+	 */
+	public function test_get_index_should_not_include_default_template_part_areas_and_default_template_types() {
+		$server  = new WP_REST_Server();
+		$request = new WP_REST_Request( 'GET', '/' );
+		$index   = $server->dispatch( $request );
+		$data    = $index->get_data();
+
+		$this->assertArrayNotHasKey( 'default_template_types', $data, 'The "default_template_types" field is missing in the response.' );
+		$this->assertArrayNotHasKey( 'default_template_part_areas', $data, 'The "default_template_part_areas" field is missing in the response.' );
+	}
+
+	/**
+	 * Test that the "get_index" method returns the expected default_template_part_areas
+	 * and default_template_types fields based on the specified request parameters.
+	 *
+	 * @ticket 62574
+	 *
+	 * @covers WP_REST_Server::get_index
+	 *
+	 * @dataProvider data_get_index_should_return_default_template_part_areas_and_default_template_types
+	 *
+	 * @param string $fields            List of fields to use in the request.
+	 * @param array  $expected_fields   Expected fields.
+	 * @param array  $unexpected_fields Optional. Fields that should not be in the results. Default array().
+	 */
+	public function test_get_index_should_return_default_template_part_areas_and_default_template_types( $fields, $expected_fields, $unexpected_fields = array() ) {
+		$server  = new WP_REST_Server();
+		$request = new WP_REST_Request( 'GET', '/', array() );
+		$request->set_param( '_fields', $fields );
+		$response = $server->get_index( $request )->get_data();
+
+		foreach ( $expected_fields as $expected_field ) {
+			$this->assertArrayHasKey( $expected_field, $response, "Expected \"{$expected_field}\" field is missing in the response." );
+		}
+
+		foreach ( $unexpected_fields as $unexpected_field ) {
+			$this->assertArrayNotHasKey( $unexpected_field, $response, "Response must not contain the \"{$unexpected_field}\" field." );
+		}
+	}
+
+	/**
+	 * Data provider.
+	 *
+	 * @return array
+	 */
+	public function data_get_index_should_return_default_template_part_areas_and_default_template_types() {
+		return array(
+			'no default_template_types or default_template_part_areas fields' => array(
+				'fields'            => 'name',
+				'expected_fields'   => array(),
+				'unexpected_fields' => array( 'default_template_types', 'default_template_part_areas' ),
+			),
+			'default_template_types field'      => array(
+				'fields'            => 'default_template_types',
+				'expected_fields'   => array( 'default_template_types' ),
+				'unexpected_fields' => array( 'default_template_part_areas' ),
+			),
+			'default_template_part_areas field' => array(
+				'fields'            => 'default_template_part_areas',
+				'expected_fields'   => array( 'default_template_part_areas' ),
+				'unexpected_fields' => array( 'default_template_types' ),
+			),
+			'default_template_part_areas and default_template_types fields' => array(
+				'fields'            => 'default_template_part_areas,default_template_types',
+				'expected_fields'   => array( 'default_template_types', 'default_template_part_areas' ),
+				'unexpected_fields' => array( '' ),
+			),
+		);
+	}
+
 	public function test_get_namespace_index() {
 		$server = new WP_REST_Server();
 		$server->register_route(
