@@ -63,8 +63,11 @@ class WP_Textdomain_Registry {
 	 * Holds a cached list of domains with translations to improve performance.
 	 *
 	 * @since 6.2.0
+	 * @since 6.8.0 This property is no longer used.
 	 *
 	 * @var string[]
+	 *
+	 * @deprecated
 	 */
 	protected $domains_with_translations = array();
 
@@ -120,8 +123,7 @@ class WP_Textdomain_Registry {
 	public function has( $domain ) {
 		return (
 			isset( $this->current[ $domain ] ) ||
-			empty( $this->all[ $domain ] ) ||
-			in_array( $domain, $this->domains_with_translations, true )
+			empty( $this->all[ $domain ] )
 		);
 	}
 
@@ -322,13 +324,6 @@ class WP_Textdomain_Registry {
 			$php_path = "$location/$domain-$locale.l10n.php";
 
 			foreach ( $files as $file_path ) {
-				if (
-					! in_array( $domain, $this->domains_with_translations, true ) &&
-					str_starts_with( str_replace( "$location/", '', $file_path ), "$domain-" )
-				) {
-					$this->domains_with_translations[] = $domain;
-				}
-
 				if ( $file_path === $mo_path || $file_path === $php_path ) {
 					$found_location = rtrim( $location, '/' ) . '/';
 					break 2;
