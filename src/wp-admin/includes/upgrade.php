@@ -322,11 +322,7 @@ Commenter avatars come from <a href="%s">Gravatar</a>.'
 			$first_page .= "</p></blockquote>\n<!-- /wp:quote -->\n\n";
 
 			$first_page .= "<!-- wp:paragraph -->\n<p>";
-			$first_page .= sprintf(
-				/* translators: First page content. %s: Site admin URL. */
-				__( 'As a new WordPress user, you should go to <a href="%s">your dashboard</a> to delete this page and create new pages for your content. Have fun!' ),
-				admin_url()
-			);
+			$first_page .= __( 'As a new WordPress user, you should go to your dashboard to delete this page and create new pages for your content. Have fun!' );
 			$first_page .= "</p>\n<!-- /wp:paragraph -->";
 		}
 
