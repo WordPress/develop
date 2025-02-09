@@ -5897,6 +5897,8 @@ function print_emoji_detection_script() {
  * @access private
  */
 function _print_emoji_detection_script() {
+	$type_attr = current_theme_supports( 'html5', 'script' ) ? '' : ' type="text/javascript"';
+
 	$settings = array(
 		/**
 		 * Filters the URL where emoji png images are hosted.
@@ -5933,6 +5935,8 @@ function _print_emoji_detection_script() {
 		 * @param string $extension The emoji extension for svg files. Default .svg.
 		 */
 		'svgExt'  => apply_filters( 'emoji_svg_ext', '.svg' ),
+
+		'typeAttr' => $type_attr,
 	);
 
 	$version = 'ver=' . get_bloginfo( 'version' );
