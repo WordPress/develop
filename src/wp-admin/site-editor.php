@@ -25,11 +25,12 @@ $is_template_part_editor = $is_template_part || $is_template_part_path;
 $is_patterns             = isset( $_GET['postType'] ) && 'wp_block' === sanitize_key( $_GET['postType'] );
 $is_patterns_path        = isset( $_GET['path'] ) && 'patterns' === sanitize_key( $_GET['path'] );
 $is_patterns_editor      = $is_patterns || $is_patterns_path;
+$is_stylebook_path	     = isset( $_GET['path'] ) && 'stylebook' === sanitize_key( $_GET['path'] );
 
 if ( ! wp_is_block_theme() ) {
 	if ( ! current_theme_supports( 'block-template-parts' ) && $is_template_part_editor ) {
 		wp_die( __( 'The theme you are currently using is not compatible with the Site Editor.' ) );
-	} elseif ( ! $is_patterns_editor && ! $is_template_part_editor ) {
+	} elseif ( ! $is_patterns_editor && ! $is_template_part_editor && ! $is_stylebook_path ) {
 		wp_die( __( 'The theme you are currently using is not compatible with the Site Editor.' ) );
 	}
 }
