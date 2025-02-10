@@ -333,9 +333,9 @@ function wp_create_image_subsizes( $file, $attachment_id ) {
 
 		if ( ! is_wp_error( $resized ) ) {
 			/*
-				* Append "-scaled" to the image file name. It will look like "my_image-scaled.jpg".
-				* This doesn't affect the sub-sizes names as they are generated from the original image (for best quality).
-				*/
+			 * Append "-scaled" to the image file name. It will look like "my_image-scaled.jpg".
+			 * This doesn't affect the sub-sizes names as they are generated from the original image (for best quality).
+			 */
 			if ( $scale_down ) {
 				$saved = $editor->save( $editor->generate_filename( 'scaled' ) );
 			} elseif ( $convert ) {
