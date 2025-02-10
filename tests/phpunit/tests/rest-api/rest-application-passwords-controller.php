@@ -848,6 +848,67 @@ class WP_Test_REST_Application_Passwords_Controller extends WP_Test_REST_Control
 	}
 
 	/**
+	 * @ticket 53692
+	 */
+	public function test_app_id_schema() {
+		$request    = new WP_REST_Request( 'OPTIONS', '/wp/v2/users/me/application-passwords' );
+		$response   = rest_get_server()->dispatch( $request );
+		$data       = $response->get_data();
+		$properties = $data['schema']['properties'];
+
+		$this->assertArrayHasKey( 'app_id', $properties );
+		$this->assertSame( 'string', $properties['app_id']['type'] );
+		$this->assertCount( 2, $properties['app_id']['oneOf'] );
+
+		$this->assertSame( 'string', $properties['app_id']['oneOf'][0]['type'] );
+		$this->assertSame( 'uuid', $properties['app_id']['oneOf'][0]['format'] );
+
+		$this->assertSame( 'string', $properties['app_id']['oneOf'][1]['type'] );
+		$this->assertSame( array( '' ), $properties['app_id']['oneOf'][1]['enum'] );
+	}
+
+	/**
+	 * @ticket 53692
+	 */
+	public function test_create_item_with_empty_app_id() {
+		wp_set_current_user( self::$admin );
+
+		$request = new WP_REST_Request( 'POST', '/wp/v2/users/' . self::$admin . '/application-passwords' );
+		$request->set_body_params(
+			array(
+				'name'   => 'Test',
+				'app_id' => '',
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertSame( 201, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertSame( '', $data['app_id'] );
+	}
+
+	/**
+	 * @ticket 53692
+	 */
+	public function test_create_item_with_uuid_app_id() {
+		wp_set_current_user( self::$admin );
+
+		$uuid = wp_generate_uuid4();
+		$request = new WP_REST_Request( 'POST', '/wp/v2/users/' . self::$admin . '/application-passwords' );
+		$request->set_body_params(
+			array(
+				'name'   => 'Test',
+				'app_id' => $uuid,
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertSame( 201, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertSame( $uuid, $data['app_id'] );
+	}
+
+	/**
 	 * Checks the password response matches the expected format.
 	 *
 	 * @since 5.6.0
