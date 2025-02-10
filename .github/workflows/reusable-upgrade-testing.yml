@@ -150,4 +150,5 @@ jobs:
         run: wp core update-db ${{ inputs.multisite && '--network' || '' }}
 
       - name: Post-upgrade version check
+        if: always()
         run: wp core version
