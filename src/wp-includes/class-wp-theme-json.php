@@ -470,7 +470,7 @@ class WP_Theme_JSON {
 		),
 	);
 
-	/*
+	/**
 	 * The valid properties for fontFamilies under settings key.
 	 *
 	 * @since 6.5.0
@@ -1317,6 +1317,8 @@ class WP_Theme_JSON {
 	 *                          - `variables`: only the CSS Custom Properties for presets & custom ones.
 	 *                          - `styles`: only the styles section in theme.json.
 	 *                          - `presets`: only the classes for the presets.
+	 *                          - `base-layout-styles`: only the base layout styles.
+	 *                          - `custom-css`: only the custom CSS.
 	 * @param string[] $origins A list of origins to include. By default it includes VALID_ORIGINS.
 	 * @param array    $options {
 	 *     Optional. An array of options for now used for internal purposes only (may change without notice).
@@ -2722,9 +2724,21 @@ class WP_Theme_JSON {
 		foreach ( $theme_json['styles']['blocks'] as $name => $node ) {
 			$node_path = array( 'styles', 'blocks', $name );
 			if ( $include_node_paths_only ) {
-				$nodes[] = array(
+				$variation_paths = array();
+				if ( $include_variations && isset( $node['variations'] ) ) {
+					foreach ( $node['variations'] as $variation => $variation_node ) {
+						$variation_paths[] = array(
+							'path' => array( 'styles', 'blocks', $name, 'variations', $variation ),
+						);
+					}
+				}
+				$node = array(
 					'path' => $node_path,
 				);
+				if ( ! empty( $variation_paths ) ) {
+					$node['variations'] = $variation_paths;
+				}
+				$nodes[] = $node;
 			} else {
 				$selector = null;
 				if ( isset( $selectors[ $name ]['selector'] ) ) {
@@ -3313,7 +3327,7 @@ class WP_Theme_JSON {
 					continue;
 				}
 				foreach ( $duotone_presets[ $origin ] as $duotone_preset ) {
-					$filters .= wp_get_duotone_filter_svg( $duotone_preset );
+					$filters .= WP_Duotone::get_filter_svg_from_preset( $duotone_preset );
 				}
 			}
 		}
