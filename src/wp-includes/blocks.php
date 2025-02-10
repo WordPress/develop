@@ -1996,6 +1996,7 @@ function excerpt_remove_blocks( $content ) {
 		'core/heading',
 		'core/html',
 		'core/list',
+		'core/list-item',
 		'core/media-text',
 		'core/paragraph',
 		'core/preformatted',
