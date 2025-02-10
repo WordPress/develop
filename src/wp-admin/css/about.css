@@ -737,6 +737,15 @@
 	}
 }
 
+@media screen and (max-width: 1200px) {
+
+	.about__section a.button.button-hero {
+		white-space: normal;
+		line-height: 1.5;
+		padding: 1.5rem;
+	}
+}
+
 
 /*------------------------------------------------------------------------------
   2.0 - Credits Page
