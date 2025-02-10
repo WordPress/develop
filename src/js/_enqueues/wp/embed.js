@@ -64,6 +64,8 @@
 				height = parseInt( data.value, 10 );
 				if ( height > 1000 ) {
 					height = 1000;
+				} else if ( height < 100 ) {
+					height = 100;
 				}
 
 				source.height = height;
