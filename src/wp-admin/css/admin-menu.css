@@ -65,7 +65,7 @@
 #adminmenuwrap {
 	position: relative;
 	float: left;
-	z-index: 9990;
+	z-index: 19990; /* Above theme model and below the admin toolbar */
 }
 
 /* side admin menu */
