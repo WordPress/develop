@@ -1780,7 +1780,7 @@ p.customize-section-description {
 
 .control-panel-themes .customize-themes-full-container {
 	position: fixed;
-	top: 0;
+	top: 20px;
 	left: 0;
 	transition: .18s left ease-in-out;
 	margin: 0 0 0 300px;
