@@ -110,14 +110,17 @@ module.exports = function(grunt) {
 	};
 
 	// Load grunt-* tasks.
+	function loadGruntTasks( dependency ) {
+		var contrib = key === 'contrib' ? 'contrib-' : '';
+		grunt.loadNpmTasks( 'grunt-' + contrib + dependency );
+	}
+
 	for ( var key in gruntDependencies ) {
 		if ( ! gruntDependencies.hasOwnProperty( key ) ) {
 			continue;
 		}
-		gruntDependencies[key].forEach( function( dependency ) {
-			var contrib = key === 'contrib' ? 'contrib-' : '';
-			grunt.loadNpmTasks( 'grunt-' + contrib + dependency );
-		} );
+
+		gruntDependencies[key].forEach( loadGruntTasks );
 	}
 
 	// Load PostCSS tasks.
