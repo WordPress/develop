@@ -893,7 +893,7 @@ class WP_Test_REST_Application_Passwords_Controller extends WP_Test_REST_Control
 	public function test_create_item_with_uuid_app_id() {
 		wp_set_current_user( self::$admin );
 
-		$uuid = wp_generate_uuid4();
+		$uuid    = wp_generate_uuid4();
 		$request = new WP_REST_Request( 'POST', '/wp/v2/users/' . self::$admin . '/application-passwords' );
 		$request->set_body_params(
 			array(
