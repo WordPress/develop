@@ -16,7 +16,7 @@ input {
 
 textarea {
 	overflow: auto;
-	padding: 2px 6px;
+	padding: 8px 12px;
 	/* inherits font size 14px */
 	line-height: 1.42857143; /* 20px */
 	resize: vertical;
@@ -48,7 +48,7 @@ input[type="week"],
 select,
 textarea {
 	box-shadow: 0 0 0 transparent;
-	border-radius: 4px;
+	border-radius: 2px;
 	border: 1px solid #8c8f94;
 	background-color: #fff;
 	color: #2c3338;
@@ -67,11 +67,11 @@ input[type="tel"],
 input[type="time"],
 input[type="url"],
 input[type="week"] {
-	padding: 0 8px;
+	padding: 0 16px;
 	/* inherits font size 14px */
 	line-height: 2; /* 28px */
 	/* Only necessary for IE11 */
-	min-height: 30px;
+	min-height: 42px;
 }
 
 ::-webkit-datetime-edit {
@@ -318,8 +318,8 @@ input[type="radio"].disabled:checked:before {
 	border-color: #8c8f94;
 	box-shadow: none;
 	border-radius: 3px;
-	padding: 0 24px 0 8px;
-	min-height: 30px;
+	padding: 0 24px 0 12px;
+	min-height: 42px;
 	max-width: 25rem;
 	-webkit-appearance: none;
 	/* The SVG is arrow-down-alt2 from Dashicons. */
@@ -698,7 +698,7 @@ fieldset label,
 .wp-pwd [type="password"] {
 	margin-bottom: 0;
 	/* Same height as the buttons */
-	min-height: 30px;
+	min-height: 42px;
 }
 
 /* Hide the Edge "reveal password" native button */
