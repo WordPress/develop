@@ -14,7 +14,7 @@ on:
         required: true
         type: 'string'
       new-version:
-        description: 'The version of WordPress to update to. Use "latest" to update to the latest version, or "develop" to update to the current branch.'
+        description: 'The version of WordPress to update to. Use "latest" to update to the latest version, "develop" to update to the current branch, or provide a specific version number to update to.'
         type: 'string'
         default: 'latest'
       php:
@@ -49,8 +49,13 @@ jobs:
   # - Downloads the specified version of WordPress.
   # - Creates a `wp-config.php` file.
   # - Installs WordPress.
+  # - Checks the version of WordPress before the upgrade.
   # - Updates to the latest minor version.
+  # - Updates the database after the minor update.
+  # - Checks the version of WordPress after the minor update.
   # - Updates to the version of WordPress being tested.
+  # - Updates the database.
+  # - Checks the version of WordPress after the upgrade.
   upgrade-tests:
     name: ${{ inputs.wp }} to ${{ inputs.new-version }} / PHP ${{ inputs.php }} with ${{ 'mariadb' == inputs.db-type && 'MariaDB' || 'MySQL' }} ${{ inputs.db-version }}${{ inputs.multisite && ' multisite' || '' }}
     permissions: {}
