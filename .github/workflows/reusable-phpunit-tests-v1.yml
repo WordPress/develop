@@ -109,9 +109,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Build WordPress
-        run: npm run build
-
       - name: Get composer cache directory
         if: ${{ env.COMPOSER_INSTALL == true }}
         id: composer-cache
