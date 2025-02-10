@@ -66,6 +66,10 @@ jobs:
         wp: [ '6.5', '6.6', '6.7' ]
         multisite: [ false, true ]
 
+        include:
+          - php: '7.2'
+            wp: '6.5'
+            extensions: ':hash'
         exclude:
           # The PHP <= 7.3/MySQL 8.4 jobs currently fail due to mysql_native_password being disabled by default. See https://core.trac.wordpress.org/ticket/61218.
           - php: '7.2'

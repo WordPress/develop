@@ -36,6 +36,11 @@ on:
         required: false
         type: 'string'
         default: '5.7'
+      extensions:
+        description: 'PHP extension configuration used by setup-php.'
+        required: false
+        type: 'string'
+        default: ''
 
 # Disable permissions for all available scopes by default.
 # Any needed permissions should be configured at the job level.
@@ -84,6 +89,16 @@ jobs:
           php-version: '${{ inputs.php }}'
           coverage: none
           tools: wp-cli
+          extensions: ${{ inputs.extensions }}
+        env:
+          fail-fast: true
+
+      - name: Debug information
+        run: |
+          php --version
+          php -m
+          php -i
+          locale -a
 
       - name: Download WordPress ${{ inputs.wp }}
         run: wp core download --version="${WP_VERSION}"
