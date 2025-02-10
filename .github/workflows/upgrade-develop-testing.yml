@@ -1,32 +1,34 @@
-name: PHP Compatibility
+# Confirms that updating WordPress using WP-CLI works successfully.
+#
+# This workflow tests upgrading from a previous version to the current wordpress-develop checkout, not to a version available on WordPress.org.
+name: Upgrade Develop Version Tests
 
 on:
-  # PHP compatibility testing was introduced in WordPress 5.5.
   push:
     branches:
       - trunk
-      - '5.[5-9]'
-      - '[6-9].[0-9]'
+      - '6.[8-9]'
+      - '[7-9].[0-9]'
     tags:
       - '[0-9]+.[0-9]'
       - '[0-9]+.[0-9].[0-9]+'
-      - '![34].[0-9].[0-9]+'
-      - '!5.[0-4].[0-9]+'
-  # pull_request:
-  #   branches:
-  #     - trunk
-  #     - '5.[5-9]'
-  #     - '[6-9].[0-9]'
-  #   paths:
-  #     # This workflow only scans PHP files.
-  #     - '**.php'
-  #     # These files configure Composer. Changes could affect the outcome.
-  #     - 'composer.*'
-  #     # This file configures PHP compatibility scanning. Changes could affect the outcome.
-  #     - 'phpcompat.xml.dist'
-  #     # Confirm any changes to relevant workflow files.
-  #     - '.github/workflows/php-compatibility.yml'
-  #     - '.github/workflows/reusable-php-compatibility.yml'
+    paths:
+      # Any change to a source PHP file should run checks.
+      - 'src/**.php'
+      # Confirm any changes to relevant workflow files.
+      - '.github/workflows/upgrade-develop-testing.yml'
+      - '.github/workflows/reusable-upgrade-testing.yml'
+  pull_request:
+    branches:
+      - trunk
+      - '6.[8-9]'
+      - '[7-9].[0-9]'
+    paths:
+      # Any change to a source PHP file should run checks.
+      - 'src/**.php'
+      # Confirm any changes to relevant workflow files.
+      - '.github/workflows/upgrade-develop-testing.yml'
+      - '.github/workflows/reusable-upgrade-testing.yml'
   workflow_dispatch:
 
 # Cancels all previous workflow runs for pull requests that have not completed.
@@ -41,13 +43,41 @@ concurrency:
 permissions: {}
 
 jobs:
-  # Runs PHP compatibility testing.
-  php-compatibility:
-    name: Check PHP compatibility
-    uses: ./.github/workflows/reusable-php-compatibility.yml
+  # Build WordPress from the current branch ready for the upgrade tests.
+  build:
+    name: Build
+    uses: ./.github/workflows/reusable-build-package.yml
     permissions:
       contents: read
+
+  # Run upgrade tests for the current branch.
+  upgrade-tests-develop:
+    name: Upgrade from ${{ matrix.wp }}
+    uses: ./.github/workflows/reusable-upgrade-testing.yml
     if: ${{ github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' }}
+    needs: [ build ]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'ubuntu-24.04' ]
+        php: [ '7.2', '8.4' ]
+        db-type: [ 'mysql' ]
+        db-version: [ '5.7', '8.4' ]
+        wp: [ '6.5', '6.6', '6.7' ]
+        multisite: [ false, true ]
+
+        exclude:
+          # The PHP <= 7.3/MySQL 8.4 jobs currently fail due to mysql_native_password being disabled by default. See https://core.trac.wordpress.org/ticket/61218.
+          - php: '7.2'
+            db-version: '8.4'
+    with:
+      os: ${{ matrix.os }}
+      php: ${{ matrix.php }}
+      db-type: ${{ matrix.db-type }}
+      db-version: ${{ matrix.db-version }}
+      wp: ${{ matrix.wp }}
+      new-version: develop
+      multisite: ${{ matrix.multisite }}
 
   slack-notifications:
     name: Slack Notifications
@@ -55,7 +85,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    needs: [ php-compatibility ]
+    needs: [ upgrade-tests-develop ]
     if: ${{ github.repository == 'WordPress/wordpress-develop' && github.event_name != 'pull_request' && always() }}
     with:
       calling_status: ${{ contains( needs.*.result, 'cancelled' ) && 'cancelled' || contains( needs.*.result, 'failure' ) && 'failure' || 'success' }}
