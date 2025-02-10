@@ -3719,8 +3719,22 @@ class WP_Query {
 
 		++$this->current_post;
 
-		/** @var WP_Post */
-		$this->post = $this->posts[ $this->current_post ];
+		$current_item = $this->posts[ $this->current_post ];
+
+		if ( $current_item instanceof WP_Post ) {
+			$this->post = $current_item;
+		} else {
+			if ( is_object( $current_item ) && property_exists( $current_item, 'ID' ) ) {
+				$this->post = get_post( $current_item->ID );
+
+				if ( ! $this->post ) {
+					$this->post = $current_item;
+				}
+			} else {
+				$this->post = $current_item;
+			}
+		}
+
 		return $this->post;
 	}
 
