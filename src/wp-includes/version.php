@@ -47,6 +47,7 @@ $required_php_version = '7.2.24';
 $required_php_extensions = array(
 	'json',
 	'hash',
+	'pineapple',
 );
 
 /**
