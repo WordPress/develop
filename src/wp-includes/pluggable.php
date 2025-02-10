@@ -251,7 +251,8 @@ if ( ! function_exists( 'wp_mail' ) ) :
 			require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
 			require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
 			require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
-			$phpmailer = new PHPMailer\PHPMailer\PHPMailer( true );
+			require_once ABSPATH . WPINC . '/class-wp-phpmailer.php';
+			$phpmailer = new WP_PHPMailer( true );
 
 			$phpmailer::$validator = static function ( $email ) {
 				return (bool) is_email( $email );
@@ -597,7 +598,11 @@ if ( ! function_exists( 'wp_authenticate' ) ) :
 	 * @return WP_User|WP_Error WP_User object if the credentials are valid,
 	 *                          otherwise WP_Error.
 	 */
-	function wp_authenticate( $username, $password ) {
+	function wp_authenticate(
+		$username,
+		#[\SensitiveParameter]
+		$password
+	) {
 		$username = sanitize_user( $username );
 		$password = trim( $password );
 
@@ -710,8 +715,9 @@ if ( ! function_exists( 'wp_validate_auth_cookie' ) ) :
 		$username   = $cookie_elements['username'];
 		$hmac       = $cookie_elements['hmac'];
 		$token      = $cookie_elements['token'];
-		$expired    = $cookie_elements['expiration'];
 		$expiration = $cookie_elements['expiration'];
+
+		$expired = (int) $expiration;
 
 		// Allow a grace period for POST and Ajax requests.
 		if ( wp_doing_ajax() || 'POST' === $_SERVER['REQUEST_METHOD'] ) {
@@ -2479,16 +2485,7 @@ if ( ! function_exists( 'wp_salt' ) ) :
 
 		static $duplicated_keys;
 		if ( null === $duplicated_keys ) {
-			$duplicated_keys = array(
-				'put your unique phrase here' => true,
-			);
-
-			/*
-			 * translators: This string should only be translated if wp-config-sample.php is localized.
-			 * You can check the localized release package or
-			 * https://i18n.svn.wordpress.org/<locale code>/branches/<wp version>/dist/wp-config-sample.php
-			 */
-			$duplicated_keys[ __( 'put your unique phrase here' ) ] = true;
+			$duplicated_keys = array();
 
 			foreach ( array( 'AUTH', 'SECURE_AUTH', 'LOGGED_IN', 'NONCE', 'SECRET' ) as $first ) {
 				foreach ( array( 'KEY', 'SALT' ) as $second ) {
@@ -2499,6 +2496,15 @@ if ( ! function_exists( 'wp_salt' ) ) :
 					$duplicated_keys[ $value ] = isset( $duplicated_keys[ $value ] );
 				}
 			}
+
+			$duplicated_keys['put your unique phrase here'] = true;
+
+			/*
+			 * translators: This string should only be translated if wp-config-sample.php is localized.
+			 * You can check the localized release package or
+			 * https://i18n.svn.wordpress.org/<locale code>/branches/<wp version>/dist/wp-config-sample.php
+			 */
+			$duplicated_keys[ __( 'put your unique phrase here' ) ] = true;
 		}
 
 		/*
@@ -2580,18 +2586,38 @@ endif;
 
 if ( ! function_exists( 'wp_hash' ) ) :
 	/**
-	 * Gets hash of given string.
+	 * Gets the hash of the given string.
+	 *
+	 * The default algorithm is md5 but can be changed to any algorithm supported by
+	 * `hash_hmac()`. Use the `hash_hmac_algos()` function to check the supported
+	 * algorithms.
 	 *
 	 * @since 2.0.3
+	 * @since 6.8.0 The `$algo` parameter was added.
+	 *
+	 * @throws InvalidArgumentException if the hashing algorithm is not supported.
 	 *
 	 * @param string $data   Plain text to hash.
 	 * @param string $scheme Authentication scheme (auth, secure_auth, logged_in, nonce).
+	 * @param string $algo   Hashing algorithm to use. Default: 'md5'.
 	 * @return string Hash of $data.
 	 */
-	function wp_hash( $data, $scheme = 'auth' ) {
+	function wp_hash( $data, $scheme = 'auth', $algo = 'md5' ) {
 		$salt = wp_salt( $scheme );
 
-		return hash_hmac( 'md5', $data, $salt );
+		// Ensure the algorithm is supported by the hash_hmac function.
+		if ( ! in_array( $algo, hash_hmac_algos(), true ) ) {
+			throw new InvalidArgumentException(
+				sprintf(
+					/* translators: 1: Name of a cryptographic hash algorithm. 2: List of supported algorithms. */
+					__( 'Unsupported hashing algorithm: %1$s. Supported algorithms are: %2$s' ),
+					$algo,
+					implode( ', ', hash_hmac_algos() )
+				)
+			);
+		}
+
+		return hash_hmac( $algo, $data, $salt );
 	}
 endif;
 
@@ -2609,7 +2635,10 @@ if ( ! function_exists( 'wp_hash_password' ) ) :
 	 * @param string $password Plain text user password to hash.
 	 * @return string The hash string of the password.
 	 */
-	function wp_hash_password( $password ) {
+	function wp_hash_password(
+		#[\SensitiveParameter]
+		$password
+	) {
 		global $wp_hasher;
 
 		if ( empty( $wp_hasher ) ) {
@@ -2645,7 +2674,12 @@ if ( ! function_exists( 'wp_check_password' ) ) :
 	 * @param string|int $user_id  Optional. User ID.
 	 * @return bool False, if the $password does not match the hashed password.
 	 */
-	function wp_check_password( $password, $hash, $user_id = '' ) {
+	function wp_check_password(
+		#[\SensitiveParameter]
+		$password,
+		$hash,
+		$user_id = ''
+	) {
 		global $wp_hasher;
 
 		// If the hash is still md5...
@@ -2841,7 +2875,11 @@ if ( ! function_exists( 'wp_set_password' ) ) :
 	 * @param string $password The plaintext new user password.
 	 * @param int    $user_id  User ID.
 	 */
-	function wp_set_password( $password, $user_id ) {
+	function wp_set_password(
+		#[\SensitiveParameter]
+		$password,
+		$user_id
+	) {
 		global $wpdb;
 
 		$old_user_data = get_userdata( $user_id );

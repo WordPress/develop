@@ -214,13 +214,6 @@ tests_reset__SERVER();
 define( 'WP_TESTS_TABLE_PREFIX', $table_prefix );
 define( 'DIR_TESTDATA', __DIR__ . '/../data' );
 define( 'DIR_TESTROOT', realpath( dirname( __DIR__ ) ) );
-define( 'IMPORTER_PLUGIN_FOR_TESTS', DIR_TESTDATA . '/plugins/wordpress-importer/wordpress-importer.php' );
-
-if ( defined( 'WP_RUN_CORE_TESTS' ) && WP_RUN_CORE_TESTS && ! file_exists( IMPORTER_PLUGIN_FOR_TESTS ) ) {
-	echo 'The test suite requires the WordPress Importer plugin to be available in the `/data/plugins/` directory.'
-		. ' See: https://make.wordpress.org/core/handbook/contribute/git/#unit-tests' . PHP_EOL,
-	exit( 1 );
-}
 
 define( 'WP_LANG_DIR', realpath( DIR_TESTDATA . '/languages' ) );
 
@@ -251,10 +244,6 @@ $_SERVER['PHP_SELF'] = '/index.php';
 $multisite = ( '1' === getenv( 'WP_MULTISITE' ) );
 $multisite = $multisite || ( defined( 'WP_TESTS_MULTISITE' ) && WP_TESTS_MULTISITE );
 $multisite = $multisite || ( defined( 'MULTISITE' ) && MULTISITE );
-
-// Override the PHPMailer.
-require_once __DIR__ . '/mock-mailer.php';
-$phpmailer = new MockPHPMailer( true );
 
 if ( ! defined( 'WP_DEFAULT_THEME' ) ) {
 	define( 'WP_DEFAULT_THEME', 'default' );
@@ -310,6 +299,11 @@ if ( isset( $GLOBALS['wp_tests_options'] ) ) {
 
 // Load WordPress.
 require_once ABSPATH . 'wp-settings.php';
+
+// Override the PHPMailer.
+require_once __DIR__ . '/mock-mailer.php';
+
+$phpmailer = new MockPHPMailer( true );
 
 // Delete any default posts & related data.
 _delete_all_posts();
