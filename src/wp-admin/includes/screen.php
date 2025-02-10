@@ -131,9 +131,10 @@ function meta_box_prefs( $screen ) {
 				$is_hidden = in_array( $box['id'], $hidden, true );
 
 				printf(
-					'<label for="%1$s-hide"><input class="hide-postbox-tog" name="%1$s-hide" type="checkbox" id="%1$s-hide" value="%1$s" %2$s />%3$s</label>',
+					'<label for="%1$s-hide"><input class="hide-postbox-tog" name="%1$s-hide" type="checkbox" id="%1$s-hide" value="%1$s" %2$s data-widget-title="%3$s" />%4$s</label>',
 					esc_attr( $box['id'] ),
 					checked( $is_hidden, false, false ),
+					strip_tags( $widget_title ),
 					$widget_title
 				);
 			}

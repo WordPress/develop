@@ -47,6 +47,14 @@ jQuery( function($) {
 		$('#wp_welcome_panel-hide').prop('checked', false);
 	});
 
+	// Speak a message when the Welcome Option checkbox is checked.
+	$( '#wp_welcome_panel-hide' ).on( 'change', function() {
+		var message = this.checked ? 
+			wp.i18n.__( 'Welcome Panel checkbox checked.' ) :
+			wp.i18n.__( 'Welcome Panel checkbox unchecked.' );
+		wp.a11y.speak( message );
+	} );
+
 	// Set welcome panel visibility based on Welcome Option checkbox value.
 	welcomePanelHide.on( 'click', function() {
 		welcomePanel.toggleClass('hidden', ! this.checked );
