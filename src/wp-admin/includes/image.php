@@ -285,9 +285,9 @@ function wp_create_image_subsizes( $file, $attachment_id ) {
 	$threshold = (int) apply_filters( 'big_image_size_threshold', 2560, $imagesize, $file, $attachment_id );
 
 	/*
-		* If the original image's dimensions are over the threshold,
-		* scale the image and use it as the "full" size.
-		*/
+	 * If the original image's dimensions are over the threshold,
+	 * scale the image and use it as the "full" size.
+	 */
 	$scale_down = false;
 	$convert    = false;
 
