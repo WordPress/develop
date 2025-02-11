@@ -247,6 +247,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 			'author_exclude' => 'author__not_in',
 			'exclude'        => 'post__not_in',
 			'include'        => 'post__in',
+			'ignore_sticky'  => 'ignore_sticky_posts',
 			'menu_order'     => 'menu_order',
 			'offset'         => 'offset',
 			'order'          => 'order',
@@ -337,6 +338,14 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 			}
 		}
 
+		/*
+		 * Honor the original REST API `post__in` behavior. Don't prepend sticky posts
+		 * when `post__in` has been specified.
+		 */
+		if ( ! empty( $args['post__in'] ) ) {
+			unset( $args['ignore_sticky_posts'] );
+		}
+
 		if (
 			isset( $registered['search_semantics'], $request['search_semantics'] )
 			&& 'exact' === $request['search_semantics']
@@ -345,6 +354,59 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		}
 
 		$args = $this->prepare_tax_query( $args, $request );
+
+		if ( isset( $registered['format'], $request['format'] ) ) {
+			$formats = $request['format'];
+			/*
+			 * The relation needs to be set to `OR` since the request can contain
+			 * two separate conditions. The user may be querying for items that have
+			 * either the `standard` format or a specific format.
+			 */
+			$formats_query = array( 'relation' => 'OR' );
+
+			/*
+			 * The default post format, `standard`, is not stored in the database.
+			 * If `standard` is part of the request, the query needs to exclude all post items that
+			 * have a format assigned.
+			 */
+			if ( in_array( 'standard', $formats, true ) ) {
+				$formats_query[] = array(
+					'taxonomy' => 'post_format',
+					'field'    => 'slug',
+					'operator' => 'NOT EXISTS',
+				);
+				// Remove the `standard` format, since it cannot be queried.
+				unset( $formats[ array_search( 'standard', $formats, true ) ] );
+			}
+
+			// Add any remaining formats to the formats query.
+			if ( ! empty( $formats ) ) {
+				// Add the `post-format-` prefix.
+				$terms = array_map(
+					static function ( $format ) {
+						return "post-format-$format";
+					},
+					$formats
+				);
+
+				$formats_query[] = array(
+					'taxonomy' => 'post_format',
+					'field'    => 'slug',
+					'terms'    => $terms,
+					'operator' => 'IN',
+				);
+			}
+
+			// Enable filtering by both post formats and other taxonomies by combining them with `AND`.
+			if ( isset( $args['tax_query'] ) ) {
+				$args['tax_query'][] = array(
+					'relation' => 'AND',
+					$formats_query,
+				);
+			} else {
+				$args['tax_query'] = $formats_query;
+			}
+		}
 
 		// Force the post_type argument, since it's not a user input variable.
 		$args['post_type'] = $this->post_type;
@@ -404,7 +466,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 			remove_filter( 'post_password_required', array( $this, 'check_password_required' ) );
 		}
 
-		$page        = (int) $query_args['paged'];
+		$page        = isset( $query_args['paged'] ) ? (int) $query_args['paged'] : 0;
 		$total_posts = $posts_query->found_posts;
 
 		if ( $total_posts < 1 && $page > 1 ) {
@@ -1596,6 +1658,8 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 				return $result;
 			}
 		}
+
+		return null;
 	}
 
 	/**
@@ -1816,7 +1880,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 			 * with the site's timezone offset applied.
 			 */
 			if ( '0000-00-00 00:00:00' === $post->post_modified_gmt ) {
-				$post_modified_gmt = gmdate( 'Y-m-d H:i:s', strtotime( $post->post_modified ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) );
+				$post_modified_gmt = gmdate( 'Y-m-d H:i:s', strtotime( $post->post_modified ) - (int) ( (float) get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) );
 			} else {
 				$post_modified_gmt = $post->post_modified_gmt;
 			}
@@ -2989,6 +3053,24 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 			$query_params['sticky'] = array(
 				'description' => __( 'Limit result set to items that are sticky.' ),
 				'type'        => 'boolean',
+			);
+
+			$query_params['ignore_sticky'] = array(
+				'description' => __( 'Whether to ignore sticky posts or not.' ),
+				'type'        => 'boolean',
+				'default'     => false,
+			);
+		}
+
+		if ( post_type_supports( $this->post_type, 'post-formats' ) ) {
+			$query_params['format'] = array(
+				'description' => __( 'Limit result set to items assigned one or more given formats.' ),
+				'type'        => 'array',
+				'uniqueItems' => true,
+				'items'       => array(
+					'enum' => array_values( get_post_format_slugs() ),
+					'type' => 'string',
+				),
 			);
 		}
 

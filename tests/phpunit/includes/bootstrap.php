@@ -245,10 +245,6 @@ $multisite = ( '1' === getenv( 'WP_MULTISITE' ) );
 $multisite = $multisite || ( defined( 'WP_TESTS_MULTISITE' ) && WP_TESTS_MULTISITE );
 $multisite = $multisite || ( defined( 'MULTISITE' ) && MULTISITE );
 
-// Override the PHPMailer.
-require_once __DIR__ . '/mock-mailer.php';
-$phpmailer = new MockPHPMailer( true );
-
 if ( ! defined( 'WP_DEFAULT_THEME' ) ) {
 	define( 'WP_DEFAULT_THEME', 'default' );
 }
@@ -303,6 +299,11 @@ if ( isset( $GLOBALS['wp_tests_options'] ) ) {
 
 // Load WordPress.
 require_once ABSPATH . 'wp-settings.php';
+
+// Override the PHPMailer.
+require_once __DIR__ . '/mock-mailer.php';
+
+$phpmailer = new MockPHPMailer( true );
 
 // Delete any default posts & related data.
 _delete_all_posts();

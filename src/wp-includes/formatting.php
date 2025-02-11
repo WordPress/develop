@@ -574,7 +574,7 @@ function wpautop( $text, $br = true ) {
 		// Replace newlines that shouldn't be touched with a placeholder.
 		$text = preg_replace_callback( '/<(script|style|svg|math).*?<\/\\1>/s', '_autop_newline_preservation_helper', $text );
 
-		// Normalize <br>
+		// Normalize <br>.
 		$text = str_replace( array( '<br>', '<br/>' ), '<br />', $text );
 
 		// Replace any new line characters that aren't preceded by a <br /> with a <br />.
@@ -621,7 +621,7 @@ function wp_html_split( $input ) {
  *
  * @since 4.4.0
  *
- * @return string The regular expression
+ * @return string The regular expression.
  */
 function get_html_split_regex() {
 	static $regex;
@@ -681,7 +681,7 @@ function get_html_split_regex() {
  * @since 4.4.0
  *
  * @param string $shortcode_regex Optional. The result from _get_wptexturize_shortcode_regex().
- * @return string The regular expression
+ * @return string The regular expression.
  */
 function _get_wptexturize_split_regex( $shortcode_regex = '' ) {
 	static $html_regex;
@@ -723,7 +723,7 @@ function _get_wptexturize_split_regex( $shortcode_regex = '' ) {
  * @since 4.4.0
  *
  * @param string[] $tagnames Array of shortcodes to find.
- * @return string The regular expression
+ * @return string The regular expression.
  */
 function _get_wptexturize_shortcode_regex( $tagnames ) {
 	$tagregexp = implode( '|', array_map( 'preg_quote', $tagnames ) );
@@ -877,7 +877,7 @@ function shortcode_unautop( $text ) {
  * @author bmorel at ssi dot fr (modified)
  * @since 1.2.1
  *
- * @param string $str The string to be checked
+ * @param string $str The string to be checked.
  * @return bool True if $str fits a UTF-8 model, false otherwise.
  */
 function seems_utf8( $str ) {
@@ -904,7 +904,7 @@ function seems_utf8( $str ) {
 			return false; // Does not match any model.
 		}
 
-		for ( $j = 0; $j < $n; $j++ ) { // n bytes matching 10bbbbbb follow ?
+		for ( $j = 0; $j < $n; $j++ ) { // n bytes matching 10bbbbbb follow?
 			if ( ( ++$i === $length ) || ( ( ord( $str[ $i ] ) & 0xC0 ) !== 0x80 ) ) {
 				return false;
 			}
@@ -1139,7 +1139,7 @@ function wp_check_invalid_utf8( $text, $strip = false ) {
  * @since 5.8.3 Added the `encode_ascii_characters` parameter.
  *
  * @param string $utf8_string             String to encode.
- * @param int    $length                  Max length of the string
+ * @param int    $length                  Max length of the string.
  * @param bool   $encode_ascii_characters Whether to encode ascii characters such as < " '
  * @return string String with Unicode encoded for URI.
  */
@@ -2536,9 +2536,9 @@ function convert_invalid_entities( $content ) {
  *
  * @since 0.71
  *
- * @param string $text  Text to be balanced
+ * @param string $text  Text to be balanced.
  * @param bool   $force If true, forces balancing, ignoring the value of the option. Default false.
- * @return string Balanced text
+ * @return string Balanced text.
  */
 function balanceTags( $text, $force = false ) {  // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
 	if ( $force || (int) get_option( 'use_balanceTags' ) === 1 ) {
@@ -2812,7 +2812,7 @@ function trailingslashit( $value ) {
  *
  * @since 2.2.0
  *
- * @param string $text Value from which trailing slashes will be removed.
+ * @param string $value Value from which trailing slashes will be removed.
  * @return string String without the trailing slashes.
  */
 function untrailingslashit( $value ) {
@@ -2941,6 +2941,10 @@ function _make_url_clickable_cb( $matches ) {
 		$suffix = '';
 	} else {
 		$suffix = $matches[3];
+	}
+
+	if ( isset( $matches[4] ) && ! empty( $matches[4] ) ) {
+		$url .= $matches[4];
 	}
 
 	// Include parentheses in the URL only if paired.
@@ -3115,6 +3119,7 @@ function make_clickable( $text ) {
 					)*
 				)
 				(\)?)                                          # 3: Trailing closing parenthesis (for parenthesis balancing post processing).
+				(\\.\\w{2,6})?                                 # 4: Allowing file extensions (e.g., .jpg, .png).
 			~xS';
 			/*
 			 * The regex is a non-anchored pattern and does not have a single fixed starting character.
@@ -3294,11 +3299,14 @@ function wp_rel_ugc( $text ) {
  *
  * @since 5.1.0
  * @since 5.6.0 Removed 'noreferrer' relationship.
+ * @deprecated 6.7.0
  *
  * @param string $text Content that may contain HTML A elements.
  * @return string Converted content.
  */
 function wp_targeted_link_rel( $text ) {
+	_deprecated_function( __FUNCTION__, '6.7.0' );
+
 	// Don't run (more expensive) regex if no links with targets.
 	if ( stripos( $text, 'target' ) === false || stripos( $text, '<a ' ) === false || is_serialized( $text ) ) {
 		return $text;
@@ -3332,11 +3340,14 @@ function wp_targeted_link_rel( $text ) {
  *
  * @since 5.1.0
  * @since 5.6.0 Removed 'noreferrer' relationship.
+ * @deprecated 6.7.0
  *
  * @param array $matches Single match.
  * @return string HTML A Element with `rel="noopener"` in addition to any existing values.
  */
 function wp_targeted_link_rel_callback( $matches ) {
+	_deprecated_function( __FUNCTION__, '6.7.0' );
+
 	$link_html          = $matches[1];
 	$original_link_html = $link_html;
 
@@ -3383,46 +3394,20 @@ function wp_targeted_link_rel_callback( $matches ) {
  * Adds all filters modifying the rel attribute of targeted links.
  *
  * @since 5.1.0
+ * @deprecated 6.7.0
  */
 function wp_init_targeted_link_rel_filters() {
-	$filters = array(
-		'title_save_pre',
-		'content_save_pre',
-		'excerpt_save_pre',
-		'content_filtered_save_pre',
-		'pre_comment_content',
-		'pre_term_description',
-		'pre_link_description',
-		'pre_link_notes',
-		'pre_user_description',
-	);
-
-	foreach ( $filters as $filter ) {
-		add_filter( $filter, 'wp_targeted_link_rel' );
-	}
+	_deprecated_function( __FUNCTION__, '6.7.0' );
 }
 
 /**
  * Removes all filters modifying the rel attribute of targeted links.
  *
  * @since 5.1.0
+ * @deprecated 6.7.0
  */
 function wp_remove_targeted_link_rel_filters() {
-	$filters = array(
-		'title_save_pre',
-		'content_save_pre',
-		'excerpt_save_pre',
-		'content_filtered_save_pre',
-		'pre_comment_content',
-		'pre_term_description',
-		'pre_link_description',
-		'pre_link_notes',
-		'pre_user_description',
-	);
-
-	foreach ( $filters as $filter ) {
-		remove_filter( $filter, 'wp_targeted_link_rel' );
-	}
+	_deprecated_function( __FUNCTION__, '6.7.0' );
 }
 
 /**
@@ -3488,40 +3473,49 @@ function translate_smiley( $matches ) {
  */
 function convert_smilies( $text ) {
 	global $wp_smiliessearch;
-	$output = '';
-	if ( get_option( 'use_smilies' ) && ! empty( $wp_smiliessearch ) ) {
-		// HTML loop taken from texturize function, could possible be consolidated.
-		$textarr = preg_split( '/(<.*>)/U', $text, -1, PREG_SPLIT_DELIM_CAPTURE ); // Capture the tags as well as in between.
-		$stop    = count( $textarr ); // Loop stuff.
 
-		// Ignore processing of specific tags.
-		$tags_to_ignore       = 'code|pre|style|script|textarea';
-		$ignore_block_element = '';
-
-		for ( $i = 0; $i < $stop; $i++ ) {
-			$content = $textarr[ $i ];
-
-			// If we're in an ignore block, wait until we find its closing tag.
-			if ( '' === $ignore_block_element && preg_match( '/^<(' . $tags_to_ignore . ')[^>]*>/', $content, $matches ) ) {
-				$ignore_block_element = $matches[1];
-			}
-
-			// If it's not a tag and not in ignore block.
-			if ( '' === $ignore_block_element && strlen( $content ) > 0 && '<' !== $content[0] ) {
-				$content = preg_replace_callback( $wp_smiliessearch, 'translate_smiley', $content );
-			}
-
-			// Did we exit ignore block?
-			if ( '' !== $ignore_block_element && '</' . $ignore_block_element . '>' === $content ) {
-				$ignore_block_element = '';
-			}
-
-			$output .= $content;
-		}
-	} else {
+	if ( ! get_option( 'use_smilies' ) || empty( $wp_smiliessearch ) ) {
 		// Return default text.
-		$output = $text;
+		return $text;
 	}
+
+	// HTML loop taken from texturize function, could possible be consolidated.
+	$textarr = preg_split( '/(<[^>]*>)/U', $text, -1, PREG_SPLIT_DELIM_CAPTURE ); // Capture the tags as well as in between.
+
+	if ( false === $textarr ) {
+		// Return default text.
+		return $text;
+	}
+
+	// Loop stuff.
+	$stop   = count( $textarr );
+	$output = '';
+
+	// Ignore processing of specific tags.
+	$tags_to_ignore       = 'code|pre|style|script|textarea';
+	$ignore_block_element = '';
+
+	for ( $i = 0; $i < $stop; $i++ ) {
+		$content = $textarr[ $i ];
+
+		// If we're in an ignore block, wait until we find its closing tag.
+		if ( '' === $ignore_block_element && preg_match( '/^<(' . $tags_to_ignore . ')[^>]*>/', $content, $matches ) ) {
+			$ignore_block_element = $matches[1];
+		}
+
+		// If it's not a tag and not in ignore block.
+		if ( '' === $ignore_block_element && strlen( $content ) > 0 && '<' !== $content[0] ) {
+			$content = preg_replace_callback( $wp_smiliessearch, 'translate_smiley', $content );
+		}
+
+		// Did we exit ignore block?
+		if ( '' !== $ignore_block_element && '</' . $ignore_block_element . '>' === $content ) {
+			$ignore_block_element = '';
+		}
+
+		$output .= $content;
+	}
+
 	return $output;
 }
 
@@ -5407,9 +5401,9 @@ function wp_html_excerpt( $str, $count, $more = null ) {
  *
  * @global string $_links_add_base
  *
- * @param string $content String to search for links in.
- * @param string $base    The base URL to prefix to links.
- * @param array  $attrs   The attributes which should be processed.
+ * @param string   $content String to search for links in.
+ * @param string   $base    The base URL to prefix to links.
+ * @param string[] $attrs   The attributes which should be processed.
  * @return string The processed content.
  */
 function links_add_base_url( $content, $base, $attrs = array( 'src', 'href' ) ) {

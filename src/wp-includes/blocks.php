@@ -376,6 +376,22 @@ function get_block_metadata_i18n_schema() {
 }
 
 /**
+ * Registers a block metadata collection.
+ *
+ * This function allows core and third-party plugins to register their block metadata
+ * collections in a centralized location. Registering collections can improve performance
+ * by avoiding multiple reads from the filesystem and parsing JSON.
+ *
+ * @since 6.7.0
+ *
+ * @param string $path     The base path in which block files for the collection reside.
+ * @param string $manifest The path to the manifest file for the collection.
+ */
+function wp_register_block_metadata_collection( $path, $manifest ) {
+	WP_Block_Metadata_Registry::register_collection( $path, $manifest );
+}
+
+/**
  * Registers a block type from the metadata stored in the `block.json` file.
  *
  * @since 5.5.0
@@ -402,34 +418,21 @@ function register_block_type_from_metadata( $file_or_folder, $args = array() ) {
 	 * instead of reading a JSON file per-block, and then decoding from JSON to PHP.
 	 * Using a static variable ensures that the metadata is only read once per request.
 	 */
-	static $core_blocks_meta;
-	if ( ! $core_blocks_meta ) {
-		$core_blocks_meta = require ABSPATH . WPINC . '/blocks/blocks-json.php';
-	}
 
 	$metadata_file = ( ! str_ends_with( $file_or_folder, 'block.json' ) ) ?
 		trailingslashit( $file_or_folder ) . 'block.json' :
 		$file_or_folder;
 
-	$is_core_block = str_starts_with( $file_or_folder, ABSPATH . WPINC );
-	// If the block is not a core block, the metadata file must exist.
+	$is_core_block        = str_starts_with( $file_or_folder, ABSPATH . WPINC );
 	$metadata_file_exists = $is_core_block || file_exists( $metadata_file );
-	if ( ! $metadata_file_exists && empty( $args['name'] ) ) {
-		return false;
-	}
+	$registry_metadata    = WP_Block_Metadata_Registry::get_metadata( $file_or_folder );
 
-	// Try to get metadata from the static cache for core blocks.
-	$metadata = array();
-	if ( $is_core_block ) {
-		$core_block_name = str_replace( ABSPATH . WPINC . '/blocks/', '', $file_or_folder );
-		if ( ! empty( $core_blocks_meta[ $core_block_name ] ) ) {
-			$metadata = $core_blocks_meta[ $core_block_name ];
-		}
-	}
-
-	// If metadata is not found in the static cache, read it from the file.
-	if ( $metadata_file_exists && empty( $metadata ) ) {
+	if ( $registry_metadata ) {
+		$metadata = $registry_metadata;
+	} elseif ( $metadata_file_exists ) {
 		$metadata = wp_json_file_decode( $metadata_file, array( 'associative' => true ) );
+	} else {
+		$metadata = array();
 	}
 
 	if ( ! is_array( $metadata ) || ( empty( $metadata['name'] ) && empty( $args['name'] ) ) ) {
@@ -909,7 +912,7 @@ function insert_hooked_blocks( &$parsed_anchor_block, $relative_position, $hooke
 	 * @param string                          $relative_position  The relative position of the hooked blocks.
 	 *                                                            Can be one of 'before', 'after', 'first_child', or 'last_child'.
 	 * @param string                          $anchor_block_type  The anchor block type.
-	 * @param WP_Block_Template|WP_Post|array $context            The block template, template part, `wp_navigation` post type,
+	 * @param WP_Block_Template|WP_Post|array $context            The block template, template part, post object,
 	 *                                                            or pattern that the anchor block belongs to.
 	 */
 	$hooked_block_types = apply_filters( 'hooked_block_types', $hooked_block_types, $relative_position, $anchor_block_type, $context );
@@ -932,7 +935,7 @@ function insert_hooked_blocks( &$parsed_anchor_block, $relative_position, $hooke
 		 * @param string                          $hooked_block_type   The hooked block type name.
 		 * @param string                          $relative_position   The relative position of the hooked block.
 		 * @param array                           $parsed_anchor_block The anchor block, in parsed block array format.
-		 * @param WP_Block_Template|WP_Post|array $context             The block template, template part, `wp_navigation` post type,
+		 * @param WP_Block_Template|WP_Post|array $context             The block template, template part, post object,
 		 *                                                             or pattern that the anchor block belongs to.
 		 */
 		$parsed_hooked_block = apply_filters( 'hooked_block', $parsed_hooked_block, $hooked_block_type, $relative_position, $parsed_anchor_block, $context );
@@ -948,7 +951,7 @@ function insert_hooked_blocks( &$parsed_anchor_block, $relative_position, $hooke
 		 * @param string                          $hooked_block_type   The hooked block type name.
 		 * @param string                          $relative_position   The relative position of the hooked block.
 		 * @param array                           $parsed_anchor_block The anchor block, in parsed block array format.
-		 * @param WP_Block_Template|WP_Post|array $context             The block template, template part, `wp_navigation` post type,
+		 * @param WP_Block_Template|WP_Post|array $context             The block template, template part, post object,
 		 *                                                             or pattern that the anchor block belongs to.
 		 */
 		$parsed_hooked_block = apply_filters( "hooked_block_{$hooked_block_type}", $parsed_hooked_block, $hooked_block_type, $relative_position, $parsed_anchor_block, $context );
@@ -1035,28 +1038,106 @@ function set_ignored_hooked_blocks_metadata( &$parsed_anchor_block, $relative_po
  * Runs the hooked blocks algorithm on the given content.
  *
  * @since 6.6.0
+ * @since 6.7.0 Injects the `theme` attribute into Template Part blocks, even if no hooked blocks are registered.
+ * @since 6.8.0 Have the `$context` parameter default to `null`, in which case `get_post()` will be called to use the current post as context.
  * @access private
  *
- * @param string                          $content  Serialized content.
- * @param WP_Block_Template|WP_Post|array $context  A block template, template part, `wp_navigation` post object,
- *                                                  or pattern that the blocks belong to.
- * @param callable                        $callback A function that will be called for each block to generate
- *                                                  the markup for a given list of blocks that are hooked to it.
- *                                                  Default: 'insert_hooked_blocks'.
+ * @param string                               $content  Serialized content.
+ * @param WP_Block_Template|WP_Post|array|null $context  A block template, template part, post object, or pattern
+ *                                                       that the blocks belong to. If set to `null`, `get_post()`
+ *                                                       will be called to use the current post as context.
+ *                                                       Default: `null`.
+ * @param callable                             $callback A function that will be called for each block to generate
+ *                                                       the markup for a given list of blocks that are hooked to it.
+ *                                                       Default: 'insert_hooked_blocks'.
  * @return string The serialized markup.
  */
-function apply_block_hooks_to_content( $content, $context, $callback = 'insert_hooked_blocks' ) {
-	$hooked_blocks = get_hooked_blocks();
-	if ( empty( $hooked_blocks ) && ! has_filter( 'hooked_block_types' ) ) {
-		return $content;
+function apply_block_hooks_to_content( $content, $context = null, $callback = 'insert_hooked_blocks' ) {
+	// Default to the current post if no context is provided.
+	if ( null === $context ) {
+		$context = get_post();
 	}
 
-	$blocks = parse_blocks( $content );
+	$hooked_blocks = get_hooked_blocks();
 
-	$before_block_visitor = make_before_block_visitor( $hooked_blocks, $context, $callback );
-	$after_block_visitor  = make_after_block_visitor( $hooked_blocks, $context, $callback );
+	$before_block_visitor = '_inject_theme_attribute_in_template_part_block';
+	$after_block_visitor  = null;
+	if ( ! empty( $hooked_blocks ) || has_filter( 'hooked_block_types' ) ) {
+		$before_block_visitor = make_before_block_visitor( $hooked_blocks, $context, $callback );
+		$after_block_visitor  = make_after_block_visitor( $hooked_blocks, $context, $callback );
+	}
 
-	return traverse_and_serialize_blocks( $blocks, $before_block_visitor, $after_block_visitor );
+	$block_allows_multiple_instances = array();
+	/*
+	 * Remove hooked blocks from `$hooked_block_types` if they have `multiple` set to false and
+	 * are already present in `$content`.
+	 */
+	foreach ( $hooked_blocks as $anchor_block_type => $relative_positions ) {
+		foreach ( $relative_positions as $relative_position => $hooked_block_types ) {
+			foreach ( $hooked_block_types as $index => $hooked_block_type ) {
+				$hooked_block_type_definition =
+					WP_Block_Type_Registry::get_instance()->get_registered( $hooked_block_type );
+
+				$block_allows_multiple_instances[ $hooked_block_type ] =
+					block_has_support( $hooked_block_type_definition, 'multiple', true );
+
+				if (
+					! $block_allows_multiple_instances[ $hooked_block_type ] &&
+					has_block( $hooked_block_type, $content )
+				) {
+					unset( $hooked_blocks[ $anchor_block_type ][ $relative_position ][ $index ] );
+				}
+			}
+			if ( empty( $hooked_blocks[ $anchor_block_type ][ $relative_position ] ) ) {
+				unset( $hooked_blocks[ $anchor_block_type ][ $relative_position ] );
+			}
+		}
+		if ( empty( $hooked_blocks[ $anchor_block_type ] ) ) {
+			unset( $hooked_blocks[ $anchor_block_type ] );
+		}
+	}
+
+	/*
+	 * We also need to cover the case where the hooked block is not present in
+	 * `$content` at first and we're allowed to insert it once -- but not again.
+	 */
+	$suppress_single_instance_blocks = static function ( $hooked_block_types ) use ( &$block_allows_multiple_instances, $content ) {
+		static $single_instance_blocks_present_in_content = array();
+		foreach ( $hooked_block_types as $index => $hooked_block_type ) {
+			if ( ! isset( $block_allows_multiple_instances[ $hooked_block_type ] ) ) {
+				$hooked_block_type_definition =
+					WP_Block_Type_Registry::get_instance()->get_registered( $hooked_block_type );
+
+				$block_allows_multiple_instances[ $hooked_block_type ] =
+					block_has_support( $hooked_block_type_definition, 'multiple', true );
+			}
+
+			if ( $block_allows_multiple_instances[ $hooked_block_type ] ) {
+				continue;
+			}
+
+			// The block doesn't allow multiple instances, so we need to check if it's already present.
+			if (
+				in_array( $hooked_block_type, $single_instance_blocks_present_in_content, true ) ||
+				has_block( $hooked_block_type, $content )
+			) {
+				unset( $hooked_block_types[ $index ] );
+			} else {
+				// We can insert the block once, but need to remember not to insert it again.
+				$single_instance_blocks_present_in_content[] = $hooked_block_type;
+			}
+		}
+		return $hooked_block_types;
+	};
+	add_filter( 'hooked_block_types', $suppress_single_instance_blocks, PHP_INT_MAX );
+	$content = traverse_and_serialize_blocks(
+		parse_blocks( $content ),
+		$before_block_visitor,
+		$after_block_visitor
+	);
+	remove_filter( 'hooked_block_types', $suppress_single_instance_blocks, PHP_INT_MAX );
+
+	return $content;
 }
 
 /**
@@ -1092,10 +1173,11 @@ function extract_serialized_parent_block( $serialized_block ) {
 }
 
 /**
- * Updates the wp_postmeta with the list of ignored hooked blocks where the inner blocks are stored as post content.
- * Currently only supports `wp_navigation` post types.
+ * Updates the wp_postmeta with the list of ignored hooked blocks
+ * where the inner blocks are stored as post content.
  *
  * @since 6.6.0
+ * @since 6.8.0 Support non-`wp_navigation` post types.
  * @access private
  *
  * @param stdClass $post Post object.
@@ -1103,7 +1185,7 @@ function extract_serialized_parent_block( $serialized_block ) {
  */
 function update_ignored_hooked_blocks_postmeta( $post ) {
 	/*
-	 * In this scenario the user has likely tried to create a navigation via the REST API.
+	 * In this scenario the user has likely tried to create a new post object via the REST API.
 	 * In which case we won't have a post ID to work with and store meta against.
 	 */
 	if ( empty( $post->ID ) ) {
@@ -1111,7 +1193,7 @@ function update_ignored_hooked_blocks_postmeta( $post ) {
 	}
 
 	/*
-	 * Skip meta generation when consumers intentionally update specific Navigation fields
+	 * Skip meta generation when consumers intentionally update specific fields
 	 * and omit the content update.
 	 */
 	if ( ! isset( $post->post_content ) ) {
@@ -1119,9 +1201,9 @@ function update_ignored_hooked_blocks_postmeta( $post ) {
 	}
 
 	/*
-	 * Skip meta generation when the post content is not a navigation block.
+	 * Skip meta generation if post type is not set.
 	 */
-	if ( ! isset( $post->post_type ) || 'wp_navigation' !== $post->post_type ) {
+	if ( ! isset( $post->post_type ) ) {
 		return $post;
 	}
 
@@ -1135,8 +1217,16 @@ function update_ignored_hooked_blocks_postmeta( $post ) {
 		);
 	}
 
+	if ( 'wp_navigation' === $post->post_type ) {
+		$wrapper_block_type = 'core/navigation';
+	} elseif ( 'wp_block' === $post->post_type ) {
+		$wrapper_block_type = 'core/block';
+	} else {
+		$wrapper_block_type = 'core/post-content';
+	}
+
 	$markup = get_comment_delimited_block_content(
-		'core/navigation',
+		$wrapper_block_type,
 		$attributes,
 		$post->post_content
 	);
@@ -1144,6 +1234,7 @@ function update_ignored_hooked_blocks_postmeta( $post ) {
 	$existing_post = get_post( $post->ID );
 	// Merge the existing post object with the updated post object to pass to the block hooks algorithm for context.
 	$context          = (object) array_merge( (array) $existing_post, (array) $post );
+	$context          = new WP_Post( $context ); // Convert to WP_Post object.
 	$serialized_block = apply_block_hooks_to_content( $markup, $context, 'set_ignored_hooked_blocks_metadata' );
 	$root_block       = parse_blocks( $serialized_block )[0];
 
@@ -1192,16 +1283,17 @@ function insert_hooked_blocks_and_set_ignored_hooked_blocks_metadata( &$parsed_a
 }
 
 /**
- * Hooks into the REST API response for the core/navigation block and adds the first and last inner blocks.
+ * Hooks into the REST API response for the Posts endpoint and adds the first and last inner blocks.
  *
  * @since 6.6.0
+ * @since 6.8.0 Support non-`wp_navigation` post types.
  *
  * @param WP_REST_Response $response The response object.
  * @param WP_Post          $post     Post object.
  * @return WP_REST_Response The response object.
  */
 function insert_hooked_blocks_into_rest_response( $response, $post ) {
-	if ( ! isset( $response->data['content']['raw'] ) || ! isset( $response->data['content']['rendered'] ) ) {
+	if ( empty( $response->data['content']['raw'] ) ) {
 		return $response;
 	}
 
@@ -1213,21 +1305,50 @@ function insert_hooked_blocks_into_rest_response( $response, $post ) {
 			'ignoredHookedBlocks' => $ignored_hooked_blocks,
 		);
 	}
+
+	if ( 'wp_navigation' === $post->post_type ) {
+		$wrapper_block_type = 'core/navigation';
+	} elseif ( 'wp_block' === $post->post_type ) {
+		$wrapper_block_type = 'core/block';
+	} else {
+		$wrapper_block_type = 'core/post-content';
+	}
+
 	$content = get_comment_delimited_block_content(
-		'core/navigation',
+		$wrapper_block_type,
 		$attributes,
 		$response->data['content']['raw']
 	);
 
-	$content = apply_block_hooks_to_content( $content, $post );
+	$content = apply_block_hooks_to_content(
+		$content,
+		$post,
+		'insert_hooked_blocks_and_set_ignored_hooked_blocks_metadata'
+	);
 
-	// Remove mock Navigation block wrapper.
+	// Remove mock block wrapper.
 	$content = remove_serialized_parent_block( $content );
 
 	$response->data['content']['raw'] = $content;
 
+	// If the rendered content was previously empty, we leave it like that.
+	if ( empty( $response->data['content']['rendered'] ) ) {
+		return $response;
+	}
+
+	// `apply_block_hooks_to_content` is called above. Ensure it is not called again as a filter.
+	$priority = has_filter( 'the_content', 'apply_block_hooks_to_content' );
+	if ( false !== $priority ) {
+		remove_filter( 'the_content', 'apply_block_hooks_to_content', $priority );
+	}
+
 	/** This filter is documented in wp-includes/post-template.php */
 	$response->data['content']['rendered'] = apply_filters( 'the_content', $content );
+
+	// Restore the filter if it was set initially.
+	if ( false !== $priority ) {
+		add_filter( 'the_content', 'apply_block_hooks_to_content', $priority );
+	}
 
 	return $response;
 }
@@ -1246,7 +1367,7 @@ function insert_hooked_blocks_into_rest_response( $response, $post ) {
  * @access private
  *
  * @param array                           $hooked_blocks An array of blocks hooked to another given block.
- * @param WP_Block_Template|WP_Post|array $context       A block template, template part, `wp_navigation` post object,
+ * @param WP_Block_Template|WP_Post|array $context       A block template, template part, post object,
  *                                                       or pattern that the blocks belong to.
  * @param callable                        $callback      A function that will be called for each block to generate
  *                                                       the markup for a given list of blocks that are hooked to it.
@@ -1303,7 +1424,7 @@ function make_before_block_visitor( $hooked_blocks, $context, $callback = 'inser
  * @access private
  *
  * @param array                           $hooked_blocks An array of blocks hooked to another block.
- * @param WP_Block_Template|WP_Post|array $context       A block template, template part, `wp_navigation` post object,
+ * @param WP_Block_Template|WP_Post|array $context       A block template, template part, post object,
  *                                                       or pattern that the blocks belong to.
  * @param callable                        $callback      A function that will be called for each block to generate
  *                                                       the markup for a given list of blocks that are hooked to it.
@@ -1690,8 +1811,11 @@ function traverse_and_serialize_blocks( $blocks, $pre_callback = null, $post_cal
 	$result       = '';
 	$parent_block = null; // At the top level, there is no parent block to pass to the callbacks; yet the callbacks expect a reference.
 
+	$pre_callback_is_callable  = is_callable( $pre_callback );
+	$post_callback_is_callable = is_callable( $post_callback );
+
 	foreach ( $blocks as $index => $block ) {
-		if ( is_callable( $pre_callback ) ) {
+		if ( $pre_callback_is_callable ) {
 			$prev = 0 === $index
 				? null
 				: $blocks[ $index - 1 ];
@@ -1702,7 +1826,7 @@ function traverse_and_serialize_blocks( $blocks, $pre_callback = null, $post_cal
 			);
 		}
 
-		if ( is_callable( $post_callback ) ) {
+		if ( $post_callback_is_callable ) {
 			$next = count( $blocks ) - 1 === $index
 				? null
 				: $blocks[ $index + 1 ];
@@ -2330,6 +2454,7 @@ function wp_migrate_old_typography_shape( $metadata ) {
  *
  * @since 5.8.0
  * @since 6.1.0 Added `query_loop_block_query_vars` filter and `parents` support in query.
+ * @since 6.7.0 Added support for the `format` property in query.
  *
  * @param WP_Block $block Block instance.
  * @param int      $page  Current query's page.
@@ -2342,6 +2467,7 @@ function build_query_vars_from_query_block( $block, $page ) {
 		'order'        => 'DESC',
 		'orderby'      => 'date',
 		'post__not_in' => array(),
+		'tax_query'    => array(),
 	);
 
 	if ( isset( $block->context['query'] ) ) {
@@ -2391,35 +2517,103 @@ function build_query_vars_from_query_block( $block, $page ) {
 		}
 		// Migrate `categoryIds` and `tagIds` to `tax_query` for backwards compatibility.
 		if ( ! empty( $block->context['query']['categoryIds'] ) || ! empty( $block->context['query']['tagIds'] ) ) {
-			$tax_query = array();
+			$tax_query_back_compat = array();
 			if ( ! empty( $block->context['query']['categoryIds'] ) ) {
-				$tax_query[] = array(
+				$tax_query_back_compat[] = array(
 					'taxonomy'         => 'category',
 					'terms'            => array_filter( array_map( 'intval', $block->context['query']['categoryIds'] ) ),
 					'include_children' => false,
 				);
 			}
 			if ( ! empty( $block->context['query']['tagIds'] ) ) {
-				$tax_query[] = array(
+				$tax_query_back_compat[] = array(
 					'taxonomy'         => 'post_tag',
 					'terms'            => array_filter( array_map( 'intval', $block->context['query']['tagIds'] ) ),
 					'include_children' => false,
 				);
 			}
-			$query['tax_query'] = $tax_query;
+			$query['tax_query'] = array_merge( $query['tax_query'], $tax_query_back_compat );
 		}
 		if ( ! empty( $block->context['query']['taxQuery'] ) ) {
-			$query['tax_query'] = array();
+			$tax_query = array();
 			foreach ( $block->context['query']['taxQuery'] as $taxonomy => $terms ) {
 				if ( is_taxonomy_viewable( $taxonomy ) && ! empty( $terms ) ) {
-					$query['tax_query'][] = array(
+					$tax_query[] = array(
 						'taxonomy'         => $taxonomy,
 						'terms'            => array_filter( array_map( 'intval', $terms ) ),
 						'include_children' => false,
 					);
 				}
 			}
+			$query['tax_query'] = array_merge( $query['tax_query'], $tax_query );
 		}
+		if ( ! empty( $block->context['query']['format'] ) && is_array( $block->context['query']['format'] ) ) {
+			$formats = $block->context['query']['format'];
+			/*
+			 * Validate that the format is either `standard` or a supported post format.
+			 * - First, add `standard` to the array of valid formats.
+			 * - Then, remove any invalid formats.
+			 */
+			$valid_formats = array_merge( array( 'standard' ), get_post_format_slugs() );
+			$formats       = array_intersect( $formats, $valid_formats );
+
+			/*
+			 * The relation needs to be set to `OR` since the request can contain
+			 * two separate conditions. The user may be querying for items that have
+			 * either the `standard` format or a specific format.
+			 */
+			$formats_query = array( 'relation' => 'OR' );
+
+			/*
+			 * The default post format, `standard`, is not stored in the database.
+			 * If `standard` is part of the request, the query needs to exclude all post items that
+			 * have a format assigned.
+			 */
+			if ( in_array( 'standard', $formats, true ) ) {
+				$formats_query[] = array(
+					'taxonomy' => 'post_format',
+					'field'    => 'slug',
+					'operator' => 'NOT EXISTS',
+				);
+				// Remove the `standard` format, since it cannot be queried.
+				unset( $formats[ array_search( 'standard', $formats, true ) ] );
+			}
+			// Add any remaining formats to the formats query.
+			if ( ! empty( $formats ) ) {
+				// Add the `post-format-` prefix.
+				$terms           = array_map(
+					static function ( $format ) {
+						return "post-format-$format";
+					},
+					$formats
+				);
+				$formats_query[] = array(
+					'taxonomy' => 'post_format',
+					'field'    => 'slug',
+					'terms'    => $terms,
+					'operator' => 'IN',
+				);
+			}
+
+			/*
+			 * Add `$formats_query` to `$query`, as long as it contains more than one key:
+			 * If `$formats_query` only contains the initial `relation` key, there are no valid formats to query,
+			 * and the query should not be modified.
+			 */
+			if ( count( $formats_query ) > 1 ) {
+				// Enable filtering by both post formats and other taxonomies by combining them with `AND`.
+				if ( empty( $query['tax_query'] ) ) {
+					$query['tax_query'] = $formats_query;
+				} else {
+					$query['tax_query'] = array(
+						'relation' => 'AND',
+						$query['tax_query'],
+						$formats_query,
+					);
+				}
+			}
+		}
+
 		if (
 			isset( $block->context['query']['order'] ) &&
 				in_array( strtoupper( $block->context['query']['order'] ), array( 'ASC', 'DESC' ), true )
@@ -2444,7 +2638,7 @@ function build_query_vars_from_query_block( $block, $page ) {
 			$query['s'] = $block->context['query']['search'];
 		}
 		if ( ! empty( $block->context['query']['parents'] ) && is_post_type_hierarchical( $query['post_type'] ) ) {
-			$query['post_parent__in'] = array_filter( array_map( 'intval', $block->context['query']['parents'] ) );
+			$query['post_parent__in'] = array_unique( array_map( 'intval', $block->context['query']['parents'] ) );
 		}
 	}
 
@@ -2563,11 +2757,6 @@ function build_comment_query_vars_from_block( $block ) {
 				if ( 0 !== $max_num_pages ) {
 					$comment_args['paged'] = $max_num_pages;
 				}
-			}
-			// Set the `cpage` query var to ensure the previous and next pagination links are correct
-			// when inheriting the Discussion Settings.
-			if ( 0 === $page && isset( $comment_args['paged'] ) && $comment_args['paged'] > 0 ) {
-				set_query_var( 'cpage', $comment_args['paged'] );
 			}
 		}
 	}

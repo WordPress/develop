@@ -94,10 +94,6 @@ class WP_Application_Passwords {
 			return new WP_Error( 'application_password_empty_name', __( 'An application name is required to create an application password.' ), array( 'status' => 400 ) );
 		}
 
-		if ( self::application_name_exists_for_user( $user_id, $args['name'] ) ) {
-			return new WP_Error( 'application_password_duplicate_name', __( 'Each application name should be unique.' ), array( 'status' => 409 ) );
-		}
-
 		$new_password    = wp_generate_password( static::PW_LENGTH, false );
 		$hashed_password = wp_hash_password( $new_password );
 
@@ -463,7 +459,10 @@ class WP_Application_Passwords {
 	 * @param string $raw_password The raw application password.
 	 * @return string The chunked password.
 	 */
-	public static function chunk_password( $raw_password ) {
+	public static function chunk_password(
+		#[\SensitiveParameter]
+		$raw_password
+	) {
 		$raw_password = preg_replace( '/[^a-z\d]/i', '', $raw_password );
 
 		return trim( chunk_split( $raw_password, 4, ' ' ) );
