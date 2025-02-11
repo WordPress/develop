@@ -31,8 +31,6 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		tooltipButton.addEventListener( 'touchstart', showTooltip );
 		tooltipButton.addEventListener( 'touchend', hideTooltip );
 
-		tooltipButton.style.cursor = 'help';
-
 		tooltipButton.addEventListener( 'keydown', function ( event ) {
 			if ( event.key === 'Enter' ) {
 				// Toggle the display of the tooltip content.
