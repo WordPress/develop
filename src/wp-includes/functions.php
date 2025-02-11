@@ -9111,7 +9111,7 @@ function wp_is_heic_image_mime_type( $mime_type ) {
  */
 function add_tooltip( $tooltip_text, $args = array() ) {
 	$default_args = array(
-		'field_id'     => '',
+		'field_id'     => 'wp-tooltip-' . wp_hash( $tooltip_text ),
 		'button_label' => __( 'Help' ),
 		'position'     => 'right',
 	);
