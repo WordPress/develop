@@ -9190,12 +9190,12 @@ function add_tooltip( $tooltip_text, $args = array() ) {
 
 	if ( str_starts_with( $icon_url, 'dashicons-' ) ) {
 		$icon = 'class="dashicons ' . sanitize_html_class( $icon_url ) . '"';
-		$icon_html = '<span ' . $icon . '></span>';
+		$icon_html = '<span ' . $icon . ' aria-hidden="true"></span>';
 	} elseif ( str_starts_with( $icon_url, 'data:image/svg+xml;base64,' ) ) {
 		$icon = ' style="background-image:url(\'' . esc_attr( $icon_url ) . '\')"';
-		$icon_html = '<svg height = "20" width = "20"' . $icon . '</svg>';
+		$icon_html = '<svg height="20" width="20" aria-hidden="true">' . $icon . '</svg>';
 	} elseif ( str_starts_with( $icon_url, 'http' ) ) {
-		$icon_html = '<img height = "20" width = "20"  src="' . esc_url( $icon_url ) . '" alt="" />';
+		$icon_html = '<img height="20" width="20" src="' . esc_url( $icon_url ) . '" alt="" />';
 	} elseif ( 'none' === $icon_url ) {
 		$icon_html = '';
 	} else {
@@ -9210,7 +9210,7 @@ function add_tooltip( $tooltip_text, $args = array() ) {
 			'6.7.0'
 		);
 
-		$icon_html = '<span class="dashicons dashicons-editor-help"></span>';
+		$icon_html = '<span class="dashicons dashicons-editor-help" aria-hidden="true"></span>';
 	}
 
 	/**
