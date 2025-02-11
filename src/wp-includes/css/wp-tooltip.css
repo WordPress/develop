@@ -3,17 +3,6 @@
 	display: inline-block;
 }
 
-.wp-tooltip-button:focus {
-	outline: 1px solid black;
-	border-radius: 20px;
-}
-
-.wp-tooltip-button {
-	background: none;
-	border: none;
-	cursor: pointer;
-}
-
 .wp-tooltip-button-span {
 	vertical-align: top;
     text-align: center;

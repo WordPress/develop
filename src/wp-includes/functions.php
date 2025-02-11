@@ -9217,7 +9217,7 @@ function add_tooltip( $field_id, $tooltip_text, $tooltip_button_label = 'Help', 
 
 	?>
 	<div class="wp-tooltip-container <?php echo esc_attr( $field_id ); ?> <?php echo esc_attr( 'position-' . $position ); ?>">
-		<button type="button" class="wp-tooltip-button" aria-describedby="<?php echo esc_attr( $field_id ); ?>-tooltip" aria-label="<?php echo esc_attr( $tooltip_button_label ); ?>">
+		<button type="button" class="wp-tooltip-button button-link" aria-describedby="<?php echo esc_attr( $field_id ); ?>-tooltip" aria-label="<?php echo esc_attr( $tooltip_button_label ); ?>">
 			<span class="wp-tooltip-button-span"><?php echo $icon_html; ?></span>
 		</button>
 		<div id="<?php echo esc_attr( $field_id ); ?>-tooltip" class="wp-tooltip-content" role="tooltip">
