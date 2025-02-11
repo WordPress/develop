@@ -20,9 +20,7 @@ To use it, place the font folder in your stylesheet directory and paste this in 
 -------------------------------------------------------------- */
 @font-face {
     font-family: 'Genericons';
-    src: url('font/genericons-regular-webfont.eot');
-    src: url('font/genericons-regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('font/genericons-regular-webfont.woff') format('woff'),
+    src: url('font/genericons-regular-webfont.woff') format('woff'),
          url('font/genericons-regular-webfont.ttf') format('truetype'),
          url('font/genericons-regular-webfont.svg#genericonsregular') format('svg');
     font-weight: normal;
