@@ -9099,11 +9099,14 @@ function wp_is_heic_image_mime_type( $mime_type ) {
  *
  * @param string $field_id             The unique identifier for the tooltip container.
  * @param string $tooltip_text         The text content to be displayed in the tooltip.
- * @param string $tooltip_button_label Optional. The label for the tooltip button. Default is 'Help'.
+ * @param string $tooltip_button_label Optional. The label for the tooltip button. Default is an empty string.
  * @param string $position             Optional. The default position of the tooltip. Default is 'right'.
  * 									   Accepted values: 'right', 'left', 'up' and 'down'.
  */
-function add_tooltip( $field_id, $tooltip_text, $tooltip_button_label = 'Help', $position = 'right' ) {
+function add_tooltip( $field_id, $tooltip_text, $tooltip_button_label = '', $position = 'right' ) {
+	if ( '' === $tooltip_button_label ) {
+		$tooltip_button_label = __( 'Help' );
+	}
 
 	if ( ! is_string( $field_id ) || '' === $field_id ) {
 		$error_arg = '$field_id';
