@@ -81,6 +81,9 @@ if ( !! window.navigation && 'CSSViewTransitionRule' in window ) {
 				}
 
 				const article = getParentElement( articleLink, 'article.post' );
+				if ( ! article ) {
+					return;
+				}
 
 				setTemporaryViewTransitionNames( [
 					[ article.querySelector( '.entry-title' ), 'post-title' ],
