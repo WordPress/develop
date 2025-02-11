@@ -4,23 +4,21 @@
 
 /**
  * @group comment
- * 
+ *
  * @covers ::pingback
  */
-class Tests_Comment_Pingback extends WP_UnitTestCase
-{
+class Tests_Comment_Pingback extends WP_UnitTestCase {
 
 	protected static $post_id;
-	protected $response = [];
+	protected $response = array();
 	public function set_up() {
 		parent::set_up();
 
-		add_filter('pre_http_request', [$this, 'request_response']);
+		add_filter( 'pre_http_request', array( $this, 'request_response' ) );
 	}
 
-	public function tear_down()
-	{
-		remove_filter('pre_http_request', [$this, 'request_response']);
+	public function tear_down() {
+		remove_filter( 'pre_http_request', array( $this, 'request_response' ) );
 		parent::tear_down();
 	}
 
