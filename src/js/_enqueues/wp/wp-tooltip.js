@@ -28,7 +28,6 @@ document.addEventListener( 'DOMContentLoaded', function () {
 
 		// Event listeners for mouse and touch events
 		tooltipContainer.addEventListener( 'mouseenter', showTooltip );
-		tooltipContainer.addEventListener( 'mouseleave', hideTooltip );
 		tooltipButton.addEventListener( 'touchstart', showTooltip );
 		tooltipButton.addEventListener( 'touchend', hideTooltip );
 
