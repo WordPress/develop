@@ -123,7 +123,6 @@ function twentythirteen_header_style() {
 	.site-title,
 	.site-description {
 		position: absolute;
-		clip: rect(1px 1px 1px 1px); /* IE7 */
 		clip: rect(1px, 1px, 1px, 1px);
 	}
 		<?php
@@ -185,7 +184,6 @@ function twentythirteen_admin_header_style() {
 	#headimg h1,
 	#headimg h2 {
 		position: absolute !important;
-		clip: rect(1px 1px 1px 1px); /* IE7 */
 		clip: rect(1px, 1px, 1px, 1px);
 	}
 	<?php endif; ?>
