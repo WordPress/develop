@@ -1,6 +1,8 @@
 # Files and folders related to build/test tools
-/build
-/node_modules
+build
+build-module
+build-types
+node_modules
 /tests
 /vendor
 /tools
@@ -9,7 +11,8 @@
 /src/js/_enqueues/vendor
 
 # Webpack built files
-/src/wp-includes/js/media-*
+/src/wp-includes/js/
+*.min.js
 
 # Themes
 src/wp-content/themes/
