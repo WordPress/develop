@@ -3095,7 +3095,7 @@ function pingback( $content, $post ) {
 	$post = get_post( $post );
 
 	if ( ! $post ) {
-		return [];
+		return array();
 	}
 
 	$pung = get_pung( $post );
