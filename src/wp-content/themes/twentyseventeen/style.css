@@ -1501,7 +1501,6 @@ a:hover .nav-title,
 }
 
 .dropdown-toggle.toggled-on .icon {
-	-ms-transform: rotate(-180deg); /* IE 9 */
 	-webkit-transform: rotate(-180deg); /* Chrome, Safari, Opera */
 	transform: rotate(-180deg);
 }
@@ -3207,13 +3206,11 @@ p > object:only-child {
 	font-weight: 400;
 	line-height: 1;
 	-webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
-	-ms-transform: rotate(180deg); /* IE 9 */
 	transform: rotate(180deg);
 }
 
 .no-svg .dropdown-toggle.toggled-on .svg-fallback.icon-angle-down {
 	-webkit-transform: rotate(0); /* Chrome, Safari, Opera */
-	-ms-transform: rotate(0); /* IE 9 */
 	transform: rotate(0);
 }
 
@@ -3693,7 +3690,6 @@ p > object:only-child {
 		right: 1em;
 		top: 50%;
 		-webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
-		-ms-transform: rotate(-90deg); /* IE 9 */
 		transform: rotate(-90deg);
 	}
 
@@ -3729,7 +3725,6 @@ p > object:only-child {
 
 	.site-header .menu-scroll-down .icon {
 		-webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
-		-ms-transform: rotate(90deg); /* IE 9 */
 		transform: rotate(90deg);
 	}
 

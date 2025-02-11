@@ -126,7 +126,6 @@ input[type="checkbox"] {
 .prev.page-numbers .icon,
 .next.page-numbers .icon {
 	display: inline-block;
-	-ms-transform: rotate(180deg); /* IE 9 */
 	-webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
 	transform: rotate(180deg);
 }
@@ -223,7 +222,6 @@ input[type="checkbox"] {
 .nav-links .nav-previous .nav-title .nav-title-icon-wrapper,
 .nav-links .nav-next .nav-title .nav-title-icon-wrapper {
 	display: inline-block;
-	-ms-transform: rotate(180deg); /* IE 9 */
 	-webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
 	transform: rotate(180deg);
 }
