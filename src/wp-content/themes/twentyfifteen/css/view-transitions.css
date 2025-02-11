@@ -1,0 +1,58 @@
+@view-transition {
+	navigation: auto;
+}
+
+::view-transition-group(*) {
+	animation-duration: 1s;
+}
+
+@keyframes slide-in-from-left {
+	from {
+		translate: -100vw 0;
+	}
+}
+
+@keyframes slide-in-from-right {
+	from {
+		translate: 100vw 0;
+	}
+}
+
+@keyframes slide-out-to-left {
+	to {
+		translate: -100vw 0;
+	}
+}
+
+@keyframes slide-out-to-right {
+	to {
+		translate: 100vw 0;
+	}
+}
+
+html:active-view-transition-type(forwards, backwards) {
+	:root {
+		view-transition-name: none;
+	}
+	main {
+		view-transition-name: main;
+	}
+}
+
+html:active-view-transition-type(forwards) {
+	&::view-transition-old(main) {
+		animation-name: slide-out-to-left;
+	}
+	&::view-transition-new(main) {
+		animation-name: slide-in-from-right;
+	}
+}
+
+html:active-view-transition-type(backwards) {
+	&::view-transition-old(main) {
+		animation-name: slide-out-to-right;
+	}
+	&::view-transition-new(main) {
+		animation-name: slide-in-from-left;
+	}
+}
