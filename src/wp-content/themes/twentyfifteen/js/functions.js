@@ -14,6 +14,7 @@
 		container.find( '.menu-item-has-children > a' ).after( '<button class="dropdown-toggle" aria-expanded="false">' + screenReaderText.expand + '</button>' );
 
 		// Toggle buttons and submenu items with active children menu items.
+		container.find( '.current-menu-ancestor > button' ).attr( 'aria-expanded', 'true' );
 		container.find( '.current-menu-ancestor > button' ).addClass( 'toggle-on' );
 		container.find( '.current-menu-ancestor > .sub-menu' ).addClass( 'toggled-on' );
 
@@ -22,7 +23,7 @@
 			e.preventDefault();
 			_this.toggleClass( 'toggle-on' );
 			_this.next( '.children, .sub-menu' ).toggleClass( 'toggled-on' );
-			_this.attr( 'aria-expanded', _this.attr( 'aria-expanded' ) === 'false' ? 'true' : 'false' );
+			_this.attr( 'aria-expanded', _this.hasClass( 'toggle-on' ) ? 'true' : 'false' );
 			_this.html( _this.html() === screenReaderText.expand ? screenReaderText.collapse : screenReaderText.expand );
 		} );
 	}
