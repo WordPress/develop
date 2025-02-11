@@ -363,7 +363,7 @@ class Tests_Admin_wpPluginsListTable extends WP_UnitTestCase {
 		// Test with filter that modifies the text.
 		add_filter(
 			'plugins_list_status_text',
-			function( $text, $count, $status_param ) {
+			function ( $text, $count, $status_param ) {
 				$this->assertSame( '', $text, 'Default text should be empty' );
 				$this->assertSame( 5, $count, 'Count should match totals' );
 				$this->assertSame( 'custom_status', $status_param, 'Status should match current status' );
