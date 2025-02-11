@@ -9193,7 +9193,7 @@ function add_tooltip( $tooltip_text, $args = array() ) {
 		$icon_html = '<span ' . $icon . ' aria-hidden="true"></span>';
 	} elseif ( str_starts_with( $icon_url, 'data:image/svg+xml;base64,' ) ) {
 		$icon = ' style="background-image:url(\'' . esc_attr( $icon_url ) . '\')"';
-		$icon_html = '<svg height="20" width="20" aria-hidden="true">' . $icon . '</svg>';
+		$icon_html = '<svg height="20" width="20" aria-hidden="true" focusable="false">' . $icon . '</svg>';
 	} elseif ( str_starts_with( $icon_url, 'http' ) ) {
 		$icon_html = '<img height="20" width="20" src="' . esc_url( $icon_url ) . '" alt="" />';
 	} elseif ( 'none' === $icon_url ) {
