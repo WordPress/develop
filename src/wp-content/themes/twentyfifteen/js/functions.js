@@ -28,6 +28,23 @@
 	}
 	initMainNavigation( $( '.main-navigation' ) );
 
+	// Add unique ID to each .sub-menu and aria-controls to parent links
+	function addUniqueIDToSubMenus() {
+		var subMenus = document.querySelectorAll( '.main-navigation .sub-menu' );
+		subMenus.forEach( function( subMenu, index ) {
+			var parentLi = subMenu.closest( 'li.menu-item-has-children' );
+			subMenu.id = 'sub-menu-' + (index + 1);
+			if ( parentLi ) {
+				var parentLink = parentLi.querySelector( 'button' );
+				if ( parentLink ) {
+					parentLink.setAttribute( 'aria-controls', subMenu.id );
+				}
+			}
+		} );
+	}
+
+	addUniqueIDToSubMenus();
+
 	// Re-initialize the main navigation when it is updated, persisting any existing submenu expanded states.
 	$( document ).on( 'customize-preview-menu-refreshed', function( e, params ) {
 		if ( 'primary' === params.wpNavMenuArgs.theme_location ) {
