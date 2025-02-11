@@ -456,7 +456,7 @@ HTML;
 	}
 
 	/**
-	 * @ticket {TICKET_NUMBER}
+	 * @ticket 62085
 	 *
 	 * @covers WP_HTML_Tag_Processor::seek
 	 */
