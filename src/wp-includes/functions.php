@@ -5,6 +5,8 @@
  * @package WordPress
  */
 
+use function PHPSTORM_META\map;
+
 // Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
@@ -9097,23 +9099,34 @@ function wp_is_heic_image_mime_type( $mime_type ) {
  *
  * @since 6.7.0
  *
- * @param string $field_id             The unique identifier for the tooltip container.
- * @param string $tooltip_text         The text content to be displayed in the tooltip.
- * @param string $tooltip_button_label Optional. The label for the tooltip button. Default is an empty string.
- * @param string $position             Optional. The default position of the tooltip. Default is 'right'.
- * 									   Accepted values: 'right', 'left', 'up' and 'down'.
+ * @param string $tooltip_text The text content to be displayed in the tooltip.
+ * @param array  $args {
+ *     Optional. Array of information to customize the tooltip.
+ *
+ *     @type string $field_id     The unique identifier for the tooltip container.
+ *     @type string $button_label The label for the tooltip button. Default is an empty string.
+ *     @type string $position     The default position of the tooltip. Default is 'right'.
+ *                                Accepted values: 'right', 'left', 'up' and 'down'.
+ * }
  */
-function add_tooltip( $field_id, $tooltip_text, $tooltip_button_label = '', $position = 'right' ) {
-	if ( '' === $tooltip_button_label ) {
-		$tooltip_button_label = __( 'Help' );
-	}
+function add_tooltip( $tooltip_text, $args = array() ) {
+	$default_args = array(
+		'field_id'     => '',
+		'button_label' => __( 'Help' ),
+		'position'     => 'right',
+	);
+
+	$args         = array_merge( $args, $default_args );
+	$field_id     = $args['field_id'];
+	$button_label = $args['button_label'];
+	$position     = $args['position'];
 
 	if ( ! is_string( $field_id ) || '' === $field_id ) {
 		$error_arg = '$field_id';
 	} elseif ( ! is_string( $tooltip_text ) || '' === $tooltip_text ) {
 		$error_arg = '$tooltip_text';
-	} elseif ( ! is_string( $tooltip_button_label ) ) {
-		$error_arg = '$tooltip_button_label';
+	} elseif ( ! is_string( $button_label ) ) {
+		$error_arg = '$button_label';
 	}
 
 	if ( isset( $error_arg ) ) {
@@ -9205,22 +9218,22 @@ function add_tooltip( $field_id, $tooltip_text, $tooltip_button_label = '', $pos
 	 *
 	 * @since 6.7.0
 	 *
-	 * @param string $field_id             The unique identifier for the tooltip container.
-	 * @param string $tooltip_text         The text content to be displayed in the tooltip.
-	 * @param string $tooltip_button_label The label for the tooltip button.
-	 * @param string $position             The default position of the tooltip.
-	 * @param string $icon_url             The URL to the icon to be used for this tooltip.
-	 *                                     Pass a base64-encoded SVG using a data URI, which will be colored to match
-	 *                                     the color scheme. This should begin with 'data:image/svg+xml;base64,'.
-	 *                                     Pass the name of a Dashicons helper class to use a font icon,
-	 *                                     e.g. 'dashicons-editor-help'.
-	 *                                     Pass 'none' to leave span.wp-tooltip-button-span empty so an icon can be added via CSS.
+	 * @param string $field_id     The unique identifier for the tooltip container.
+	 * @param string $tooltip_text The text content to be displayed in the tooltip.
+	 * @param string $button_label The label for the tooltip button.
+	 * @param string $position     The default position of the tooltip.
+	 * @param string $icon_url     The URL to the icon to be used for this tooltip.
+	 *                             Pass a base64-encoded SVG using a data URI, which will be colored to match
+	 *                             the color scheme. This should begin with 'data:image/svg+xml;base64,'.
+	 *                             Pass the name of a Dashicons helper class to use a font icon,
+	 *                             e.g. 'dashicons-editor-help'.
+	 *                             Pass 'none' to leave span.wp-tooltip-button-span empty so an icon can be added via CSS.
 	 */
-	add_action( 'pre_wp_tooltip_rendered', $field_id, $tooltip_text, $tooltip_button_label, $position, $icon_url );
+	add_action( 'pre_wp_tooltip_rendered', $field_id, $tooltip_text, $button_label, $position, $icon_url );
 
 	?>
 	<div class="wp-tooltip-container <?php echo esc_attr( $field_id ); ?> <?php echo esc_attr( 'position-' . $position ); ?>">
-		<button type="button" class="wp-tooltip-button button-link" aria-describedby="<?php echo esc_attr( $field_id ); ?>-tooltip" aria-label="<?php echo esc_attr( $tooltip_button_label ); ?>">
+		<button type="button" class="wp-tooltip-button button-link" aria-describedby="<?php echo esc_attr( $field_id ); ?>-tooltip" aria-label="<?php echo esc_attr( $button_label ); ?>">
 			<span class="wp-tooltip-button-span"><?php echo $icon_html; ?></span>
 		</button>
 		<div id="<?php echo esc_attr( $field_id ); ?>-tooltip" class="wp-tooltip-content" role="tooltip">
