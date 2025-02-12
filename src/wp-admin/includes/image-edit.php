@@ -209,61 +209,61 @@ function wp_image_editor( $post_id, $msg = false ) {
 				<fieldset class="imgedit-crop-ratio">
 					<legend><?php _e( 'Aspect ratio:' ); ?></legend>
 					<div class="nowrap">
-					<label for="imgedit-crop-width-<?php echo $post_id; ?>" class="screen-reader-text">
+					<label for="imgedit-crop-width-<?php echo esc_attr($post_id); ?>" class="screen-reader-text">
 					<?php
 					/* translators: Hidden accessibility text. */
 					_e( 'crop ratio width' );
 					?>
 					</label>
-					<input type="number" step="1" min="1" id="imgedit-crop-width-<?php echo $post_id; ?>" onkeyup="imageEdit.setRatioSelection(<?php echo $post_id; ?>, 0, this)" onblur="imageEdit.setRatioSelection(<?php echo $post_id; ?>, 0, this)" />
+					<input type="number" step="1" min="1" id="imgedit-crop-width-<?php echo esc_attr($post_id); ?>" onkeyup="imageEdit.setRatioSelection(<?php echo $post_id; ?>, 0, this)" onblur="imageEdit.setRatioSelection(<?php echo $post_id; ?>, 0, this)" />
 					<span class="imgedit-separator" aria-hidden="true">:</span>
-					<label for="imgedit-crop-height-<?php echo $post_id; ?>" class="screen-reader-text">
+					<label for="imgedit-crop-height-<?php echo esc_attr($post_id); ?>" class="screen-reader-text">
 					<?php
 					/* translators: Hidden accessibility text. */
 					_e( 'crop ratio height' );
 					?>
 					</label>
-					<input  type="number" step="1" min="0" id="imgedit-crop-height-<?php echo $post_id; ?>" onkeyup="imageEdit.setRatioSelection(<?php echo $post_id; ?>, 1, this)" onblur="imageEdit.setRatioSelection(<?php echo $post_id; ?>, 1, this)" />
+					<input  type="number" step="1" min="0" id="imgedit-crop-height-<?php echo esc_attr($post_id); ?>" onkeyup="imageEdit.setRatioSelection(<?php echo $post_id; ?>, 1, this)" onblur="imageEdit.setRatioSelection(<?php echo $post_id; ?>, 1, this)" />
 					</div>
 				</fieldset>
-				<fieldset id="imgedit-crop-sel-<?php echo $post_id; ?>" class="imgedit-crop-sel">
+				<fieldset id="imgedit-crop-sel-<?php echo esc_attr($post_id); ?>" class="imgedit-crop-sel">
 					<legend><?php _e( 'Selection:' ); ?></legend>
 					<div class="nowrap">
-					<label for="imgedit-sel-width-<?php echo $post_id; ?>" class="screen-reader-text">
+					<label for="imgedit-sel-width-<?php echo esc_attr($post_id); ?>" class="screen-reader-text">
 					<?php
 					/* translators: Hidden accessibility text. */
 					_e( 'selection width' );
 					?>
 					</label>
-					<input  type="number" step="1" min="0" id="imgedit-sel-width-<?php echo $post_id; ?>" onkeyup="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" onblur="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" />
+					<input  type="number" step="1" min="0" id="imgedit-sel-width-<?php echo esc_attr($post_id); ?>" onkeyup="imageEdit.setNumSelection(<?php echo esc_attr($post_id); ?>, this)" onblur="imageEdit.setNumSelection(<?php echo esc_attr($post_id); ?>, this)" />
 					<span class="imgedit-separator" aria-hidden="true">&times;</span>
-					<label for="imgedit-sel-height-<?php echo $post_id; ?>" class="screen-reader-text">
+					<label for="imgedit-sel-height-<?php echo esc_attr($post_id); ?>" class="screen-reader-text">
 					<?php
 					/* translators: Hidden accessibility text. */
 					_e( 'selection height' );
 					?>
 					</label>
-					<input  type="number" step="1" min="0" id="imgedit-sel-height-<?php echo $post_id; ?>" onkeyup="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" onblur="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" />
+					<input  type="number" step="1" min="0" id="imgedit-sel-height-<?php echo esc_attr($post_id); ?>" onkeyup="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" onblur="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" />
 					</div>
 				</fieldset>
-				<fieldset id="imgedit-crop-sel-<?php echo $post_id; ?>" class="imgedit-crop-sel">
+				<fieldset id="imgedit-crop-sel-<?php echo esc_attr($post_id); ?>" class="imgedit-crop-sel">
 					<legend><?php _e( 'Starting Coordinates:' ); ?></legend>
 					<div class="nowrap">
-					<label for="imgedit-start-x-<?php echo $post_id; ?>" class="screen-reader-text">
+					<label for="imgedit-start-x-<?php echo esc_attr($post_id); ?>" class="screen-reader-text">
 					<?php
 					/* translators: Hidden accessibility text. */
 					_e( 'horizontal start position' );
 					?>
 					</label>
-					<input  type="number" step="1" min="0" id="imgedit-start-x-<?php echo $post_id; ?>" onkeyup="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" onblur="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" value="0" />
+					<input  type="number" step="1" min="0" id="imgedit-start-x-<?php echo esc_attr($post_id); ?>" onkeyup="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" onblur="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" value="0" />
 					<span class="imgedit-separator" aria-hidden="true">&times;</span>
-					<label for="imgedit-start-y-<?php echo $post_id; ?>" class="screen-reader-text">
+					<label for="imgedit-start-y-<?php echo esc_attr($post_id); ?>" class="screen-reader-text">
 					<?php
 					/* translators: Hidden accessibility text. */
 					_e( 'vertical start position' );
 					?>
 					</label>
-					<input  type="number" step="1" min="0" id="imgedit-start-y-<?php echo $post_id; ?>" onkeyup="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" onblur="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" value="0" />
+					<input  type="number" step="1" min="0" id="imgedit-start-y-<?php echo esc_attr($post_id); ?>" onkeyup="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" onblur="imageEdit.setNumSelection(<?php echo $post_id; ?>, this)" value="0" />
 					</div>
 				</fieldset>
 				<div class="imgedit-crop-apply imgedit-menu container">
@@ -293,25 +293,25 @@ function wp_image_editor( $post_id, $msg = false ) {
 		</div>
 		<div class="imgedit-thumbnail-preview-group">
 			<figure class="imgedit-thumbnail-preview">
-				<img src="<?php echo $thumb['url']; ?>" width="<?php echo $thumb_img[0]; ?>" height="<?php echo $thumb_img[1]; ?>" class="imgedit-size-preview" alt="" draggable="false" />
+				<img src="<?php echo esc_url($thumb['url']); ?>" width="<?php echo esc_attr($thumb_img[0]); ?>" height="<?php echo esc_attr($thumb_img[1]); ?>" class="imgedit-size-preview" alt="" draggable="false" />
 				<figcaption class="imgedit-thumbnail-preview-caption"><?php _e( 'Current thumbnail' ); ?></figcaption>
 			</figure>
-			<div id="imgedit-save-target-<?php echo $post_id; ?>" class="imgedit-save-target">
+			<div id="imgedit-save-target-<?php echo esc_attr($post_id); ?>" class="imgedit-save-target">
 			<fieldset>
 				<legend><?php _e( 'Apply changes to:' ); ?></legend>
 
 				<span class="imgedit-label">
-					<input type="radio" id="imgedit-target-all" name="imgedit-target-<?php echo $post_id; ?>" value="all" checked="checked" />
+					<input type="radio" id="imgedit-target-all" name="imgedit-target-<?php echo esc_attr($post_id); ?>" value="all" checked="checked" />
 					<label for="imgedit-target-all"><?php _e( 'All image sizes' ); ?></label>
 				</span>
 
 				<span class="imgedit-label">
-					<input type="radio" id="imgedit-target-thumbnail" name="imgedit-target-<?php echo $post_id; ?>" value="thumbnail" />
+					<input type="radio" id="imgedit-target-thumbnail" name="imgedit-target-<?php echo esc_attr($post_id); ?>" value="thumbnail" />
 					<label for="imgedit-target-thumbnail"><?php _e( 'Thumbnail' ); ?></label>
 				</span>
 
 				<span class="imgedit-label">
-					<input type="radio" id="imgedit-target-nothumb" name="imgedit-target-<?php echo $post_id; ?>" value="nothumb" />
+					<input type="radio" id="imgedit-target-nothumb" name="imgedit-target-<?php echo esc_attr($post_id); ?>" value="nothumb" />
 					<label for="imgedit-target-nothumb"><?php _e( 'All sizes except thumbnail' ); ?></label>
 				</span>
 
@@ -325,8 +325,8 @@ function wp_image_editor( $post_id, $msg = false ) {
 
 	</div>
 
-	<div class="imgedit-wait" id="imgedit-wait-<?php echo $post_id; ?>"></div>
-	<div class="hidden" id="imgedit-leaving-<?php echo $post_id; ?>"><?php _e( "There are unsaved changes that will be lost. 'OK' to continue, 'Cancel' to return to the Image Editor." ); ?></div>
+	<div class="imgedit-wait" id="imgedit-wait-<?php echo esc_attr($post_id); ?>"></div>
+	<div class="hidden" id="imgedit-leaving-<?php echo esc_attr($post_id); ?>"><?php _e( "There are unsaved changes that will be lost. 'OK' to continue, 'Cancel' to return to the Image Editor." ); ?></div>
 	</div>
 	<?php
 }
