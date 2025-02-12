@@ -62,13 +62,13 @@ test.describe( 'Quick Draft', () => {
 		// Check that new draft appears in Your Recent Drafts section
 		await expect(
 			page.locator( '.drafts .draft-title' ).first().getByRole( 'link' )
-		).toHaveText( 'Untitled' );
+		).toHaveText( '(no title)' );
 
 		// Check that new draft appears in Posts page
 		await admin.visitAdminPage( '/edit.php' );
 
 		await expect(
 			page.locator( '.type-post.status-draft .title' ).first()
-		).toContainText( 'Untitled' );
+		).toContainText( '(no title)' );
 	} );
 } );
