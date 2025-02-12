@@ -225,6 +225,6 @@ class Tests_User_CountUserPosts extends WP_UnitTestCase {
 		count_user_posts( self::$user_id, array( 'post' ) );
 		$total_queries = get_num_queries() - $query_num_start;
 
-		$this->assertSame( 0, $total_queries );
+		$this->assertSame( 0, $total_queries, 'Cache is expected to be hit for equivalent queries with duplicate post types' );
 	}
 }
