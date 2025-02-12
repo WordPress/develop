@@ -26,6 +26,41 @@ final class WP_Speculation_Rules implements JsonSerializable {
 	private $rules_by_mode = array();
 
 	/**
+	 * The allowed speculation rules modes as a map, used for validation.
+	 *
+	 * @since 6.8.0
+	 * @var array<string, bool>
+	 */
+	private static $mode_allowlist = array(
+		'prefetch'  => true,
+		'prerender' => true,
+	);
+
+	/**
+	 * The allowed speculation rules eagerness levels as a map, used for validation.
+	 *
+	 * @since 6.8.0
+	 * @var array<string, bool>
+	 */
+	private static $eagerness_allowlist = array(
+		'immediate'    => true,
+		'eager'        => true,
+		'moderate'     => true,
+		'conservative' => true,
+	);
+
+	/**
+	 * The allowed speculation rules sources as a map, used for validation.
+	 *
+	 * @since 6.8.0
+	 * @var array<string, bool>
+	 */
+	private static $source_allowlist = array(
+		'list'     => true,
+		'document' => true,
+	);
+
+	/**
 	 * Adds a speculation rule to the speculation rules to consider.
 	 *
 	 * @since 6.8.0
@@ -36,7 +71,7 @@ final class WP_Speculation_Rules implements JsonSerializable {
 	 * @return bool True on success, false if invalid parameters are provided.
 	 */
 	public function add_rule( string $mode, string $id, array $rule ): bool {
-		if ( ! wp_is_valid_speculation_rules_mode( $mode ) ) {
+		if ( ! self::is_valid_mode( $mode ) ) {
 			_doing_it_wrong(
 				__METHOD__,
 				sprintf(
@@ -98,7 +133,7 @@ final class WP_Speculation_Rules implements JsonSerializable {
 			return false;
 		}
 		if ( isset( $rule['source'] ) ) {
-			if ( ! wp_is_valid_speculation_rules_source( $rule['source'] ) ) {
+			if ( ! self::is_valid_source( $rule['source'] ) ) {
 				_doing_it_wrong(
 					__METHOD__,
 					sprintf(
@@ -142,7 +177,7 @@ final class WP_Speculation_Rules implements JsonSerializable {
 
 		// If there is an 'eagerness' key specified, make sure it's valid.
 		if ( isset( $rule['eagerness'] ) ) {
-			if ( ! wp_is_valid_speculation_rules_eagerness( $rule['eagerness'] ) ) {
+			if ( ! self::is_valid_eagerness( $rule['eagerness'] ) ) {
 				_doing_it_wrong(
 					__METHOD__,
 					sprintf(
@@ -218,5 +253,41 @@ final class WP_Speculation_Rules implements JsonSerializable {
 	 */
 	private function is_valid_id( string $id ): bool {
 		return (bool) preg_match( '/^[a-z][a-z0-9_-]+$/', $id );
+	}
+
+	/**
+	 * Checks whether the given speculation rules mode is valid.
+	 *
+	 * @since 6.8.0
+	 *
+	 * @param string $mode Speculation rules mode.
+	 * @return bool True if valid, false otherwise.
+	 */
+	public static function is_valid_mode( string $mode ): bool {
+		return isset( self::$mode_allowlist[ $mode ] );
+	}
+
+	/**
+	 * Checks whether the given speculation rules eagerness is valid.
+	 *
+	 * @since 6.8.0
+	 *
+	 * @param string $eagerness Speculation rules eagerness.
+	 * @return bool True if valid, false otherwise.
+	 */
+	public static function is_valid_eagerness( string $eagerness ): bool {
+		return isset( self::$eagerness_allowlist[ $eagerness ] );
+	}
+
+	/**
+	 * Checks whether the given speculation rules source is valid.
+	 *
+	 * @since 6.8.0
+	 *
+	 * @param string $source Speculation rules source.
+	 * @return bool True if valid, false otherwise.
+	 */
+	public static function is_valid_source( string $source ): bool {
+		return isset( self::$source_allowlist[ $source ] );
 	}
 }

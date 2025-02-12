@@ -240,7 +240,7 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 	 * Tests that transforming a speculation rules object into JSON-encodable data works as expected.
 	 *
 	 * @ticket 62503
-	 * @covers ::to_jsonSerialize
+	 * @covers ::jsonSerialize
 	 */
 	public function test_jsonSerialize() {
 		$prefetch_rule_1  = array( 'where' => array( 'href_matches' => '/*' ) );
@@ -284,6 +284,86 @@ class Tests_Speculative_Loading_wpSpeculationRules extends WP_UnitTestCase {
 			),
 			$speculation_rules->jsonSerialize(),
 			'Speculation rules JSON data should contain all added rules'
+		);
+	}
+
+	/**
+	 * Tests that the mode validation method correctly identifies valid and invalid values.
+	 *
+	 * @ticket 62503
+	 * @covers ::is_valid_mode
+	 * @dataProvider data_is_valid_mode
+	 */
+	public function test_is_valid_mode( $mode, $expected ) {
+		if ( $expected ) {
+			$this->assertTrue( WP_Speculation_Rules::is_valid_mode( $mode ) );
+		} else {
+			$this->assertFalse( WP_Speculation_Rules::is_valid_mode( $mode ) );
+		}
+	}
+
+	public static function data_is_valid_mode(): array {
+		return array(
+			'prefetch'     => array( 'prefetch', true ),
+			'prerender'    => array( 'prerender', true ),
+			'auto'         => array( 'auto', false ),
+			'none'         => array( 'none', false ),
+			'42'           => array( 42, false ),
+			'empty string' => array( '', false ),
+		);
+	}
+
+	/**
+	 * Tests that the eagerness validation method correctly identifies valid and invalid values.
+	 *
+	 * @ticket 62503
+	 * @covers ::is_valid_eagerness
+	 * @dataProvider data_is_valid_eagerness
+	 */
+	public function test_is_valid_eagerness( $eagerness, $expected ) {
+		if ( $expected ) {
+			$this->assertTrue( WP_Speculation_Rules::is_valid_eagerness( $eagerness ) );
+		} else {
+			$this->assertFalse( WP_Speculation_Rules::is_valid_eagerness( $eagerness ) );
+		}
+	}
+
+	public static function data_is_valid_eagerness(): array {
+		return array(
+			'conservative' => array( 'conservative', true ),
+			'moderate'     => array( 'moderate', true ),
+			'eager'        => array( 'eager', true ),
+			'immediate'    => array( 'immediate', true ),
+			'auto'         => array( 'auto', false ),
+			'none'         => array( 'none', false ),
+			'42'           => array( 42, false ),
+			'empty string' => array( '', false ),
+		);
+	}
+
+	/**
+	 * Tests that the source validation method correctly identifies valid and invalid values.
+	 *
+	 * @ticket 62503
+	 * @covers ::is_valid_source
+	 * @dataProvider data_is_valid_source
+	 */
+	public function test_is_valid_source( $source, $expected ) {
+		if ( $expected ) {
+			$this->assertTrue( WP_Speculation_Rules::is_valid_source( $source ) );
+		} else {
+			$this->assertFalse( WP_Speculation_Rules::is_valid_source( $source ) );
+		}
+	}
+
+	public static function data_is_valid_source(): array {
+		return array(
+			'list'         => array( 'list', true ),
+			'document'     => array( 'document', true ),
+			'auto'         => array( 'auto', false ),
+			'none'         => array( 'none', false ),
+			'42'           => array( 42, false ),
+			'empty string' => array( '', false ),
 		);
 	}
 }

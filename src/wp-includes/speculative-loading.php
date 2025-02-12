@@ -70,14 +70,14 @@ function wp_get_speculation_rules_configuration(): ?array {
 	if (
 		! isset( $config['mode'] ) ||
 		'auto' === $config['mode'] ||
-		! wp_is_valid_speculation_rules_mode( $config['mode'] )
+		! WP_Speculation_Rules::is_valid_mode( $config['mode'] )
 	) {
 		$config['mode'] = $default_mode;
 	}
 	if (
 		! isset( $config['eagerness'] ) ||
 		'auto' === $config['eagerness'] ||
-		! wp_is_valid_speculation_rules_eagerness( $config['eagerness'] ) ||
+		! WP_Speculation_Rules::is_valid_eagerness( $config['eagerness'] ) ||
 		// 'immediate' is a valid eagerness, but for safety WordPress does not allow it for document-level rules.
 		'immediate' === $config['eagerness']
 	) {
@@ -88,56 +88,6 @@ function wp_get_speculation_rules_configuration(): ?array {
 		'mode'      => $config['mode'],
 		'eagerness' => $config['eagerness'],
 	);
-}
-
-/**
- * Checks whether the given speculation rules mode is valid.
- *
- * @since 6.8.0
- *
- * @param string $mode Speculation rules mode.
- * @return bool True if valid, false otherwise.
- */
-function wp_is_valid_speculation_rules_mode( string $mode ): bool {
-	static $mode_allowlist = array(
-		'prefetch'  => true,
-		'prerender' => true,
-	);
-	return isset( $mode_allowlist[ $mode ] );
-}
-
-/**
- * Checks whether the given speculation rules eagerness is valid.
- *
- * @since 6.8.0
- *
- * @param string $eagerness Speculation rules eagerness.
- * @return bool True if valid, false otherwise.
- */
-function wp_is_valid_speculation_rules_eagerness( string $eagerness ): bool {
-	static $eagerness_allowlist = array(
-		'immediate'    => true,
-		'eager'        => true,
-		'moderate'     => true,
-		'conservative' => true,
-	);
-	return isset( $eagerness_allowlist[ $eagerness ] );
-}
-
-/**
- * Checks whether the given speculation rules source is valid.
- *
- * @since 6.8.0
- *
- * @param string $source Speculation rules source.
- * @return bool True if valid, false otherwise.
- */
-function wp_is_valid_speculation_rules_source( string $source ): bool {
-	static $source_allowlist = array(
-		'list'     => true,
-		'document' => true,
-	);
-	return isset( $source_allowlist[ $source ] );
 }
 
 /**
