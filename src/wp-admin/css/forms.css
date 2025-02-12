@@ -443,23 +443,11 @@ selectedcontent {
 	display: grid;
 	grid-template-columns: 1.5rem 1fr;
 	gap: 1rem;
-	font-size: 1rem;
-	/*  remove these two lines when patch is in   */
-	align-items: center;
-	padding: .4rem;
-
-	& img,
-	& figure {
-		width: 100%;
-	}
 }
-
 
 [hidden] {
   display: none;
 }
-
-
 
 body {
   margin: 2rem 4rem;
