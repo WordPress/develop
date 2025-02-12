@@ -2802,10 +2802,11 @@ if ( ! function_exists( 'wp_password_needs_rehash' ) ) :
 	 *
 	 * @global PasswordHash $wp_hasher phpass object.
 	 *
-	 * @param string $hash Hash of a password to check.
+	 * @param string     $hash    Hash of a password to check.
+	 * @param string|int $user_id Optional. ID of a user associated with the password.
 	 * @return bool Whether the hash needs to be rehashed.
 	 */
-	function wp_password_needs_rehash( $hash ) {
+	function wp_password_needs_rehash( $hash, $user_id = '' ) {
 		global $wp_hasher;
 
 		if ( ! empty( $wp_hasher ) ) {
@@ -2818,14 +2819,27 @@ if ( ! function_exists( 'wp_password_needs_rehash' ) ) :
 		/** This filter is documented in wp-includes/pluggable.php */
 		$options = apply_filters( 'wp_hash_password_options', array(), $algorithm );
 
-		if ( str_starts_with( $hash, '$wp' ) ) {
-			$hash = substr( $hash, 3 );
-		} elseif ( PASSWORD_BCRYPT === $algorithm ) {
-			// Vanilla bcrypt hashes should be rehashed to use pre-hashing.
-			return true;
+		$prefixed = str_starts_with( $hash, '$wp' );
+
+		if ( ( PASSWORD_BCRYPT === $algorithm ) && ! $prefixed ) {
+			// If bcrypt is in use and the hash is not prefixed then it needs to be rehashed.
+			$needs_rehash = true;
+		} else {
+			// Otherwise check the hash minus its prefix if necessary.
+			$hash_to_check = $prefixed ? substr( $hash, 3 ) : $hash;
+			$needs_rehash  = password_needs_rehash( $hash_to_check, $algorithm, $options );
 		}
 
-		return password_needs_rehash( $hash, $algorithm, $options );
+		/**
+		 * Filters whether the password hash needs to be rehashed.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param bool       $needs_rehash Whether the password hash needs to be rehashed.
+		 * @param string     $hash         The password hash.
+		 * @param string|int $user_id      Optional. ID of a user associated with the password.
+		 */
+		return apply_filters( 'password_needs_rehash', $needs_rehash, $hash, $user_id );
 	}
 endif;
 

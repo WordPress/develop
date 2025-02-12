@@ -207,7 +207,7 @@ function wp_authenticate_username_password(
 
 	$valid = wp_check_password( $password, $user->user_pass, $user->ID );
 
-	if ( $valid && wp_password_needs_rehash( $user->user_pass ) ) {
+	if ( $valid && wp_password_needs_rehash( $user->user_pass, $user->ID ) ) {
 		wp_set_password( $password, $user->ID );
 	}
 
@@ -290,7 +290,7 @@ function wp_authenticate_email_password(
 
 	$valid = wp_check_password( $password, $user->user_pass, $user->ID );
 
-	if ( $valid && wp_password_needs_rehash( $user->user_pass ) ) {
+	if ( $valid && wp_password_needs_rehash( $user->user_pass, $user->ID ) ) {
 		wp_set_password( $password, $user->ID );
 	}
 

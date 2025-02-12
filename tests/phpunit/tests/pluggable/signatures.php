@@ -219,6 +219,7 @@ class Tests_Pluggable_Signatures extends WP_UnitTestCase {
 			),
 			'wp_password_needs_rehash'        => array(
 				'hash',
+				'user_id' => '',
 			),
 			'wp_generate_password'            => array(
 				'length'              => 12,

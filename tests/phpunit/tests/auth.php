@@ -1056,7 +1056,7 @@ class Tests_Auth extends WP_UnitTestCase {
 
 		// Verify that the password needs rehashing.
 		$hash = get_userdata( self::$user_id )->user_pass;
-		$this->assertTrue( wp_password_needs_rehash( $hash ) );
+		$this->assertTrue( wp_password_needs_rehash( $hash, self::$user_id ) );
 
 		// Authenticate.
 		$user = wp_authenticate( $username_or_email, $password );
@@ -1068,7 +1068,7 @@ class Tests_Auth extends WP_UnitTestCase {
 
 		// Verify that the password no longer needs rehashing.
 		$hash = get_userdata( self::$user_id )->user_pass;
-		$this->assertFalse( wp_password_needs_rehash( $hash ) );
+		$this->assertFalse( wp_password_needs_rehash( $hash, self::$user_id ) );
 
 		// Authenticate a second time to ensure the new hash is valid.
 		$user = wp_authenticate( $username_or_email, $password );
@@ -1094,7 +1094,7 @@ class Tests_Auth extends WP_UnitTestCase {
 
 		// Verify that the password needs rehashing.
 		$hash = get_userdata( self::$user_id )->user_pass;
-		$this->assertTrue( wp_password_needs_rehash( $hash ) );
+		$this->assertTrue( wp_password_needs_rehash( $hash, self::$user_id ) );
 
 		// Authenticate.
 		$user = wp_authenticate( $username_or_email, $password );
@@ -1106,7 +1106,7 @@ class Tests_Auth extends WP_UnitTestCase {
 
 		// Verify that the password has been rehashed with the increased cost.
 		$hash = get_userdata( self::$user_id )->user_pass;
-		$this->assertFalse( wp_password_needs_rehash( $hash ) );
+		$this->assertFalse( wp_password_needs_rehash( $hash, self::$user_id ) );
 		$this->assertSame( self::get_default_bcrypt_cost(), password_get_info( substr( $hash, 3 ) )['options']['cost'] );
 
 		// Authenticate a second time to ensure the new hash is valid.
@@ -1137,6 +1137,17 @@ class Tests_Auth extends WP_UnitTestCase {
 				self::USER_EMAIL,
 			),
 		);
+	}
+
+	/**
+	 * @ticket 21022
+	 */
+	public function test_password_rehashing_requirement_can_be_filtered() {
+		$filter_count_before = did_filter( 'password_needs_rehash' );
+
+		wp_password_needs_rehash( '$hash' );
+
+		$this->assertSame( $filter_count_before + 1, did_filter( 'password_needs_rehash' ) );
 	}
 
 	/**
