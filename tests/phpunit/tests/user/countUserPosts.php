@@ -216,7 +216,7 @@ class Tests_User_CountUserPosts extends WP_UnitTestCase {
 	 * User count cache should be hit for array duplicates and equivalent queries.
 	 *
 	 * @ticket 39242
- */
+	*/
 	public function test_cache_should_be_hit_for_and_array_duplicates_equivalent_queries() {
 		// Prime Cache
 		count_user_posts( self::$user_id, array( 'post', 'post', 'post' ) );
