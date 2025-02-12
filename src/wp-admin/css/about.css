@@ -704,6 +704,14 @@
 		margin-right: 0;
 		font-size: 1.2em;
 	}
+
+	.about__section a.button.button-hero {
+		font-size: 1.3rem;
+		max-width: 100%;
+		text-wrap: balance;
+		line-height: 1.7;
+		padding: calc(var(--gap) / 2);
+	}
 }
 
 @media screen and (max-width: 600px) {
