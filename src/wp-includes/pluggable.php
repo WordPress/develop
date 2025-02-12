@@ -2638,7 +2638,7 @@ if ( ! function_exists( 'wp_hash_password' ) ) :
 	 * instead use the other package password hashing algorithm.
 	 *
 	 * @since 2.5.0
-	 * @since x.y.z The password is now hashed using bcrypt instead of phpass.
+	 * @since x.y.z The password is now hashed using bcrypt by default instead of phpass.
 	 *
 	 * @global PasswordHash $wp_hasher phpass object.
 	 *
@@ -2716,7 +2716,7 @@ if ( ! function_exists( 'wp_check_password' ) ) :
 	 *
 	 * Note that this function may be used to check a value that is not a user password.
 	 * A plugin may use this function to check a password of a different type, and there
-	 * is not always a user ID associated with the password.
+	 * may not always be a user ID associated with the password.
 	 *
 	 * For integration with other applications, this function can be overwritten to
 	 * instead use the other package password hashing algorithm.
@@ -2794,9 +2794,9 @@ if ( ! function_exists( 'wp_password_needs_rehash' ) ) :
 	 * or algorithm is changed in PHP or WordPress then a password hashed in a previous version will
 	 * need to be rehashed.
 	 *
-	 * Note that, just like wp_check_password(),  this function may be used to check a value that is
+	 * Note that, just like wp_check_password(), this function may be used to check a value that is
 	 * not a user password. A plugin may use this function to check a password of a different type,
-	 * and there is not always a user ID associated with the password.
+	 * and there may not always be a user ID associated with the password.
 	 *
 	 * @since x.y.z
 	 *
@@ -2991,7 +2991,7 @@ if ( ! function_exists( 'wp_set_password' ) ) :
 	 * of password resets if precautions are not taken to ensure it does not execute on every page load.
 	 *
 	 * @since 2.5.0
-	 * @since x.y.z The password is now hashed using bcrypt instead of phpass.
+	 * @since x.y.z The password is now hashed using bcrypt by default instead of phpass.
 	 *
 	 * @global wpdb $wpdb WordPress database abstraction object.
 	 *
