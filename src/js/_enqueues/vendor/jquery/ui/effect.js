@@ -1,5 +1,5 @@
 /*!
- * jQuery UI Effects 1.13.3
+ * jQuery UI Effects 1.14.1
  * https://jqueryui.com
  *
  * Copyright OpenJS Foundation and other contributors
@@ -81,26 +81,14 @@ function camelCase( string ) {
 
 function getElementStyles( elem ) {
 	var key, len,
-		style = elem.ownerDocument.defaultView ?
-			elem.ownerDocument.defaultView.getComputedStyle( elem, null ) :
-			elem.currentStyle,
+		style = elem.ownerDocument.defaultView.getComputedStyle( elem ),
 		styles = {};
 
-	if ( style && style.length && style[ 0 ] && style[ style[ 0 ] ] ) {
-		len = style.length;
-		while ( len-- ) {
-			key = style[ len ];
-			if ( typeof style[ key ] === "string" ) {
-				styles[ camelCase( key ) ] = style[ key ];
-			}
-		}
-
-	// Support: Opera, IE <9
-	} else {
-		for ( key in style ) {
-			if ( typeof style[ key ] === "string" ) {
-				styles[ key ] = style[ key ];
-			}
+	len = style.length;
+	while ( len-- ) {
+		key = style[ len ];
+		if ( typeof style[ key ] === "string" ) {
+			styles[ camelCase( key ) ] = style[ key ];
 		}
 	}
 
@@ -123,15 +111,6 @@ function styleDifference( oldStyle, newStyle ) {
 	}
 
 	return diff;
-}
-
-// Support: jQuery <1.8
-if ( !$.fn.addBack ) {
-	$.fn.addBack = function( selector ) {
-		return this.add( selector == null ?
-			this.prevObject : this.prevObject.filter( selector )
-		);
-	};
 }
 
 $.effects.animateClass = function( value, duration, easing, callback ) {
@@ -273,7 +252,7 @@ if ( $.expr && $.expr.pseudos && $.expr.pseudos.animated ) {
 	} )( $.expr.pseudos.animated );
 }
 
-if ( $.uiBackCompat !== false ) {
+if ( $.uiBackCompat === true ) {
 	$.extend( $.effects, {
 
 		// Saves a set of properties in a data storage
@@ -402,7 +381,7 @@ if ( $.uiBackCompat !== false ) {
 }
 
 $.extend( $.effects, {
-	version: "1.13.3",
+	version: "1.14.1",
 
 	define: function( name, mode, effect ) {
 		if ( !effect ) {
@@ -759,7 +738,7 @@ $.fn.extend( {
 			// as toggle can be either show or hide depending on element state
 			args.mode = modes.shift();
 
-			if ( $.uiBackCompat !== false && !defaultMode ) {
+			if ( $.uiBackCompat === true && !defaultMode ) {
 				if ( elem.is( ":hidden" ) ? mode === "hide" : mode === "show" ) {
 
 					// Call the core method to track "olddisplay" properly
