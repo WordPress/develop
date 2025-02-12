@@ -1655,6 +1655,12 @@ function wp_widget_rss_output( $rss, $args = array() ) {
 			$date = $item->get_date( 'U' );
 
 			if ( $date ) {
+				$gmt_offset = get_option( 'gmt_offset' );
+
+				$date = is_numeric( $gmt_offset )
+					? $date + (int) ( (float) $gmt_offset * HOUR_IN_SECONDS )
+					: $date;
+
 				$date = ' <span class="rss-date">' . date_i18n( get_option( 'date_format' ), $date ) . '</span>';
 			}
 		}
