@@ -597,7 +597,7 @@ class WP_Admin_Bar {
 			}
 		}
 
-		echo ">{$arrow}{$node->title}";
+		echo ">{$arrow}" . esc_html( $node->title );
 
 		if ( $has_link ) {
 			echo '</a>';
