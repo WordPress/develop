@@ -554,4 +554,34 @@ class Tests_Pluggable_wpMail extends WP_UnitTestCase {
 		$phpmailer = $GLOBALS['phpmailer'];
 		$this->assertNotSame( 'user1', $phpmailer->AltBody );
 	}
+
+	/**
+	 * Test wp_mail without MAIL_ENVELOP_FROM definition.
+	 */
+	public function test_wp_mail_without_mail_envelop_from() {
+		if ( defined( 'MAIL_ENVELOP_FROM' ) ) {
+			$this->markTestSkipped( 'MAIL_ENVELOP_FROM is defined, cannot test without it.' );
+		}
+
+		wp_mail( 'test@example.localhost', 'Subject', 'Content' );
+
+		$mailer = tests_retrieve_phpmailer_instance();
+
+		$this->assertEmpty( $mailer->Sender, 'Sender field should be empty when MAIL_ENVELOP_FROM is not defined.' );
+	}
+
+	/**
+	 * Test the MAIL_ENVELOP_FROM functionality in wp_mail.
+	 */
+	public function test_wp_mail_with_mail_envelop_from() {
+		if ( ! defined( 'MAIL_ENVELOP_FROM' ) ) {
+			define( 'MAIL_ENVELOP_FROM', 'no-reply@example.localhost' );
+		}
+
+		wp_mail( 'test@example.localhost', 'Subject', 'Content' );
+
+		$mailer = tests_retrieve_phpmailer_instance();
+
+		$this->assertSame( 'no-reply@example.localhost', $mailer->Sender, 'MAIL_ENVELOP_FROM should correctly set the Sender field.' );
+	}
 }

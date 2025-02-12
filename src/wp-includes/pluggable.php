@@ -406,6 +406,11 @@ if ( ! function_exists( 'wp_mail' ) ) :
 		$from_name = apply_filters( 'wp_mail_from_name', $from_name );
 
 		try {
+			// Configure envelop-from via MAIL_ENVELOP_FROM if defined.
+			if ( defined( 'MAIL_ENVELOP_FROM' ) && MAIL_ENVELOP_FROM ) {
+				$phpmailer->Sender = MAIL_ENVELOP_FROM;
+			}
+
 			$phpmailer->setFrom( $from_email, $from_name, false );
 		} catch ( PHPMailer\PHPMailer\Exception $e ) {
 			$mail_error_data                             = compact( 'to', 'subject', 'message', 'headers', 'attachments' );
