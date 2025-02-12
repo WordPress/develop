@@ -771,6 +771,9 @@ switch ( $action ) {
 			exit;
 		}
 
+		require_once ABSPATH . WPINC . '/class-phpass.php';
+		$hasher = new PasswordHash( 8, true );
+
 		/**
 		 * Filters the life span of the post password cookie.
 		 *
@@ -789,9 +792,7 @@ switch ( $action ) {
 			$secure = false;
 		}
 
-		$hashed = wp_hash_password( wp_unslash( $_POST['post_password'] ) );
-
-		setcookie( 'wp-postpass_' . COOKIEHASH, $hashed, $expire, COOKIEPATH, COOKIE_DOMAIN, $secure );
+		setcookie( 'wp-postpass_' . COOKIEHASH, $hasher->HashPassword( wp_unslash( $_POST['post_password'] ) ), $expire, COOKIEPATH, COOKIE_DOMAIN, $secure );
 
 		wp_safe_redirect( $redirect_to );
 		exit;

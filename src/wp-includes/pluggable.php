@@ -2714,9 +2714,9 @@ if ( ! function_exists( 'wp_check_password' ) ) :
 	/**
 	 * Checks a plaintext password against a hashed password.
 	 *
-	 * Note that this function is used to check more than just user passwords, for example
-	 * it's also used to check post passwords and may be used by plugins to check other
-	 * types of password. There is not always a user ID associated with the password.
+	 * Note that this function may be used to check a value that is not a user password.
+	 * A plugin may use this function to check a password of a different type, and there
+	 * is not always a user ID associated with the password.
 	 *
 	 * For integration with other applications, this function can be overwritten to
 	 * instead use the other package password hashing algorithm.
@@ -2793,6 +2793,10 @@ if ( ! function_exists( 'wp_password_needs_rehash' ) ) :
 	 * of WordPress may still be hashed with phpass and will need to be rehashed. If the default cost
 	 * or algorithm is changed in PHP or WordPress then a password hashed in a previous version will
 	 * need to be rehashed.
+	 *
+	 * Note that, just like wp_check_password(),  this function may be used to check a value that is
+	 * not a user password. A plugin may use this function to check a password of a different type,
+	 * and there is not always a user ID associated with the password.
 	 *
 	 * @since x.y.z
 	 *
