@@ -48,12 +48,18 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	 * @dataProvider data_eagerness
 	 */
 	public function test_wp_get_speculation_rules_with_prefetch( string $eagerness ) {
-		$rules = wp_get_speculation_rules(
-			array(
-				'mode'      => 'prefetch',
-				'eagerness' => $eagerness,
-			)
+		remove_all_filters( 'wp_speculation_rules_configuration' );
+		add_filter(
+			'wp_speculation_rules_configuration',
+			static function () use ( $eagerness ) {
+				return array(
+					'mode'      => 'prefetch',
+					'eagerness' => $eagerness,
+				);
+			}
 		);
+
+		$rules = wp_get_speculation_rules();
 
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$rules = $rules->jsonSerialize();
@@ -76,12 +82,18 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	 * @dataProvider data_eagerness
 	 */
 	public function test_wp_get_speculation_rules_with_prerender( string $eagerness ) {
-		$rules = wp_get_speculation_rules(
-			array(
-				'mode'      => 'prerender',
-				'eagerness' => $eagerness,
-			)
+		remove_all_filters( 'wp_speculation_rules_configuration' );
+		add_filter(
+			'wp_speculation_rules_configuration',
+			static function () use ( $eagerness ) {
+				return array(
+					'mode'      => 'prerender',
+					'eagerness' => $eagerness,
+				);
+			}
 		);
+
+		$rules = wp_get_speculation_rules();
 
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$rules = $rules->jsonSerialize();
@@ -111,7 +123,14 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	 * @ticket 62503
 	 */
 	public function test_wp_get_speculation_rules_prefetch_entries() {
-		$rules = wp_get_speculation_rules( $this->prefetch_config );
+		add_filter(
+			'wp_speculation_rules_configuration',
+			function () {
+				return $this->prefetch_config;
+			}
+		);
+
+		$rules = wp_get_speculation_rules();
 
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$rules = $rules->jsonSerialize();
@@ -129,7 +148,14 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	 * @ticket 62503
 	 */
 	public function test_wp_get_speculation_rules_prerender_entries() {
-		$rules = wp_get_speculation_rules( $this->prerender_config );
+		add_filter(
+			'wp_speculation_rules_configuration',
+			function () {
+				return $this->prerender_config;
+			}
+		);
+
+		$rules = wp_get_speculation_rules();
 
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$rules = $rules->jsonSerialize();
@@ -150,7 +176,14 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	 * @ticket 62503
 	 */
 	public function test_wp_get_speculation_rules_href_exclude_paths() {
-		$rules = wp_get_speculation_rules( $this->prefetch_config );
+		add_filter(
+			'wp_speculation_rules_configuration',
+			function () {
+				return $this->prefetch_config;
+			}
+		);
+
+		$rules = wp_get_speculation_rules();
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$rules = $rules->jsonSerialize();
 
@@ -179,7 +212,7 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 			}
 		);
 
-		$rules = wp_get_speculation_rules( $this->prefetch_config );
+		$rules = wp_get_speculation_rules();
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$rules = $rules->jsonSerialize();
 
@@ -211,7 +244,14 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	public function test_wp_get_speculation_rules_href_exclude_paths_without_pretty_permalinks() {
 		update_option( 'permalink_structure', '' );
 
-		$rules = wp_get_speculation_rules( $this->prefetch_config );
+		add_filter(
+			'wp_speculation_rules_configuration',
+			function () {
+				return $this->prefetch_config;
+			}
+		);
+
+		$rules = wp_get_speculation_rules();
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$rules = $rules->jsonSerialize();
 
@@ -252,7 +292,13 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 			2
 		);
 
-		$rules = wp_get_speculation_rules( $this->prerender_config );
+		add_filter(
+			'wp_speculation_rules_configuration',
+			function () {
+				return $this->prerender_config;
+			}
+		);
+		$rules = wp_get_speculation_rules();
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$rules = $rules->jsonSerialize();
 
@@ -277,7 +323,13 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 		);
 
 		// Redo with 'prefetch'.
-		$rules = wp_get_speculation_rules( $this->prefetch_config );
+		add_filter(
+			'wp_speculation_rules_configuration',
+			function () {
+				return $this->prefetch_config;
+			}
+		);
+		$rules = wp_get_speculation_rules();
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$rules = $rules->jsonSerialize();
 
@@ -319,7 +371,13 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 			}
 		);
 
-		$rules = wp_get_speculation_rules( $this->prerender_config );
+		add_filter(
+			'wp_speculation_rules_configuration',
+			function () {
+				return $this->prerender_config;
+			}
+		);
+		$rules = wp_get_speculation_rules();
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$rules = $rules->jsonSerialize();
 
@@ -371,7 +429,13 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 			}
 		);
 
-		$rules = wp_get_speculation_rules( $this->prerender_config );
+		add_filter(
+			'wp_speculation_rules_configuration',
+			function () {
+				return $this->prerender_config;
+			}
+		);
+		$rules = wp_get_speculation_rules();
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$rules = $rules->jsonSerialize();
 
@@ -396,17 +460,21 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	/**
 	 * Tests that passing an invalid configuration to the function does not lead to unexpected problems.
 	 *
+	 * This is mostly an integration test as it is resolved as part of wp_get_speculation_rules_configuration().
+	 *
 	 * @ticket 62503
 	 */
 	public function test_wp_get_speculation_rules_with_invalid_configuration() {
-		$this->setExpectedIncorrectUsage( 'wp_get_speculation_rules' );
-
-		$rules = wp_get_speculation_rules(
-			array(
-				'mode'      => 'none',
-				'eagerness' => 'none',
-			)
+		add_filter(
+			'wp_speculation_rules_configuration',
+			static function () {
+				return array(
+					'mode'      => 'none',
+					'eagerness' => 'none',
+				);
+			}
 		);
+		$rules = wp_get_speculation_rules();
 
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$rules = $rules->jsonSerialize();
@@ -416,25 +484,17 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests that passing an eagerness of 'immediate' to the function is not allowed.
+	 * Tests that passing no configuration (`null`) results in no speculation rules being returned.
+	 *
+	 * This is used to effectively disable the feature.
 	 *
 	 * @ticket 62503
 	 */
-	public function test_wp_get_speculation_rules_with_immediate_eagerness() {
-		$this->setExpectedIncorrectUsage( 'wp_get_speculation_rules' );
+	public function test_wp_get_speculation_rules_with_null() {
+		add_filter( 'wp_speculation_rules_configuration', '__return_null' );
 
-		$rules = wp_get_speculation_rules(
-			array(
-				'mode'      => 'prefetch',
-				'eagerness' => 'immediate',
-			)
-		);
-
-		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
-		$rules = $rules->jsonSerialize();
-
-		$this->assertArrayHasKey( 'prefetch', $rules );
-		$this->assertSame( 'conservative', $rules['prefetch'][0]['eagerness'] );
+		$rules = wp_get_speculation_rules();
+		$this->assertNull( $rules );
 	}
 
 	/**
@@ -478,7 +538,13 @@ class Tests_Speculative_Loading_wpGetSpeculationRules extends WP_UnitTestCase {
 			}
 		);
 
-		$rules = wp_get_speculation_rules( $this->prefetch_config );
+		add_filter(
+			'wp_speculation_rules_configuration',
+			function () {
+				return $this->prefetch_config;
+			}
+		);
+		$rules = wp_get_speculation_rules();
 		$this->assertInstanceOf( WP_Speculation_Rules::class, $rules );
 		$this->assertSame( $filtered_obj, $rules );
 

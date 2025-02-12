@@ -141,42 +141,24 @@ function wp_is_valid_speculation_rules_source( string $source ): bool {
 }
 
 /**
- * Returns the full speculation rules data based on the given configuration.
+ * Returns the full speculation rules data based on the configuration.
  *
  * Plugins with features that rely on frontend URLs to exclude from prefetching or prerendering should use the
  * {@see 'wp_speculation_rules_href_exclude_paths'} filter to ensure those URL patterns are excluded.
  *
+ * Additional speculation rules other than the default rule from WordPress Core can be provided by using the
+ * {@see 'wp_load_speculation_rules'} action and amending the passed WP_Speculation_Rules object.
+ *
  * @since 6.8.0
  * @access private
  *
- * @param array<string, string> $configuration Associative array with 'mode' and 'eagerness' keys.
- * @return WP_Speculation_Rules Object representing the speculation rules to use.
+ * @return WP_Speculation_Rules|null Object representing the speculation rules to use, or null if speculative loading
+ *                                   is disabled in the current context.
  */
-function wp_get_speculation_rules( array $configuration ): WP_Speculation_Rules {
-	// If the passed configuration is invalid, trigger a warning and fall back to the default configuration.
-	if (
-		! isset( $configuration['mode'] ) ||
-		! wp_is_valid_speculation_rules_mode( $configuration['mode'] ) ||
-		! isset( $configuration['eagerness'] ) ||
-		! wp_is_valid_speculation_rules_eagerness( $configuration['eagerness'] ) ||
-		// 'immediate' is a valid eagerness, but for safety WordPress does not allow it for document-level rules.
-		'immediate' === $configuration['eagerness']
-	) {
-		_doing_it_wrong(
-			__FUNCTION__,
-			esc_html(
-				sprintf(
-					/* translators: %s is $configuration */
-					__( 'The %s parameter was provided with an invalid value.' ),
-					'$configuration'
-				)
-			),
-			'6.8.0'
-		);
-		$configuration = wp_get_speculation_rules_configuration();
-		if ( null === $configuration ) {
-			return array();
-		}
+function wp_get_speculation_rules(): ?WP_Speculation_Rules {
+	$configuration = wp_get_speculation_rules_configuration();
+	if ( null === $configuration ) {
+		return null;
 	}
 
 	$mode      = $configuration['mode'];
@@ -308,14 +290,14 @@ function wp_get_speculation_rules( array $configuration ): WP_Speculation_Rules 
  * @access private
  */
 function wp_print_speculation_rules(): void {
-	$configuration = wp_get_speculation_rules_configuration();
-	if ( null === $configuration ) {
+	$speculation_rules = wp_get_speculation_rules();
+	if ( null === $speculation_rules ) {
 		return;
 	}
 
 	wp_print_inline_script_tag(
 		(string) wp_json_encode(
-			wp_get_speculation_rules( $configuration )
+			$speculation_rules
 		),
 		array( 'type' => 'speculationrules' )
 	);
