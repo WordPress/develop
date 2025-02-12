@@ -1,14 +1,4 @@
 if ( !! window.navigation && 'CSSViewTransitionRule' in window ) {
-	const getParentElement = ( element, selector ) => {
-		element = element.parentElement;
-		while ( element && element !== document ) {
-			if ( ! selector || element.matches( selector ) ) {
-				return element;
-			}
-		}
-		return null;
-	};
-
 	const setTemporaryViewTransitionNames = async ( entries, vtPromise ) => {
 		for ( const [ element, name ] of entries ) {
 			if ( ! element ) {
@@ -45,7 +35,7 @@ if ( !! window.navigation && 'CSSViewTransitionRule' in window ) {
 					return;
 				}
 
-				const article = getParentElement( articleLink, 'article.post' );
+				const article = articleLink.closest( 'article.post' );
 				if ( ! article ) {
 					return;
 				}
@@ -80,7 +70,7 @@ if ( !! window.navigation && 'CSSViewTransitionRule' in window ) {
 					return;
 				}
 
-				const article = getParentElement( articleLink, 'article.post' );
+				const article = articleLink.closest( 'article.post' );
 				if ( ! article ) {
 					return;
 				}
