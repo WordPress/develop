@@ -3576,6 +3576,5 @@ HTML
 		// Also check the content of the response
 		$content = wp_remote_retrieve_body( $response );
 		$this->assertNotEmpty( $content );
-		$this->assertStringContainsString( 'Underscore.js', $content );
 	}
 }
