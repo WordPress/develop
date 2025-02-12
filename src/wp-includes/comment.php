@@ -3084,7 +3084,7 @@ function generic_ping( $post_id = 0 ) {
  *
  * @param string      $content Post content to check for links. If empty will retrieve from post.
  * @param int|WP_Post $post    Post ID or object.
- * @return bool[] An array of pingback statuses indexed by link.
+ * @return array<string, bool> An array of pingback statuses indexed by link.
  */
 function pingback( $content, $post ) {
 	require_once ABSPATH . WPINC . '/class-IXR.php';
