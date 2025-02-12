@@ -22,14 +22,15 @@ define( 'WPINC', 'wp-includes' );
  * include version.php from another installation and don't override
  * these values if already set.
  *
- * @global string $wp_version             The WordPress version string.
- * @global int    $wp_db_version          WordPress database version.
- * @global string $tinymce_version        TinyMCE version.
- * @global string $required_php_version   The required PHP version string.
- * @global string $required_mysql_version The required MySQL version string.
- * @global string $wp_local_package       Locale code of the package.
+ * @global string   $wp_version              The WordPress version string.
+ * @global int      $wp_db_version           WordPress database version.
+ * @global string   $tinymce_version         TinyMCE version.
+ * @global string   $required_php_version    The required PHP version string.
+ * @global string[] $required_php_extensions The names of required PHP extensions.
+ * @global string   $required_mysql_version  The required MySQL version string.
+ * @global string   $wp_local_package        Locale code of the package.
  */
-global $wp_version, $wp_db_version, $tinymce_version, $required_php_version, $required_mysql_version, $wp_local_package;
+global $wp_version, $wp_db_version, $tinymce_version, $required_php_version, $required_php_extensions, $required_mysql_version, $wp_local_package;
 require ABSPATH . WPINC . '/version.php';
 require ABSPATH . WPINC . '/compat.php';
 require ABSPATH . WPINC . '/load.php';
@@ -518,9 +519,23 @@ if ( ! is_multisite() && wp_is_fatal_error_handler_enabled() ) {
 	wp_recovery_mode()->initialize();
 }
 
+// To make get_plugin_data() available in a way that's compatible with plugins also loading this file, see #62244.
+require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
 // Load active plugins.
 foreach ( wp_get_active_and_valid_plugins() as $plugin ) {
 	wp_register_plugin_realpath( $plugin );
+
+	$plugin_data = get_plugin_data( $plugin, false, false );
+
+	$textdomain = $plugin_data['TextDomain'];
+	if ( $textdomain ) {
+		if ( $plugin_data['DomainPath'] ) {
+			$GLOBALS['wp_textdomain_registry']->set_custom_path( $textdomain, dirname( $plugin ) . $plugin_data['DomainPath'] );
+		} else {
+			$GLOBALS['wp_textdomain_registry']->set_custom_path( $textdomain, dirname( $plugin ) );
+		}
+	}
 
 	$_wp_plugin_file = $plugin;
 	include_once $plugin;
@@ -534,17 +549,6 @@ foreach ( wp_get_active_and_valid_plugins() as $plugin ) {
 	 * @param string $plugin Full path to the plugin's main file.
 	 */
 	do_action( 'plugin_loaded', $plugin );
-
-	$plugin_data = get_plugin_data( $plugin, false, false );
-
-	$textdomain = $plugin_data['TextDomain'];
-	if ( $textdomain ) {
-		if ( $plugin_data['DomainPath'] ) {
-			$GLOBALS['wp_textdomain_registry']->set_custom_path( $textdomain, dirname( $plugin ) . $plugin_data['DomainPath'] );
-		} else {
-			$GLOBALS['wp_textdomain_registry']->set_custom_path( $textdomain, dirname( $plugin ) );
-		}
-	}
 }
 unset( $plugin, $_wp_plugin_file, $plugin_data, $textdomain );
 
@@ -679,14 +683,15 @@ $GLOBALS['wp_locale_switcher']->init();
 
 // Load the functions for the active theme, for both parent and child theme if applicable.
 foreach ( wp_get_active_and_valid_themes() as $theme ) {
+	$wp_theme = wp_get_theme( basename( $theme ) );
+
+	$wp_theme->load_textdomain();
+
 	if ( file_exists( $theme . '/functions.php' ) ) {
 		include $theme . '/functions.php';
 	}
-
-	$theme = wp_get_theme( basename( $theme ) );
-	$theme->load_textdomain();
 }
-unset( $theme );
+unset( $theme, $wp_theme );
 
 /**
  * Fires after the theme is loaded.
