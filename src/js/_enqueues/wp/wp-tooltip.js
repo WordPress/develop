@@ -18,8 +18,8 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		);
 		// Generate tooltips declaratively.
 		if ( null === tooltipContent ) {
-			tooltipString = tooltipButton.getAttribute( 'data-tooltip' );
-			tooltipId     = tooltipButton.id;
+			let tooltipString = tooltipButton.getAttribute( 'data-tooltip' );
+			let tooltipId     = tooltipButton.id;
 			if ( tooltipString && tooltipId ) {
 				tooltipContent = document.createElement( 'div' );
 				tooltipContent.setAttribute( 'role', 'tooltip' );
