@@ -16,6 +16,20 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		var tooltipContent = tooltipContainer.querySelector(
 			'.wp-tooltip-content'
 		);
+		// Generate tooltips declaratively.
+		if ( null === tooltipContent ) {
+			tooltipString = tooltipButton.getAttribute( 'data-tooltip' );
+			tooltipId     = tooltipButton.id;
+			if ( tooltipString && tooltipId ) {
+				tooltipContent = document.createElement( 'div' );
+				tooltipContent.setAttribute( 'role', 'tooltip' );
+				tooltipContent.classList.add( 'wp-tooltip-content' );
+				tooltipContent.id = tooltipId + '-content';
+				tooltipButton.setAttribute( 'aria-describedby', tooltipId + '-content' );
+				tooltipContent.innerHTML = '<p>' + tooltipString + '</p>'; 
+				tooltipContainer.appendChild( tooltipContent );
+			}
+		}
 
 		function showTooltip() {
 			tooltipContent.style.display = 'block';
