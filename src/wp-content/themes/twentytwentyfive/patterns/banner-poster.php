@@ -25,7 +25,7 @@
 					<?php
 					echo wp_kses_post(
 						/* translators: This string contains the word "Stories" in four different languages with the first item in the locale's language. */
-						_x( '“Stories, <span lang="es">historias</span>, <span lang="uk">iсторії</span>, <span lang="el">iστορίες</span>”', 'Placeholder heading in four languages.', 'twentytwentyfive' )
+						_x( '"Stories, <span lang="es">historias</span>, <span lang="uk">iсторії</span>, <span lang="el">iστορίες</span>"', 'Placeholder heading in four languages.', 'twentytwentyfive' )
 					);
 					?>
 				</h2>
@@ -48,7 +48,7 @@
 			<!-- wp:column {"verticalAlignment":"bottom","width":"80%"} -->
 			<div class="wp-block-column is-vertically-aligned-bottom" style="flex-basis:80%">
 				<!-- wp:heading {"textAlign":"left","align":"wide","style":{"typography":{"lineHeight":"0.9","fontStyle":"normal","fontWeight":"300"}},"fontSize":"xx-large"} -->
-				<h2 class="wp-block-heading alignwide has-text-align-left has-xx-large-font-size" style="font-style:normal;font-weight:300;line-height:0.9"><?php esc_html_e( 'Let’s hear them.', 'twentytwentyfive' ); ?></h2>
+				<h2 class="wp-block-heading alignwide has-text-align-left has-xx-large-font-size" style="font-style:normal;font-weight:300;line-height:0.9"><?php esc_html_e( 'Let\'s hear them.', 'twentytwentyfive' ); ?></h2>
 				<!-- /wp:heading -->
 			</div>
 			<!-- /wp:column -->

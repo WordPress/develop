@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Photo blog posts
+ * Title: Photo blog query loop
  * Slug: twentytwentyfive/template-query-loop-photo-blog
  * Categories: query
  * Block Types: core/query
