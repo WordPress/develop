@@ -9137,7 +9137,7 @@ function add_tooltip( $tooltip_text, $args = array() ) {
 				__( 'The "%s" argument must be a non-empty string.' ),
 				$error_arg
 			),
-			'6.7.0'
+			'6.8.0'
 		);
 
 		return;
@@ -9207,7 +9207,7 @@ function add_tooltip( $tooltip_text, $args = array() ) {
 				'$icon_html',
 				'pre_wp_tooltip_rendered'
 			),
-			'6.7.0'
+			'6.8.0'
 		);
 
 		$icon_html = '<span class="dashicons dashicons-editor-help" aria-hidden="true"></span>';
