@@ -204,7 +204,7 @@ switch ( $step ) {
 </p>
 <p><?php _e( 'In all likelihood, these items were supplied to you by your web host. If you do not have this information, then you will need to contact them before you can continue. If you are ready&hellip;' ); ?></p>
 
-<p class="step"><a href="<?php echo esc_url($step_1 ); ?>" class="button button-large"><?php _e( 'Let&#8217;s go!' ); ?></a></p>
+<p class="step"><a href="<?php echo esc_url( $step_1 ); ?>" class="button button-large"><?php _e( 'Let&#8217;s go!' ); ?></a></p>
 		<?php
 		break;
 
