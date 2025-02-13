@@ -11,11 +11,9 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	);
 
 	tooltipContainers.forEach( function ( tooltipContainer ) {
-		var tooltipButton =
-			tooltipContainer.querySelector( '.wp-tooltip-button' );
-		var tooltipContent = tooltipContainer.querySelector(
-			'.wp-tooltip-content'
-		);
+		var tooltipButton = tooltipContainer.querySelector( '.wp-tooltip-button, button, a' );
+		var tooltipContent = tooltipContainer.querySelector( '.wp-tooltip-content' );
+
 		// Generate tooltips declaratively.
 		if ( null === tooltipContent ) {
 			let tooltipString = tooltipButton.getAttribute( 'data-tooltip' );
