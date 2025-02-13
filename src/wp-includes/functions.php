@@ -9193,7 +9193,7 @@ function add_tooltip( $tooltip_text, $args = array() ) {
 		$icon_html = '<span ' . $icon . ' aria-hidden="true"></span>';
 	} elseif ( str_starts_with( $icon_url, 'data:image/svg+xml;base64,' ) ) {
 		$icon = ' style="background-image:url(\'' . esc_attr( $icon_url ) . '\')"';
-		$icon_html = '<svg height="20" width="20" aria-hidden="true" focusable="false">' . $icon . '</svg>';
+		$icon_html = '<svg height="20" width="20" aria-hidden="true" focusable="false"' . $icon . '></svg>';
 	} elseif ( str_starts_with( $icon_url, 'http' ) ) {
 		$icon_html = '<img height="20" width="20" src="' . esc_url( $icon_url ) . '" alt="" />';
 	} elseif ( 'none' === $icon_url ) {
@@ -9236,9 +9236,7 @@ function add_tooltip( $tooltip_text, $args = array() ) {
 		<button type="button" class="wp-tooltip-button button-link" aria-describedby="<?php echo esc_attr( $field_id ); ?>-tooltip" aria-label="<?php echo esc_attr( $button_label ); ?>">
 			<span class="wp-tooltip-button-span"><?php echo $icon_html; ?></span>
 		</button>
-		<div id="<?php echo esc_attr( $field_id ); ?>-tooltip" class="wp-tooltip-content" role="tooltip">
-			<p><?php echo esc_html( $tooltip_text ); ?></p>
-		</div>
+		<div id="<?php echo esc_attr( $field_id ); ?>-tooltip" class="wp-tooltip-content" role="tooltip"><p><?php echo esc_html( $tooltip_text ); ?></p></div>
 	</div>
 	<?php
 }
