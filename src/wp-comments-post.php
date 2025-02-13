@@ -22,6 +22,23 @@ require __DIR__ . '/wp-load.php';
 
 nocache_headers();
 
+// Check if user is not logged in and email exists in the comment form
+if ( ! is_user_logged_in() && isset( $_POST['email'] ) && ! empty( $_POST['email'] ) ) {
+	$email = sanitize_email( wp_unslash( $_POST['email'] ) );
+
+	// Check if the email belongs to a registered user
+	if ( email_exists( $email ) ) {
+		wp_die(
+			'<p>' . __( 'The email address you entered is already associated with a registered account. Please log in to continue.' ) . '</p>',
+			__( 'Email Address Error' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
+}
+
 $comment = wp_handle_comment_submission( wp_unslash( $_POST ) );
 if ( is_wp_error( $comment ) ) {
 	$data = (int) $comment->get_error_data();
