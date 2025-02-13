@@ -206,10 +206,12 @@ class Tests_User_wpDropdownUsers extends WP_UnitTestCase {
 	 * Show display name with gravatar image.
 	 */
 	public function test_user_dropdown_with_gravatar() {
-		$u1 = self::factory()->user->create(array(
-			'user_login'   => 'foo',
-			'display_name' => 'Foo Person',
-		) );
+		$u1 = self::factory()->user->create(
+			array(
+				'user_login'   => 'foo',
+				'display_name' => 'Foo Person',
+			)
+		);
 
 		// Add some gravatars.
 		update_user_meta( $u1, 'wp_user_avatar', 'https://example.com/avatar1.jpg' );
