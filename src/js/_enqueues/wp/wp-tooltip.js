@@ -1,18 +1,18 @@
 /**
  * Tooltip functionality for WordPress.
  *
- * @version 6.7.0
+ * @version 6.8.0
  * @output wp-includes/js/wp-tooltip.js
  */
 
 document.addEventListener( 'DOMContentLoaded', function () {
-	var tooltipContainers = document.querySelectorAll(
+	const tooltipContainers = document.querySelectorAll(
 		'.wp-tooltip-container'
 	);
 
 	tooltipContainers.forEach( function ( tooltipContainer ) {
-		var tooltipButton = tooltipContainer.querySelector( '.wp-tooltip-button, button, a' );
-		var tooltipContent = tooltipContainer.querySelector( '.wp-tooltip-content' );
+		let tooltipButton = tooltipContainer.querySelector( '.wp-tooltip-button, button, a' );
+		let tooltipContent = tooltipContainer.querySelector( '.wp-tooltip-content' );
 
 		// Generate tooltips declaratively.
 		if ( null === tooltipContent ) {
@@ -74,20 +74,18 @@ document.addEventListener( 'DOMContentLoaded', function () {
 
 	// Function to adjust tooltip position based on screen availability
 	function adjustTooltipPosition( container, content ) {
-		var containerRect = container.getBoundingClientRect();
-		var contentRect = content.getBoundingClientRect();
-		var viewportWidth = window.innerWidth;
-		var viewportHeight = window.innerHeight;
+		let containerRect = container.getBoundingClientRect(),
+			contentRect = content.getBoundingClientRect(),
+			viewportWidth = window.innerWidth,
+			viewportHeight = window.innerHeight;
 
 		// Check if there's enough space in each direction
-		var fitsAbove = containerRect.top >= contentRect.height;
-		var fitsBelow =
-			viewportHeight - containerRect.bottom >= contentRect.height;
-		var fitsLeft = containerRect.left >= contentRect.width;
-		var fitsRight =
-			viewportWidth - containerRect.right >= contentRect.width;
+		let fitsAbove = containerRect.top >= contentRect.height,
+			fitsBelow = viewportHeight - containerRect.bottom >= contentRect.height,
+			fitsLeft = containerRect.left >= contentRect.width,
+			fitsRight = viewportWidth - containerRect.right >= contentRect.width;
 
-		var defaultPosition = 'right';
+		let defaultPosition = 'right';
 
 		if ( container.classList.contains( 'position-top' ) ) {
 			defaultPosition = 'top';
@@ -97,7 +95,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 			defaultPosition = 'left';
 		}
 
-		var newPosition = defaultPosition;
+		let newPosition = defaultPosition;
 
 		if ( defaultPosition === 'top' && ! fitsAbove && fitsBelow ) {
 			newPosition = 'bottom';

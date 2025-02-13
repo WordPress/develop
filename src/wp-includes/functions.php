@@ -9164,7 +9164,7 @@ function add_tooltip( $tooltip_text, $args = array() ) {
 	/**
 	 * Enqueues the Styles and Scripts for the Tooltip.
 	 *
-	 * @since 6.7.0
+	 * @since 6.8.0
 	 *
 	 */
 	wp_enqueue_style( 'wp-tooltip' );
@@ -9175,7 +9175,7 @@ function add_tooltip( $tooltip_text, $args = array() ) {
 	/**
 	 * Filters $icon_url before the tooltip is rendered in the HTML.
 	 *
-	 * @since 6.7.0
+	 * @since 6.8.0
 	 *
 	 * @param string $icon_url The URL to the icon to be used for this tooltip.
 	 *                         * Pass a base64-encoded SVG using a data URI, which will be colored to match
@@ -9189,10 +9189,10 @@ function add_tooltip( $tooltip_text, $args = array() ) {
 	$icon_url = set_url_scheme( $icon_url );
 
 	if ( str_starts_with( $icon_url, 'dashicons-' ) ) {
-		$icon = 'class="dashicons ' . sanitize_html_class( $icon_url ) . '"';
+		$icon      = 'class="dashicons ' . sanitize_html_class( $icon_url ) . '"';
 		$icon_html = '<span ' . $icon . ' aria-hidden="true"></span>';
 	} elseif ( str_starts_with( $icon_url, 'data:image/svg+xml;base64,' ) ) {
-		$icon = ' style="background-image:url(\'' . esc_attr( $icon_url ) . '\')"';
+		$icon      = ' style="background-image:url(\'' . esc_attr( $icon_url ) . '\')"';
 		$icon_html = '<svg height="20" width="20" aria-hidden="true" focusable="false"' . $icon . '></svg>';
 	} elseif ( str_starts_with( $icon_url, 'http' ) ) {
 		$icon_html = '<img height="20" width="20" src="' . esc_url( $icon_url ) . '" alt="" />';
@@ -9216,7 +9216,7 @@ function add_tooltip( $tooltip_text, $args = array() ) {
 	/**
 	 * Fires before the tooltip is rendered.
 	 *
-	 * @since 6.7.0
+	 * @since 6.8.0
 	 *
 	 * @param string $field_id     The unique identifier for the tooltip container.
 	 * @param string $tooltip_text The text content to be displayed in the tooltip.
