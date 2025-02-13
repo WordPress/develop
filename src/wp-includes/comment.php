@@ -3186,6 +3186,8 @@ function pingback( $content, $post ) {
 			// When set to true, this outputs debug messages by itself.
 			$client->debug = false;
 
+			$status = $client->query( 'pingback.ping', $pagelinkedfrom, $pagelinkedto );
+
 			if ( $status // Ping registered.
 				|| ( isset( $client->error->code ) && 48 === $client->error->code ) // Already registered.
 			) {
