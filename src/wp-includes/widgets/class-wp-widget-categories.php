@@ -51,9 +51,9 @@ class WP_Widget_Categories extends WP_Widget {
 		/** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
 		$title = apply_filters( 'widget_title', $title, $instance, $this->id_base );
 
-		$count        = ! empty( $instance['count'] ) ? '1' : '0';
-		$hierarchical = ! empty( $instance['hierarchical'] ) ? '1' : '0';
-		$dropdown     = ! empty( $instance['dropdown'] ) ? '1' : '0';
+		$count        = ! empty( $instance['count'] ) ? true : false;
+		$hierarchical = ! empty( $instance['hierarchical'] ) ? true : false;
+		$dropdown     = ! empty( $instance['dropdown'] ) ? true : false;
 
 		echo $args['before_widget'];
 
