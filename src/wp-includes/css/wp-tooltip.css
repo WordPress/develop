@@ -6,6 +6,8 @@
 .wp-tooltip-button-span {
 	vertical-align: top;
     text-align: center;
+	padding: 3px;
+	display: block;
 }
 
 .wp-tooltip-content {
