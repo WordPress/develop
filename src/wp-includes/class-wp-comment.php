@@ -33,7 +33,7 @@ final class WP_Comment {
 	 * @since 4.4.0
 	 * @var string
 	 */
-	public $comment_post_ID = 0;
+	public $comment_post_ID = '0';
 
 	/**
 	 * Comment author name.
@@ -99,7 +99,7 @@ final class WP_Comment {
 	 * @since 4.4.0
 	 * @var string
 	 */
-	public $comment_karma = 0;
+	public $comment_karma = '0';
 
 	/**
 	 * Comment approval status.
