@@ -1814,6 +1814,12 @@ mockedApiResponse.Schema = {
                             "default": [],
                             "required": false
                         },
+                        "orderby_hierarchy": {
+                            "description": "Whether the post should be grouped by parent-child relationship (hierarchy).",
+                            "type": "boolean",
+                            "default": false,
+                            "required": false
+                        },
                         "search_columns": {
                             "default": [],
                             "description": "Array of column names to be searched.",

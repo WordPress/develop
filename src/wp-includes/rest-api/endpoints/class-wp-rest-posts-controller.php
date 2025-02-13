@@ -48,6 +48,13 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 	protected $allow_batch = array( 'v1' => true );
 
 	/**
+	 * Holds information about each post's level.
+	 * Level means the depth of the post in the hierarchy:
+	 * top-level posts have level 0, their children have level 1, and so on.
+	 */
+	protected $levels = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 4.7.0
@@ -410,6 +417,14 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 
 		// Force the post_type argument, since it's not a user input variable.
 		$args['post_type'] = $this->post_type;
+
+		if ( Hierarchical_Sort::is_eligible( $request ) ) {
+			$result       = Hierarchical_Sort::run( $args );
+			$this->levels = $result['levels'];
+
+			$args['post__in'] = $result['post_ids'];
+			$args['orderby']  = 'post__in';
+		}
 
 		/**
 		 * Filters WP_Query arguments when querying posts via the REST API.
@@ -2099,6 +2114,10 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 			}
 		}
 
+		if ( Hierarchical_Sort::is_eligible( $request ) ) {
+			$response->data['level'] = $this->levels[ $post->ID ];
+		}
+
 		/**
 		 * Filters the post data for a REST API response.
 		 *
@@ -3015,6 +3034,13 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 					'type' => 'integer',
 				),
 				'default'     => array(),
+			);
+		}
+		if ( $post_type->hierarchical ) {
+			$query_params['orderby_hierarchy'] = array(
+				'description' => __( 'Whether the post should be grouped by parent-child relationship (hierarchy).' ),
+				'type'        => 'boolean',
+				'default'     => false,
 			);
 		}
 
