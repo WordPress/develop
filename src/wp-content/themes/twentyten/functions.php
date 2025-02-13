@@ -820,7 +820,7 @@ if ( ! function_exists( 'wp_body_open' ) ) :
 endif;
 
 /**
- * Displays the site logo, either text or image.
+ * Displays the site logo and/or the site title.
  *
  * @param array $args    Arguments for displaying the site logo either as an image or text.
  * @param bool  $display Display or return the HTML.
@@ -831,7 +831,6 @@ function twentyten_site_logo( $args = array() ) {
 	$contents   = '';
 
 	$defaults = array(
-		'logo'         => '%1$s',
 		'home_title'   => '<h1><a href="%1$s" aria-current="page" rel="home">%2$s</a></h1>',
 		'single_title' => '<a href="%1$s" rel="home">%2$s</a>',
 		'condition'    => ( is_front_page() || is_home() && ( (int) get_option( 'page_for_posts' ) !== get_queried_object_id() ) ) && ! is_paged(),
