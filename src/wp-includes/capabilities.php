@@ -1078,7 +1078,7 @@ function user_can_for_site( $user, $site_id, $capability, ...$args ) {
 function wp_roles() {
 	global $wp_roles;
 
-	if ( ! isset( $wp_roles ) ) {
+	if ( ! ( $wp_roles instanceof WP_Roles ) ) {
 		$wp_roles = new WP_Roles();
 	}
 	return $wp_roles;
