@@ -14,13 +14,14 @@
 	background-color: #2271b1;
 	color: white;
 	border: 1px solid #ccc;
-	padding: 5px;
-	z-index: 1000;
+	padding: 8px 12px;
+	font-size: 16px;
+	z-index: 100000;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 	border-radius: 5px;
-	width: 200px;
-	height: auto;
-	text-align: center;
+	white-space: pre-line;
+	width: max-content;
+	max-width: 20rem;
 }
 
 .wp-tooltip-content p {
