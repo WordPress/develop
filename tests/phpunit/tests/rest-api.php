@@ -2568,7 +2568,7 @@ class Tests_REST_API extends WP_UnitTestCase {
 		$wp = new stdClass();
 
 		$wp->query_vars = array(
-			'rest_route' => array( 'invalid' )
+			'rest_route' => array( 'invalid' ),
 		);
 
 		$this->expectException( WPDieException::class );
