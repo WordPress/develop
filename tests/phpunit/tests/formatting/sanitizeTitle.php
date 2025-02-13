@@ -12,6 +12,11 @@ class Tests_Formatting_SanitizeTitle extends WP_UnitTestCase {
 		$this->assertSame( $expected, sanitize_title( $input ) );
 	}
 
+	public function test_leaves_devanagari() {
+		$input = 'राजीव';
+		$this->assertSame( $input, urldecode( sanitize_title( $input ) ) );
+	}
+
 	public function test_titles_sanitized_to_nothing_are_replaced_with_optional_fallback() {
 		$input    = '<strong></strong>';
 		$fallback = 'Captain Awesome';
