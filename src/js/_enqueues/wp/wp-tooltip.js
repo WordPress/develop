@@ -28,19 +28,9 @@ document.addEventListener( 'DOMContentLoaded', function () {
 
 		// Event listeners for mouse and touch events
 		tooltipContainer.addEventListener( 'mouseenter', showTooltip );
+		tooltipContainer.addEventListener( 'focusin', showTooltip );
 		tooltipButton.addEventListener( 'touchstart', showTooltip );
 		tooltipButton.addEventListener( 'touchend', hideTooltip );
-
-		tooltipButton.addEventListener( 'keydown', function ( event ) {
-			if ( event.key === 'Enter' ) {
-				// Toggle the display of the tooltip content.
-				tooltipContent.style.display =
-					tooltipContent.style.display === 'block' ? 'none' : 'block';
-				if ( tooltipContent.style.display === 'block' ) {
-					adjustTooltipPosition( tooltipContainer, tooltipContent );
-				}
-			}
-		} );
 
 		document.addEventListener( 'keydown', function ( event ) {
 			if (
