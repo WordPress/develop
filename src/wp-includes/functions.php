@@ -425,6 +425,8 @@ function wp_maybe_decline_date( $date, $format = '' ) {
 function number_format_i18n( $number, $decimals = 0 ) {
 	global $wp_locale;
 
+	$number = (float) $number;
+
 	if ( isset( $wp_locale ) ) {
 		$formatted = number_format( $number, absint( $decimals ), $wp_locale->number_format['decimal_point'], $wp_locale->number_format['thousands_sep'] );
 	} else {
