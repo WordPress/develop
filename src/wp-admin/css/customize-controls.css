@@ -2645,7 +2645,6 @@ body.adding-widget .add-new-widget:before,
 #available-widgets .customize-section-title,
 #available-menu-items .customize-section-title {
 	border: 0;
-	clip: rect(1px, 1px, 1px, 1px);
 	clip-path: inset(50%);
 	height: 1px;
 	margin: -1px;
@@ -2995,7 +2994,6 @@ body.adding-widget .add-new-widget:before,
 	#available-widgets .customize-section-title,
 	#available-menu-items .customize-section-title {
 		border: 0;
-		clip: auto;
 		clip-path: none;
 		height: inherit;
 		margin: 0;
