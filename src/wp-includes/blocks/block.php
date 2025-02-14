@@ -8,6 +8,10 @@
 /**
  * Renders the `core/block` block on server.
  *
+ * @since 5.0.0
+ *
+ * @global WP_Embed $wp_embed
+ *
  * @param array $attributes The block attributes.
  *
  * @return string Rendered HTML of the referenced block.
@@ -74,7 +78,7 @@ function render_block_core_block( $attributes ) {
 	 * filter so that it is available when a pattern's inner blocks are
 	 * rendering via do_blocks given it only receives the inner content.
 	 */
-	$has_pattern_overrides = isset( $attributes['content'] );
+	$has_pattern_overrides = isset( $attributes['content'] ) && null !== get_block_bindings_source( 'core/pattern-overrides' );
 	if ( $has_pattern_overrides ) {
 		$filter_block_context = static function ( $context ) use ( $attributes ) {
 			$context['pattern/overrides'] = $attributes['content'];
@@ -82,6 +86,26 @@ function render_block_core_block( $attributes ) {
 		};
 		add_filter( 'render_block_context', $filter_block_context, 1 );
 	}
+
+	$ignored_hooked_blocks = get_post_meta( $attributes['ref'], '_wp_ignored_hooked_blocks', true );
+	if ( ! empty( $ignored_hooked_blocks ) ) {
+		$ignored_hooked_blocks  = json_decode( $ignored_hooked_blocks, true );
+		$attributes['metadata'] = array(
+			'ignoredHookedBlocks' => $ignored_hooked_blocks,
+		);
+	}
+
+	// Wrap in "Block" block so the Block Hooks algorithm can insert blocks
+	// that are hooked as first or last child of `core/block`.
+	$content = get_comment_delimited_block_content(
+		'core/block',
+		$attributes,
+		$content
+	);
+	// Apply Block Hooks.
+	$content = apply_block_hooks_to_content( $content, $reusable_block );
+	// Remove block wrapper.
+	$content = remove_serialized_parent_block( $content );
 
 	$content = do_blocks( $content );
 	unset( $seen_refs[ $attributes['ref'] ] );
@@ -95,6 +119,8 @@ function render_block_core_block( $attributes ) {
 
 /**
  * Registers the `core/block` block.
+ *
+ * @since 5.3.0
  */
 function register_block_core_block() {
 	register_block_type_from_metadata(

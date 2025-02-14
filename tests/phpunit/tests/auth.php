@@ -115,16 +115,22 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * Tests hooking into wp_set_password().
 	 *
 	 * @ticket 57436
+	 * @ticket 61541
 	 *
 	 * @covers ::wp_set_password
 	 */
 	public function test_wp_set_password_action() {
 		$action = new MockAction();
 
-		add_action( 'wp_set_password', array( $action, 'action' ) );
-		wp_set_password( 'A simple password', self::$user_id );
+		$previous_user_pass = get_user_by( 'id', $this->user->ID )->user_pass;
+
+		add_action( 'wp_set_password', array( $action, 'action' ), 10, 3 );
+		wp_set_password( 'A simple password', $this->user->ID );
 
 		$this->assertSame( 1, $action->get_call_count() );
+
+		// Check that the old data passed through the hook is correct.
+		$this->assertSame( $previous_user_pass, $action->get_args()[0][2]->user_pass );
 	}
 
 	/**
@@ -424,6 +430,34 @@ class Tests_Auth extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Ensure that `user_activation_key` is cleared after a successful login.
+	 *
+	 * @ticket 58901
+	 *
+	 * @covers ::wp_signon
+	 */
+	public function test_user_activation_key_after_successful_login() {
+		global $wpdb;
+
+		$password_reset_key = get_password_reset_key( $this->user );
+		$user               = wp_signon(
+			array(
+				'user_login'    => self::USER_LOGIN,
+				'user_password' => self::USER_PASS,
+			)
+		);
+
+		$activation_key_from_database = $wpdb->get_var(
+			$wpdb->prepare( "SELECT user_activation_key FROM $wpdb->users WHERE ID = %d", $this->user->ID )
+		);
+
+		$this->assertNotWPError( $password_reset_key, 'The password reset key was not created.' );
+		$this->assertNotWPError( $user, 'The user was not authenticated.' );
+		$this->assertEmpty( $user->user_activation_key, 'The `user_activation_key` was not empty on the user object returned by `wp_signon()` function.' );
+		$this->assertEmpty( $activation_key_from_database, 'The `user_activation_key` was not empty in the database.' );
+	}
+
+	/**
 	 * Ensure users can log in using both their username and their email address.
 	 *
 	 * @ticket 9568
@@ -592,6 +626,28 @@ class Tests_Auth extends WP_UnitTestCase {
 	 * @ticket 56850
 	 */
 	public function test_wp_signon_does_not_throw_deprecation_notices_with_default_parameters() {
+		$error = wp_signon();
+		$this->assertWPError( $error, 'The result should be an instance of WP_Error.' );
+
+		$error_codes = $error->get_error_codes();
+		$this->assertContains( 'empty_username', $error_codes, 'The "empty_username" error code should be present.' );
+		$this->assertContains( 'empty_password', $error_codes, 'The "empty_password" error code should be present.' );
+	}
+
+	/**
+	 * Tests that a warning or a fatal error is not thrown when the login or password
+	 * passed via `$_POST` is an array instead of a string.
+	 *
+	 * The messages that we should not see:
+	 * `Warning: wp_strip_all_tags() expects parameter #1 ($text) to be a string, array given`.
+	 * `TypeError: trim(): Argument #1 ($string) must be of type string, array given`.
+	 *
+	 * @ticket 62794
+	 */
+	public function test_wp_signon_does_not_throw_fatal_errors_with_array_parameters() {
+		$_POST['log'] = array( 'example' );
+		$_POST['pwd'] = array( 'example' );
+
 		$error = wp_signon();
 		$this->assertWPError( $error, 'The result should be an instance of WP_Error.' );
 
