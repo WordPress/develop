@@ -3933,6 +3933,7 @@ function _wp_keep_alive_customize_changeset_dependent_auto_drafts( $new_status, 
  *
  * @since 5.5.0
  * @since 6.0.1 The `block-templates` feature was added.
+ * @since 6.8.0 The `stylebook` feature was added.
  */
 function create_initial_theme_features() {
 	register_theme_feature(
@@ -4378,11 +4379,12 @@ function wp_theme_get_element_class_name( $element ) {
 }
 
 /**
- * Adds default theme supports for block themes when the 'after_setup_theme' action fires.
+ * Adds default theme supports for themes when the 'after_setup_theme' action fires.
  *
  * See {@see 'after_setup_theme'}.
  *
  * @since 5.9.0
+ * @since 6.8.0 The `stylebook` feature was enabled.
  * @access private
  */
 function _add_default_theme_supports() {
