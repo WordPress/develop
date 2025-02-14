@@ -2299,6 +2299,9 @@ function get_calendar( $initial = true, $display = true ) {
 			$thismonth = '01';
 		} else {
 			$thismonth = zeroise( (int) substr( $m, 4, 2 ), 2 );
+			if ( ! in_array( (int) $thismonth, range( 1, 12 ) ) ) {
+				$thismonth = '01';
+			}
 		}
 	} else {
 		$thisyear  = current_time( 'Y' );
