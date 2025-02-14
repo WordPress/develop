@@ -261,8 +261,10 @@ function wp_create_image_subsizes( $file, $attachment_id ) {
 		$image_meta['image_meta'] = $exif_meta;
 	}
 
+	$output_format = wp_get_image_editor_output_format( $file, $imagesize['mime'] );
+
 	// Do not scale (large) PNG images. May result in sub-sizes that have greater file size than the original. See #48736.
-	if ( 'image/png' !== $imagesize['mime'] ) {
+	if ( 'image/png' !== $imagesize['mime'] || 'image/png' !== $output_format ) {
 
 		/**
 		 * Filters the "BIG image" threshold value.
@@ -298,9 +300,6 @@ function wp_create_image_subsizes( $file, $attachment_id ) {
 			// The image will be converted if needed on saving.
 			$scale_down = true;
 		} else {
-			// The image may need to be converted regardless of its dimensions.
-			$output_format = wp_get_image_editor_output_format( $file, $imagesize['mime'] );
-
 			if (
 				is_array( $output_format ) &&
 				array_key_exists( $imagesize['mime'], $output_format ) &&
