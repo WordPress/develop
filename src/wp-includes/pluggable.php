@@ -598,7 +598,11 @@ if ( ! function_exists( 'wp_authenticate' ) ) :
 	 * @return WP_User|WP_Error WP_User object if the credentials are valid,
 	 *                          otherwise WP_Error.
 	 */
-	function wp_authenticate( $username, $password ) {
+	function wp_authenticate(
+		$username,
+		#[\SensitiveParameter]
+		$password
+	) {
 		$username = sanitize_user( $username );
 		$password = trim( $password );
 
@@ -768,9 +772,7 @@ if ( ! function_exists( 'wp_validate_auth_cookie' ) ) :
 
 		$key = wp_hash( $username . '|' . $pass_frag . '|' . $expiration . '|' . $token, $scheme );
 
-		// If ext/hash is not present, compat.php's hash_hmac() does not support sha256.
-		$algo = function_exists( 'hash' ) ? 'sha256' : 'sha1';
-		$hash = hash_hmac( $algo, $username . '|' . $expiration . '|' . $token, $key );
+		$hash = hash_hmac( 'sha256', $username . '|' . $expiration . '|' . $token, $key );
 
 		if ( ! hash_equals( $hash, $hmac ) ) {
 			/**
@@ -871,9 +873,7 @@ if ( ! function_exists( 'wp_generate_auth_cookie' ) ) :
 
 		$key = wp_hash( $user->user_login . '|' . $pass_frag . '|' . $expiration . '|' . $token, $scheme );
 
-		// If ext/hash is not present, compat.php's hash_hmac() does not support sha256.
-		$algo = function_exists( 'hash' ) ? 'sha256' : 'sha1';
-		$hash = hash_hmac( $algo, $user->user_login . '|' . $expiration . '|' . $token, $key );
+		$hash = hash_hmac( 'sha256', $user->user_login . '|' . $expiration . '|' . $token, $key );
 
 		$cookie = $user->user_login . '|' . $expiration . '|' . $token . '|' . $hash;
 
@@ -2605,7 +2605,7 @@ if ( ! function_exists( 'wp_hash' ) ) :
 		if ( ! in_array( $algo, hash_hmac_algos(), true ) ) {
 			throw new InvalidArgumentException(
 				sprintf(
-					/** translators: 1: Name of a cryptographic hash algorithm. 2: List of supported algorithms. */
+					/* translators: 1: Name of a cryptographic hash algorithm. 2: List of supported algorithms. */
 					__( 'Unsupported hashing algorithm: %1$s. Supported algorithms are: %2$s' ),
 					$algo,
 					implode( ', ', hash_hmac_algos() )
@@ -2631,7 +2631,10 @@ if ( ! function_exists( 'wp_hash_password' ) ) :
 	 * @param string $password Plain text user password to hash.
 	 * @return string The hash string of the password.
 	 */
-	function wp_hash_password( $password ) {
+	function wp_hash_password(
+		#[\SensitiveParameter]
+		$password
+	) {
 		global $wp_hasher;
 
 		if ( empty( $wp_hasher ) ) {
@@ -2667,7 +2670,12 @@ if ( ! function_exists( 'wp_check_password' ) ) :
 	 * @param string|int $user_id  Optional. User ID.
 	 * @return bool False, if the $password does not match the hashed password.
 	 */
-	function wp_check_password( $password, $hash, $user_id = '' ) {
+	function wp_check_password(
+		#[\SensitiveParameter]
+		$password,
+		$hash,
+		$user_id = ''
+	) {
 		global $wp_hasher;
 
 		// If the hash is still md5...
@@ -2863,7 +2871,11 @@ if ( ! function_exists( 'wp_set_password' ) ) :
 	 * @param string $password The plaintext new user password.
 	 * @param int    $user_id  User ID.
 	 */
-	function wp_set_password( $password, $user_id ) {
+	function wp_set_password(
+		#[\SensitiveParameter]
+		$password,
+		$user_id
+	) {
 		global $wpdb;
 
 		$old_user_data = get_userdata( $user_id );
