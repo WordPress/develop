@@ -124,6 +124,53 @@ OPTIONS;
 	}
 
 	/**
+	 * @ticket 59440
+	 *
+	 * @covers WP_Comments_List_Table::bulk_actions
+	 */
+	public function test_bulk_action_menu_should_be_shown_if_user_has_capability() {
+		$u = self::factory()->user->create_and_get(
+			array(
+				'role' => 'administrator',
+			)
+		);
+
+		wp_set_current_user( $u );
+
+		$this->assertTrue( current_user_can( 'moderate_comments' ) );
+
+		ob_start();
+		$this->table->bulk_actions();
+		$output = ob_get_clean();
+
+		$this->assertNotEmpty( $output );
+		$this->assertStringContainsString( '<option value="-1">Bulk actions</option>', $output );
+	}
+
+	/**
+	 * @ticket 59440
+	 *
+	 * @covers WP_Comments_List_Table::bulk_actions
+	 */
+	public function test_bulk_action_menu_should_not_be_shown_if_user_has_no_capability() {
+		$u = self::factory()->user->create_and_get(
+			array(
+				'role' => 'subscriber',
+			)
+		);
+
+		wp_set_current_user( $u );
+
+		$this->assertFalse( current_user_can( 'moderate_comments' ) );
+
+		ob_start();
+		$this->table->bulk_actions();
+		$output = ob_get_clean();
+
+		$this->assertEmpty( $output );
+	}
+
+	/**
 	 * @ticket 45089
 	 *
 	 * @covers WP_Comments_List_Table::print_column_headers
