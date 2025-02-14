@@ -105,27 +105,50 @@ class Tests_Cron_WPCron extends WP_UnitTestCase {
 			define( 'DOING_CRON', true );
 		}
 
+		$doing_cron_transient = get_transient( 'doing_cron' );
+
+		if ( ! $doing_cron_transient ) {
+			$doing_cron_transient = sprintf( '%.22F', microtime( true ) );
+			set_transient( 'doing_cron', $doing_cron_transient );
+		}
+
 		$crons = wp_get_ready_cron_jobs();
+		
+		if ( empty( $crons ) ) {
+			delete_transient( 'doing_cron' );
+			return;
+		}
+
+		$gmt_time = microtime( true );
+		$keys = array_keys( $crons );
+		
+		if ( isset( $keys[0] ) && $keys[0] > $gmt_time ) {
+			delete_transient( 'doing_cron' );
+			return;
+		}
+
+		// Process cron jobs.
 		foreach ( $crons as $timestamp => $cronhooks ) {
+			if ( $timestamp > $gmt_time ) {
+				continue;
+			}
+
 			foreach ( $cronhooks as $hook => $keys ) {
 				foreach ( $keys as $k => $v ) {
-					$scheduled_args = $v['args'];
-					wp_unschedule_event( $timestamp, $hook, $scheduled_args );
-					do_action_ref_array( $hook, $scheduled_args );
+					$schedule = $v['schedule'];
+					$args = $v['args'];
 
-					if ( isset( $v['schedule'] ) ) {
-						$next_timestamp = wp_next_scheduled( $hook, $scheduled_args );
-						if ( ! $next_timestamp ) {
-							$schedules = wp_get_schedules();
-							if ( isset( $schedules[ $v['schedule'] ] ) ) {
-								$interval = $schedules[ $v['schedule'] ]['interval'];
-								wp_schedule_event( $timestamp + $interval, $v['schedule'], $hook, $scheduled_args );
-							}
-						}
+					do_action_ref_array( $hook, $args );
+
+					wp_unschedule_event( $timestamp, $hook, $args );
+
+					if ( $schedule ) {
+						wp_reschedule_event( $timestamp, $schedule, $hook, $args );
 					}
 				}
 			}
 		}
+
 		delete_transient( 'doing_cron' );
 	}
 }
