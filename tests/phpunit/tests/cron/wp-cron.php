@@ -113,15 +113,15 @@ class Tests_Cron_WPCron extends WP_UnitTestCase {
 		}
 
 		$crons = wp_get_ready_cron_jobs();
-		
+
 		if ( empty( $crons ) ) {
 			delete_transient( 'doing_cron' );
 			return;
 		}
 
 		$gmt_time = microtime( true );
-		$keys = array_keys( $crons );
-		
+		$keys     = array_keys( $crons );
+
 		if ( isset( $keys[0] ) && $keys[0] > $gmt_time ) {
 			delete_transient( 'doing_cron' );
 			return;
@@ -136,7 +136,7 @@ class Tests_Cron_WPCron extends WP_UnitTestCase {
 			foreach ( $cronhooks as $hook => $keys ) {
 				foreach ( $keys as $k => $v ) {
 					$schedule = $v['schedule'];
-					$args = $v['args'];
+					$args     = $v['args'];
 
 					do_action_ref_array( $hook, $args );
 
