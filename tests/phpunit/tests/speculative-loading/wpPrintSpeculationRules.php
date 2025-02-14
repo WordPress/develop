@@ -43,7 +43,7 @@ class Tests_Speculative_Loading_wpPrintSpeculationRules extends WP_UnitTestCase 
 
 		add_filter(
 			'wp_speculation_rules_configuration',
-			function () {
+			static function () {
 				return array(
 					'mode'      => 'prerender',
 					'eagerness' => 'moderate',
@@ -70,7 +70,7 @@ class Tests_Speculative_Loading_wpPrintSpeculationRules extends WP_UnitTestCase 
 
 		add_filter(
 			'wp_speculation_rules_configuration',
-			function () {
+			static function () {
 				return array(
 					'mode'      => 'prerender',
 					'eagerness' => 'moderate',
