@@ -67,7 +67,7 @@ if ( is_singular() && get_option( 'thread_comments' ) ) {
 		<div id="masthead">
 			<div id="branding" role="banner">
 				<?php twentyten_site_logo(); ?>
-				<?php if ( get_bloginfo( 'description' ) && display_header_text() ) : ?>
+				<?php if ( get_bloginfo( 'description' ) ) : ?>
 					<div id="site-description"><?php bloginfo( 'description' ); ?></div>
 				<?php endif; ?>
 
