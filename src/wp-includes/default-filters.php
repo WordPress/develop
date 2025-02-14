@@ -784,4 +784,10 @@ add_filter( 'rest_prepare_post', 'insert_hooked_blocks_into_rest_response', 10, 
 add_filter( 'rest_prepare_wp_block', 'insert_hooked_blocks_into_rest_response', 10, 2 );
 add_filter( 'rest_prepare_wp_navigation', 'insert_hooked_blocks_into_rest_response', 10, 2 );
 
+// Add filters to metadata API when calling site ( network ) metadata.
+add_filter( 'get_site_metadata', 'filter_get_site_metadata', 10, 4 );
+add_filter( 'update_site_metadata', 'filter_update_site_metadata', 10, 4 );
+add_filter( 'add_site_metadata', 'filter_add_site_metadata', 10, 5 );
+add_filter( 'delete_site_metadata', 'filter_delete_site_metadata', 10, 5 );
+
 unset( $filter, $action );
