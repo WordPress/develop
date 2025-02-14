@@ -340,4 +340,24 @@ class Tests_User_wpListAuthors extends WP_UnitTestCase {
 			)
 		);
 	}
+
+	/**
+	 * @ticket 62835
+	 */
+	public function test_wp_list_authors_remove_title_attributes() {
+		$expected['use_title_attr'] =
+			'<li><a href="' . self::$user_urls[1] . '">bob</a></li>' .
+			'<li><a href="' . self::$user_urls[2] . '">paul</a></li>' .
+			'<li><a href="' . self::$user_urls[0] . '">zack</a></li>';
+
+		$this->assertSame(
+			$expected['use_title_attr'],
+			wp_list_authors(
+				array(
+					'echo'           => false,
+					'use_title_attr' => false,
+				)
+			)
+		);
+	}
 }
