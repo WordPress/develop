@@ -3060,6 +3060,9 @@ ol.wp-block-latest-comments {
     font-weight: inherit;
 }
 
+.wp-calendar-nav .wp-calendar-nav-prev {
+	font-family: "Inter var", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
+}
 /* Block: Columns ---------------------------- */
 
 .wp-block-columns.alignfull,
