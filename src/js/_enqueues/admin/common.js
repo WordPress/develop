@@ -1355,6 +1355,18 @@ $( function() {
 		wp.a11y.speak( errorMessage );
 	});
 
+	$( '.hide-column-tog' ).on( 'change' , function() {
+		var optionTitle = $( this ).closest( 'label' ).text(); 
+		var message = this.checked ? 
+			wp.i18n.sprintf( 
+				wp.i18n.__( 'The checkbox %s has been checked.' ), optionTitle 
+			) : 
+			wp.i18n.sprintf( 
+				wp.i18n.__( 'The checkbox %s has been unchecked.' ), optionTitle 
+			);
+		wp.a11y.speak( message );
+	} );
+
 	/**
 	 * Shows row actions on focus of its parent container element or any other elements contained within.
 	 *

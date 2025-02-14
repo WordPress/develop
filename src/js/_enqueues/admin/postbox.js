@@ -11,7 +11,8 @@
 
 (function($) {
 	var $document = $( document ),
-		__ = wp.i18n.__;
+		__ = wp.i18n.__,
+		sprintf = wp.i18n.sprintf;
 
 	/**
 	 * This object contains all function to handle the behavior of the post boxes. The post boxes are the boxes you see
@@ -305,7 +306,9 @@
 			$('.hide-postbox-tog').on('click.postboxes', function() {
 				var $el = $(this),
 					boxId = $el.val(),
-					$postbox = $( '#' + boxId );
+					$postbox = $( '#' + boxId ),
+					widgetTitle = $(this).data( 'widget-title' ),
+					message;
 
 				if ( $el.prop( 'checked' ) ) {
 					$postbox.show();
@@ -318,6 +321,11 @@
 						postboxes.pbhide( boxId );
 					}
 				}
+				
+				message = $el.prop( 'checked' ) ?
+					sprintf( __( 'The checkbox %s has been checked.' ),	widgetTitle ) :
+					sprintf( __( 'The checkbox %s has been unchecked.' ), widgetTitle );
+				wp.a11y.speak( message );
 
 				postboxes.save_state( page );
 				postboxes._mark_area();
