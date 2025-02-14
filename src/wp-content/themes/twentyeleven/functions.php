@@ -220,6 +220,7 @@ if ( ! function_exists( 'twentyeleven_setup' ) ) :
 				'height'      => 100,
 				'width'       => 300,
 				'flex-height' => true,
+				'flex-width'  => true,
 			)
 		);
 
