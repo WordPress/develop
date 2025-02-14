@@ -4329,6 +4329,13 @@ function create_initial_theme_features() {
 		)
 	);
 	register_theme_feature(
+		'stylebook',
+		array(
+			'description'  => __( 'Whether a classic theme uses the Stylebook.' ),
+			'show_in_rest' => true,
+		)
+	);
+	register_theme_feature(
 		'title-tag',
 		array(
 			'description'  => __( 'Whether the theme can manage the document title tag.' ),
@@ -4379,6 +4386,8 @@ function wp_theme_get_element_class_name( $element ) {
  * @access private
  */
 function _add_default_theme_supports() {
+	add_theme_support( 'stylebook' );
+
 	if ( ! wp_is_block_theme() ) {
 		return;
 	}
