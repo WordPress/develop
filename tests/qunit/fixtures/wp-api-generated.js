@@ -687,6 +687,14 @@ mockedApiResponse.Schema = {
                             "type": "string",
                             "required": false
                         },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "required": false
+                        },
                         "status": {
                             "description": "A named status for the post.",
                             "type": "string",
@@ -969,6 +977,14 @@ mockedApiResponse.Schema = {
                         "slug": {
                             "description": "An alphanumeric identifier for the post unique to its type.",
                             "type": "string",
+                            "required": false
+                        },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
                             "required": false
                         },
                         "status": {
@@ -1408,6 +1424,14 @@ mockedApiResponse.Schema = {
                         "slug": {
                             "description": "An alphanumeric identifier for the post unique to its type.",
                             "type": "string",
+                            "required": false
+                        },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
                             "required": false
                         },
                         "status": {
@@ -1893,6 +1917,14 @@ mockedApiResponse.Schema = {
                             "type": "string",
                             "required": false
                         },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "required": false
+                        },
                         "status": {
                             "description": "A named status for the post.",
                             "type": "string",
@@ -2147,6 +2179,14 @@ mockedApiResponse.Schema = {
                         "slug": {
                             "description": "An alphanumeric identifier for the post unique to its type.",
                             "type": "string",
+                            "required": false
+                        },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
                             "required": false
                         },
                         "status": {
@@ -2558,6 +2598,14 @@ mockedApiResponse.Schema = {
                         "slug": {
                             "description": "An alphanumeric identifier for the post unique to its type.",
                             "type": "string",
+                            "required": false
+                        },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
                             "required": false
                         },
                         "status": {
@@ -3007,6 +3055,14 @@ mockedApiResponse.Schema = {
                             "type": "string",
                             "required": false
                         },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "required": false
+                        },
                         "status": {
                             "description": "A named status for the post.",
                             "type": "string",
@@ -3212,6 +3268,14 @@ mockedApiResponse.Schema = {
                         "slug": {
                             "description": "An alphanumeric identifier for the post unique to its type.",
                             "type": "string",
+                            "required": false
+                        },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
                             "required": false
                         },
                         "status": {
@@ -4647,6 +4711,14 @@ mockedApiResponse.Schema = {
                             "type": "string",
                             "required": false
                         },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "required": false
+                        },
                         "status": {
                             "description": "A named status for the post.",
                             "type": "string",
@@ -4854,6 +4926,14 @@ mockedApiResponse.Schema = {
                         "slug": {
                             "description": "An alphanumeric identifier for the post unique to its type.",
                             "type": "string",
+                            "required": false
+                        },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
                             "required": false
                         },
                         "status": {
@@ -5218,6 +5298,14 @@ mockedApiResponse.Schema = {
                         "slug": {
                             "description": "An alphanumeric identifier for the post unique to its type.",
                             "type": "string",
+                            "required": false
+                        },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
                             "required": false
                         },
                         "status": {
@@ -7182,6 +7270,14 @@ mockedApiResponse.Schema = {
                             "type": "string",
                             "required": false
                         },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "required": false
+                        },
                         "status": {
                             "description": "A named status for the post.",
                             "type": "string",
@@ -7361,6 +7457,14 @@ mockedApiResponse.Schema = {
                         "slug": {
                             "description": "An alphanumeric identifier for the post unique to its type.",
                             "type": "string",
+                            "required": false
+                        },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
                             "required": false
                         },
                         "status": {
@@ -7698,6 +7802,14 @@ mockedApiResponse.Schema = {
                         "slug": {
                             "description": "An alphanumeric identifier for the post unique to its type.",
                             "type": "string",
+                            "required": false
+                        },
+                        "old_slug": {
+                            "description": "An alphanumeric identifier for the object unique to its type.",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
                             "required": false
                         },
                         "status": {
