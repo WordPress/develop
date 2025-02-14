@@ -610,9 +610,13 @@ function wp_debug_mode() {
 		error_reporting( E_ALL );
 
 		if ( WP_DEBUG_DISPLAY ) {
-			ini_set( 'display_errors', 1 );
+			if ( function_exists( 'ini_set' ) ) {
+				ini_set( 'display_errors', 1 );
+			}
 		} elseif ( null !== WP_DEBUG_DISPLAY ) {
-			ini_set( 'display_errors', 0 );
+			if ( function_exists( 'ini_set' ) ) {
+				ini_set( 'display_errors', 0 );
+			}
 		}
 
 		if ( in_array( strtolower( (string) WP_DEBUG_LOG ), array( 'true', '1' ), true ) ) {
@@ -624,8 +628,10 @@ function wp_debug_mode() {
 		}
 
 		if ( $log_path ) {
-			ini_set( 'log_errors', 1 );
-			ini_set( 'error_log', $log_path );
+			if ( function_exists( 'ini_set' ) ) {
+				ini_set( 'log_errors', 1 );
+				ini_set( 'error_log', $log_path );
+			}
 		}
 	} else {
 		error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
@@ -639,7 +645,9 @@ function wp_debug_mode() {
 		|| ( defined( 'WP_INSTALLING' ) && WP_INSTALLING )
 		|| wp_doing_ajax() || wp_is_json_request()
 	) {
-		ini_set( 'display_errors', 0 );
+		if ( function_exists( 'ini_set' ) ) {
+			ini_set( 'display_errors', 0 );
+		}
 	}
 }
 
