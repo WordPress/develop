@@ -333,4 +333,54 @@ class Tests_Admin_wpPluginsListTable extends WP_UnitTestCase {
 
 		return $plugins_list;
 	}
+
+	/**
+	 * Tests the plugins_list_status_text filter.
+	 *
+	 * @ticket 60495
+	 *
+	 * @covers WP_Plugins_List_Table::get_views
+	 */
+	public function test_plugins_list_status_text_filter() {
+		global $totals, $status;
+
+		$totals_backup = $totals;
+		$status_backup = $status;
+
+		$totals = array(
+			'custom_status' => 5,
+		);
+		$status = 'custom_status';
+
+		// Test default behavior (no filter).
+		$views = $this->table->get_views();
+		$this->assertStringContainsString(
+			'custom_status <span class="count">(5)</span>',
+			strip_tags( $views['custom_status'], '<span>' ),
+			'Default status text should be used when no filter is applied'
+		);
+
+		// Test with filter that modifies the text.
+		add_filter(
+			'plugins_list_status_text',
+			function ( $text, $count, $status_param ) {
+				$this->assertSame( '', $text, 'Default text should be empty' );
+				$this->assertSame( 5, $count, 'Count should match totals' );
+				$this->assertSame( 'custom_status', $status_param, 'Status should match current status' );
+				return 'Custom Text';
+			},
+			10,
+			3
+		);
+
+		$views = $this->table->get_views();
+		$this->assertStringContainsString(
+			'Custom Text <span class="count">(5)</span>',
+			strip_tags( $views['custom_status'], '<span>' ),
+			'Filter should modify the status text while preserving count'
+		);
+
+		$totals = $totals_backup;
+		$status = $status_backup;
+	}
 }
