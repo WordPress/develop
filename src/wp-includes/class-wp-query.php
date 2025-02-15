@@ -869,10 +869,10 @@ class WP_Query {
 		}
 
 		// Compat. Map subpost to attachment.
-		if ( is_scalar( $qv['subpost'] ) && '' != $qv['subpost'] ) {
+		if ( is_scalar( $qv['subpost'] ) && '' !== $qv['subpost'] ) {
 			$qv['attachment'] = $qv['subpost'];
 		}
-		if ( is_scalar( $qv['subpost_id'] ) && '' != $qv['subpost_id'] ) {
+		if ( is_scalar( $qv['subpost_id'] ) && '' !== $qv['subpost_id'] ) {
 			$qv['attachment_id'] = $qv['subpost_id'];
 		}
 
@@ -980,7 +980,7 @@ class WP_Query {
 			}
 			unset( $tax_query );
 
-			if ( empty( $qv['author'] ) || ( '0' == $qv['author'] ) ) {
+			if ( empty( $qv['author'] ) || ( '0' === (string) $qv['author'] ) ) {
 				$this->is_author = false;
 			} else {
 				$this->is_author = true;
@@ -1002,24 +1002,24 @@ class WP_Query {
 			}
 		}
 
-		if ( '' != $qv['feed'] ) {
+		if ( '' !== $qv['feed'] ) {
 			$this->is_feed = true;
 		}
 
-		if ( '' != $qv['embed'] ) {
+		if ( '' !== $qv['embed'] ) {
 			$this->is_embed = true;
 		}
 
-		if ( '' != $qv['tb'] ) {
+		if ( '' !== $qv['tb'] ) {
 			$this->is_trackback = true;
 		}
 
-		if ( '' != $qv['paged'] && ( (int) $qv['paged'] > 1 ) ) {
+		if ( '' !== $qv['paged'] && ( (int) $qv['paged'] > 1 ) ) {
 			$this->is_paged = true;
 		}
 
 		// If we're previewing inside the write screen.
-		if ( '' != $qv['preview'] ) {
+		if ( '' !== $qv['preview'] ) {
 			$this->is_preview = true;
 		}
 
@@ -1087,25 +1087,29 @@ class WP_Query {
 				unset( $this->queried_object );
 			}
 
-			if ( 'page' === get_option( 'show_on_front' ) && isset( $this->queried_object_id ) && get_option( 'page_for_posts' ) == $this->queried_object_id ) {
+			if ( 'page' === get_option( 'show_on_front' ) && isset( $this->queried_object_id )
+				&& (int) get_option( 'page_for_posts' ) === $this->queried_object_id
+			) {
 				$this->is_page       = false;
 				$this->is_home       = true;
 				$this->is_posts_page = true;
 			}
 
-			if ( isset( $this->queried_object_id ) && get_option( 'wp_page_for_privacy_policy' ) == $this->queried_object_id ) {
+			if ( isset( $this->queried_object_id )
+				&& (int) get_option( 'wp_page_for_privacy_policy' ) === $this->queried_object_id
+			) {
 				$this->is_privacy_policy = true;
 			}
 		}
 
 		if ( $qv['page_id'] ) {
-			if ( 'page' === get_option( 'show_on_front' ) && get_option( 'page_for_posts' ) == $qv['page_id'] ) {
+			if ( 'page' === get_option( 'show_on_front' ) && get_option( 'page_for_posts' ) === $qv['page_id'] ) {
 				$this->is_page       = false;
 				$this->is_home       = true;
 				$this->is_posts_page = true;
 			}
 
-			if ( get_option( 'wp_page_for_privacy_policy' ) == $qv['page_id'] ) {
+			if ( get_option( 'wp_page_for_privacy_policy' ) === $qv['page_id'] ) {
 				$this->is_privacy_policy = true;
 			}
 		}
@@ -1135,7 +1139,7 @@ class WP_Query {
 		$this->is_singular = $this->is_single || $this->is_page || $this->is_attachment;
 		// Done correcting `is_*` for 'page_on_front' and 'page_for_posts'.
 
-		if ( '404' == $qv['error'] ) {
+		if ( '404' === $qv['error'] ) {
 			$this->set_404();
 		}
 
@@ -1931,7 +1935,7 @@ class WP_Query {
 
 		// Set a flag if a 'pre_get_posts' hook changed the query vars.
 		$hash = md5( serialize( $this->query_vars ) );
-		if ( $hash != $this->query_vars_hash ) {
+		if ( $hash !== $this->query_vars_hash ) {
 			$this->query_vars_changed = true;
 			$this->query_vars_hash    = $hash;
 		}
@@ -2011,11 +2015,12 @@ class WP_Query {
 			$q['showposts']      = (int) $q['showposts'];
 			$q['posts_per_page'] = $q['showposts'];
 		}
-		if ( ( isset( $q['posts_per_archive_page'] ) && 0 != $q['posts_per_archive_page'] ) && ( $this->is_archive || $this->is_search ) ) {
+		if ( ( isset( $q['posts_per_archive_page'] ) && 0 !== (int) $q['posts_per_archive_page'] )
+			&& ( $this->is_archive || $this->is_search ) ) {
 			$q['posts_per_page'] = $q['posts_per_archive_page'];
 		}
 		if ( ! isset( $q['nopaging'] ) ) {
-			if ( -1 == $q['posts_per_page'] ) {
+			if ( -1 === (int) $q['posts_per_page'] ) {
 				$q['nopaging'] = true;
 			} else {
 				$q['nopaging'] = false;
@@ -2031,14 +2036,15 @@ class WP_Query {
 			}
 			$q['nopaging'] = false;
 		}
+
 		$q['posts_per_page'] = (int) $q['posts_per_page'];
 		if ( $q['posts_per_page'] < -1 ) {
 			$q['posts_per_page'] = abs( $q['posts_per_page'] );
-		} elseif ( 0 == $q['posts_per_page'] ) {
+		} elseif ( 0 === $q['posts_per_page'] ) {
 			$q['posts_per_page'] = 1;
 		}
 
-		if ( ! isset( $q['comments_per_page'] ) || 0 == $q['comments_per_page'] ) {
+		if ( ! isset( $q['comments_per_page'] ) || 0 === (int) $q['comments_per_page'] ) {
 			$q['comments_per_page'] = get_option( 'comments_per_page' );
 		}
 
@@ -2194,8 +2200,8 @@ class WP_Query {
 				}
 			}
 
-			$page_for_posts = get_option( 'page_for_posts' );
-			if ( ( 'page' !== get_option( 'show_on_front' ) ) || empty( $page_for_posts ) || ( $reqpage != $page_for_posts ) ) {
+			$page_for_posts = (int) get_option( 'page_for_posts' );
+			if ( ( 'page' !== get_option( 'show_on_front' ) ) || empty( $page_for_posts ) || ( $reqpage !== $page_for_posts ) ) {
 				$q['pagename'] = sanitize_title_for_query( wp_basename( $q['pagename'] ) );
 				$q['name']     = $q['pagename'];
 				$where        .= " AND ({$wpdb->posts}.ID = '$reqpage')";
@@ -2258,7 +2264,7 @@ class WP_Query {
 		}
 
 		if ( $q['page_id'] ) {
-			if ( ( 'page' !== get_option( 'show_on_front' ) ) || ( get_option( 'page_for_posts' ) != $q['page_id'] ) ) {
+			if ( ( 'page' !== get_option( 'show_on_front' ) ) || ( get_option( 'page_for_posts' ) !== $q['page_id'] ) ) {
 				$q['p'] = $q['page_id'];
 				$where  = " AND {$wpdb->posts}.ID = " . $q['page_id'];
 			}
@@ -2379,7 +2385,7 @@ class WP_Query {
 
 		// Author/user stuff.
 
-		if ( ! empty( $q['author'] ) && '0' != $q['author'] ) {
+		if ( ! empty( $q['author'] ) && 0 !== (int) $q['author'] ) {
 			$q['author'] = addslashes_gpc( '' . urldecode( $q['author'] ) );
 			$authors     = array_unique( array_map( 'intval', preg_split( '/[,\s]+/', $q['author'] ) ) );
 			sort( $authors );
@@ -3346,7 +3352,7 @@ class WP_Query {
 			return $post_parents;
 		}
 
-		$is_unfiltered_query = $old_request == $this->request && "{$wpdb->posts}.*" === $fields;
+		$is_unfiltered_query = $old_request === $this->request && "{$wpdb->posts}.*" === $fields;
 
 		if ( null === $this->posts ) {
 			$split_the_query = (
