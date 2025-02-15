@@ -2945,7 +2945,7 @@ footer.entry-meta {
 		width: auto;
 	}
 	.site-header .home-link {
-		min-height: 0;
+		min-height: 85px;
 	}
 	.site-title {
 		font-size: 36px;
@@ -2979,7 +2979,6 @@ footer.entry-meta {
 	}
 	.site-logo img {
 		margin: 8px 0 0;
-		max-height: 100px;
 	}
 	.site-logo .custom-logo-link {
 		padding: 0;
