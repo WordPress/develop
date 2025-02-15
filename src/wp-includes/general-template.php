@@ -4585,6 +4585,7 @@ function paginate_links( $args = '' ) {
 			$link = add_query_arg( $add_args, $link );
 		}
 		$link .= $args['add_fragment'];
+		$link  = get_option( 'permalink_structure' ) ? user_trailingslashit( $link, 'paged' ) : $link;
 
 		$page_links[] = sprintf(
 			'<a class="prev page-numbers" href="%s">%s</a>',
@@ -4617,6 +4618,7 @@ function paginate_links( $args = '' ) {
 					$link = add_query_arg( $add_args, $link );
 				}
 				$link .= $args['add_fragment'];
+				$link  = get_option( 'permalink_structure' ) ? user_trailingslashit( $link, 'paged' ) : $link;
 
 				$page_links[] = sprintf(
 					'<a class="page-numbers" href="%s">%s</a>',
@@ -4641,6 +4643,7 @@ function paginate_links( $args = '' ) {
 			$link = add_query_arg( $add_args, $link );
 		}
 		$link .= $args['add_fragment'];
+		$link  = get_option( 'permalink_structure' ) ? user_trailingslashit( $link, 'paged' ) : $link;
 
 		$page_links[] = sprintf(
 			'<a class="next page-numbers" href="%s">%s</a>',
