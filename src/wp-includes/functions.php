@@ -5,6 +5,8 @@
  * @package WordPress
  */
 
+use function PHPSTORM_META\map;
+
 // Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
@@ -9113,4 +9115,152 @@ function wp_is_heic_image_mime_type( $mime_type ) {
 	);
 
 	return in_array( $mime_type, $heic_mime_types, true );
+}
+
+
+/**
+ * Outputs the tooltip for a specific field.
+ *
+ * @since 6.7.0
+ *
+ * @param string $tooltip_text The text content to be displayed in the tooltip.
+ * @param array  $args {
+ *     Optional. Array of information to customize the tooltip.
+ *
+ *     @type string $field_id     The unique identifier for the tooltip container.
+ *     @type string $button_label The label for the tooltip button. Default is an empty string.
+ *     @type string $position     The default position of the tooltip. Default is 'right'.
+ *                                Accepted values: 'right', 'left', 'up' and 'down'.
+ * }
+ */
+function add_tooltip( $tooltip_text, $args = array() ) {
+	$default_args = array(
+		'field_id'     => 'wp-tooltip-' . wp_hash( $tooltip_text ),
+		'button_label' => __( 'Help' ),
+		'position'     => 'right',
+	);
+
+	$args         = array_merge( $args, $default_args );
+	$field_id     = $args['field_id'];
+	$button_label = $args['button_label'];
+	$position     = $args['position'];
+
+	if ( ! is_string( $field_id ) || '' === $field_id ) {
+		$error_arg = '$field_id';
+	} elseif ( ! is_string( $tooltip_text ) || '' === $tooltip_text ) {
+		$error_arg = '$tooltip_text';
+	} elseif ( ! is_string( $button_label ) ) {
+		$error_arg = '$button_label';
+	}
+
+	if ( isset( $error_arg ) ) {
+		_doing_it_wrong(
+			__FUNCTION__,
+			sprintf(
+				/* translators: %s: The invalid argument passed to add_tooltip(). */
+				__( 'The "%s" argument must be a non-empty string.' ),
+				$error_arg
+			),
+			'6.8.0'
+		);
+
+		return;
+	}
+
+	$valid_positions = array( 'top', 'right', 'bottom', 'left' );
+
+	// Validate position input.
+	if ( ! is_string( $position ) || ! in_array( $position, $valid_positions, true ) ) {
+
+		_doing_it_wrong(
+			__FUNCTION__,
+			sprintf(
+				/* translators: %s: Invalid $position argument passed to add_tooltip(). */
+				__( 'The passed "%s" argument is invalid. Default "right" position was used instead.' ),
+				'$position'
+			),
+			'6.7.0'
+		);
+
+		$position = 'right';
+	}
+
+	/**
+	 * Enqueues the Styles and Scripts for the Tooltip.
+	 *
+	 * @since 6.8.0
+	 *
+	 */
+	wp_enqueue_style( 'wp-tooltip' );
+	wp_enqueue_script( 'wp-tooltip' );
+
+	$icon_url = 'dashicons-editor-help';
+
+	/**
+	 * Filters $icon_url before the tooltip is rendered in the HTML.
+	 *
+	 * @since 6.8.0
+	 *
+	 * @param string $icon_url The URL to the icon to be used for this tooltip.
+	 *                         * Pass a base64-encoded SVG using a data URI, which will be colored to match
+	 *                         the color scheme. This should begin with 'data:image/svg+xml;base64,'.
+	 *                         * Pass the name of a Dashicons helper class to use a font icon,
+	 *                         e.g. 'dashicons-editor-help'.
+	 *                         * Pass 'none' to leave span.wp-tooltip-button-span empty so an icon can be added via CSS.
+	 * @param string $field_id The unique identifier for the tooltip container.
+	 */
+	$icon_url = apply_filters( 'wp_tooltip_icon', $icon_url, $field_id );
+	$icon_url = set_url_scheme( $icon_url );
+
+	if ( str_starts_with( $icon_url, 'dashicons-' ) ) {
+		$icon      = 'class="dashicons ' . sanitize_html_class( $icon_url ) . '"';
+		$icon_html = '<span ' . $icon . ' aria-hidden="true"></span>';
+	} elseif ( str_starts_with( $icon_url, 'data:image/svg+xml;base64,' ) ) {
+		$icon      = ' style="background-image:url(\'' . esc_attr( $icon_url ) . '\')"';
+		$icon_html = '<svg height="20" width="20" aria-hidden="true" focusable="false"' . $icon . '></svg>';
+	} elseif ( str_starts_with( $icon_url, 'http' ) ) {
+		$icon_html = '<img height="20" width="20" src="' . esc_url( $icon_url ) . '" alt="" />';
+	} elseif ( 'none' === $icon_url ) {
+		$icon_html = '';
+	} else {
+		_doing_it_wrong(
+			__FUNCTION__,
+			sprintf(
+				/* translators: %s: Invalid $icon_html passed in 'pre_wp_tooltip_rendered' hook. */
+				__( 'The passed "%1$s" argument in the "%2$s" filter is invalid.' ),
+				'$icon_html',
+				'pre_wp_tooltip_rendered'
+			),
+			'6.8.0'
+		);
+
+		$icon_html = '<span class="dashicons dashicons-editor-help" aria-hidden="true"></span>';
+	}
+
+	/**
+	 * Fires before the tooltip is rendered.
+	 *
+	 * @since 6.8.0
+	 *
+	 * @param string $field_id     The unique identifier for the tooltip container.
+	 * @param string $tooltip_text The text content to be displayed in the tooltip.
+	 * @param string $button_label The label for the tooltip button.
+	 * @param string $position     The default position of the tooltip.
+	 * @param string $icon_url     The URL to the icon to be used for this tooltip.
+	 *                             Pass a base64-encoded SVG using a data URI, which will be colored to match
+	 *                             the color scheme. This should begin with 'data:image/svg+xml;base64,'.
+	 *                             Pass the name of a Dashicons helper class to use a font icon,
+	 *                             e.g. 'dashicons-editor-help'.
+	 *                             Pass 'none' to leave span.wp-tooltip-button-span empty so an icon can be added via CSS.
+	 */
+	add_action( 'pre_wp_tooltip_rendered', $field_id, $tooltip_text, $button_label, $position, $icon_url );
+
+	?>
+	<div class="wp-tooltip-container <?php echo esc_attr( $field_id ); ?> <?php echo esc_attr( 'position-' . $position ); ?>">
+		<button type="button" class="wp-tooltip-button button-link" aria-describedby="<?php echo esc_attr( $field_id ); ?>-tooltip" aria-label="<?php echo esc_attr( $button_label ); ?>">
+			<span class="wp-tooltip-button-span"><?php echo $icon_html; ?></span>
+		</button>
+		<div id="<?php echo esc_attr( $field_id ); ?>-tooltip" class="wp-tooltip-content" role="tooltip"><p><?php echo esc_html( $tooltip_text ); ?></p></div>
+	</div>
+	<?php
 }
