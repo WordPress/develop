@@ -1330,12 +1330,13 @@ final class WP_Theme implements ArrayAccess {
 			$files = (array) $this->get_files( 'php', 1, true );
 
 			foreach ( $files as $file => $full_path ) {
-				if ( ! preg_match( '|Template Name:(.*)$|mi', file_get_contents( $full_path ), $header ) ) {
+				$file_contents = file_get_contents( $full_path );
+				if ( ! preg_match( '|Template Name:(.*)$|mi', $file_contents, $header ) ) {
 					continue;
 				}
 
 				$types = array( 'page' );
-				if ( preg_match( '|Template Post Type:(.*)$|mi', file_get_contents( $full_path ), $type ) ) {
+				if ( preg_match( '|Template Post Type:(.*)$|mi', $file_contents, $type ) ) {
 					$types = explode( ',', _cleanup_header_comment( $type[1] ) );
 				}
 
