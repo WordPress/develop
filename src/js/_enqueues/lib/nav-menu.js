@@ -1103,10 +1103,36 @@
 
 			$('#add-custom-links input[type="text"]').on( 'keypress', function(e){
 				$('#customlinkdiv').removeClass('form-invalid');
+				$('#custom-menu-item-url').hide();
 
 				if ( e.keyCode === 13 ) {
 					e.preventDefault();
 					$( '#submit-customlinkdiv' ).trigger( 'click' );
+				}
+			});
+
+			$('#submit-customlinkdiv').on('click', function (e) {
+				var urlInput = $('#custom-menu-item-url'),
+					url = urlInput.val().trim(),
+					errorMessage = $('#custom-url-error'),
+					urlWrap = $('#menu-item-url-wrap');
+
+				// Hide the error message initially
+				errorMessage.hide();
+				urlWrap.removeClass('has-error');
+
+				if ('' === url || 'https://' === url || 'http://' === url) {
+					e.preventDefault();
+					urlInput.addClass('form-invalid')
+						.attr('aria-invalid', 'true')
+						.attr('aria-describedby', 'custom-url-error');
+
+					var errorText = wp.i18n.__('No content entered. Please enter a valid link.');
+					errorMessage.show();
+					urlWrap.addClass('has-error');
+
+					// Announce error message via screen reader
+					wp.a11y.speak(errorText, 'assertive');
 				}
 			});
 		},
