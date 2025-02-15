@@ -46,15 +46,15 @@ TABLE OF CONTENTS:
 	display: inline-block;
 	text-decoration: none;
 	font-size: 13px;
-	line-height: 2.15384615; /* 28px */
-	min-height: 30px;
+	line-height: 1.538; /* 20px */
+	min-height: 42px;
 	margin: 0;
-	padding: 0 10px;
+	padding: 0 12px;
 	cursor: pointer;
 	border-width: 1px;
 	border-style: solid;
 	-webkit-appearance: none;
-	border-radius: 3px;
+	border-radius: 2px;
 	white-space: nowrap;
 	box-sizing: border-box;
 }
@@ -71,15 +71,14 @@ TABLE OF CONTENTS:
 
 .wp-core-ui .button.button-large,
 .wp-core-ui .button-group.button-large .button {
-	min-height: 32px;
-	line-height: 2.30769231; /* 30px */
-	padding: 0 12px;
+	min-height: 44px;
+	line-height: 1.84615; /* 24px */
 }
 
 .wp-core-ui .button.button-small,
 .wp-core-ui .button-group.button-small .button {
 	min-height: 26px;
-	line-height: 2.18181818; /* 24px */
+	line-height: 1,636363; /* 18px */
 	padding: 0 8px;
 	font-size: 11px;
 }
