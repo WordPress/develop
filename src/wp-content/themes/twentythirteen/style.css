@@ -838,7 +838,22 @@ img.wp-smiley,
 .site-header {
 	position: relative;
 }
-
+.site-logo {
+	float:left;
+	padding: 58px 0 10px;
+}
+.site-logo {
+	max-width: 100%;
+}
+.site-logo + .site-title {
+	clear: none;
+}
+.site-logo + .site-title + .site-description {
+	clear: none;
+}
+.site-logo .custom-logo-link {
+	padding: 0 20px;
+}
 .site-header .home-link {
 	color: #141412;
 	display: block;
@@ -2922,6 +2937,13 @@ footer.entry-meta {
 
 /* Collapse oversized image and pulled images after iPad breakpoint. */
 @media (max-width: 767px) {
+	.site-logo {
+		padding: 8px 0 10px;
+	}
+	.site-logo img {
+  		max-height: 70px;
+		width: auto;
+	}
 	.site-header .home-link {
 		min-height: 0;
 	}
@@ -2952,6 +2974,16 @@ footer.entry-meta {
 }
 
 @media (max-width: 643px) {
+	.site-logo {
+		float: none;
+	}
+	.site-logo img {
+		margin: 8px 0 0;
+		max-height: 100px;
+	}
+	.site-logo .custom-logo-link {
+		padding: 0;
+	}
 	.site-title {
 		font-size: 30px;
 	}
