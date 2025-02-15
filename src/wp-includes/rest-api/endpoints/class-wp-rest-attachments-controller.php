@@ -135,6 +135,23 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller {
 			);
 		}
 
+		// If the upload is an image, check if the server can handle the mime type.
+		$files = $request->get_file_params();
+		if (
+			! empty( $files ) &&
+			isset( $files['file'] ) &&
+			str_starts_with( $files['file']['type'], 'image/' )
+		) {
+			// Check if the image editor supports the type.
+			if ( ! wp_image_editor_supports( array( 'mime_type' => $files['file']['type'] ) ) ) {
+				return new WP_Error(
+					'rest_upload_image_type_not_supported',
+					__( 'The web server cannot generate responsive image sizes for this image. Convert it to JPEG or PNG before uploading.', 'gutenberg' ),
+					array( 'status' => 400 )
+				);
+			}
+		}
+
 		return true;
 	}
 
