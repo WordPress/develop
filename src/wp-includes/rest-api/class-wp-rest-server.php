@@ -1402,6 +1402,14 @@ class WP_REST_Server {
 			}
 		}
 
+		if ( rest_is_field_included( 'default_template_part_areas', $fields ) ) {
+			$this->add_default_template_part_areas_to_index( $response );
+		}
+
+		if ( rest_is_field_included( 'default_template_types', $fields ) ) {
+			$this->add_default_template_types_to_index( $response );
+		}
+
 		/**
 		 * Filters the REST API root index data.
 		 *
@@ -1479,6 +1487,34 @@ class WP_REST_Server {
 		$this->add_image_to_index( $response, $site_icon_id, 'site_icon' );
 
 		$response->data['site_icon_url'] = get_site_icon_url();
+	}
+
+	/**
+	 * Exposes the default template part areas through the WordPress REST API.
+	 *
+	 * @since 6.8.0
+	 *
+	 * @param WP_REST_Response $response REST API response.
+	 */
+	protected function add_default_template_part_areas_to_index( WP_REST_Response $response ) {
+		$response->data['default_template_part_areas'] = get_allowed_block_template_part_areas();
+	}
+
+	/**
+	 * Exposes the default template types through the WordPress REST API.
+	 *
+	 * @since 6.8.0
+	 *
+	 * @param WP_REST_Response $response REST API response.
+	 */
+	protected function add_default_template_types_to_index( WP_REST_Response $response ) {
+		$indexed_template_types = array();
+		foreach ( get_default_block_template_types() as $slug => $template_type ) {
+			$template_type['slug']    = (string) $slug;
+			$indexed_template_types[] = $template_type;
+		}
+
+		$response->data['default_template_types'] = $indexed_template_types;
 	}
 
 	/**

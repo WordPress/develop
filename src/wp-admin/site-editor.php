@@ -144,8 +144,6 @@ $custom_settings      = array(
 	'siteUrl'                   => site_url(),
 	'postsPerPage'              => get_option( 'posts_per_page' ),
 	'styles'                    => get_block_editor_theme_styles(),
-	'defaultTemplateTypes'      => $indexed_template_types,
-	'defaultTemplatePartAreas'  => get_allowed_block_template_part_areas(),
 	'supportsLayout'            => wp_theme_has_theme_json(),
 	'supportsTemplatePartsMode' => ! wp_is_block_theme() && current_theme_supports( 'block-template-parts' ),
 );
