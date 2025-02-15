@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Right-aligned blog, search
+ * Title: Right-aligned search results
  * Slug: twentytwentyfive/template-search-vertical-header-blog
  * Template Types: search
  * Viewport width: 1400
